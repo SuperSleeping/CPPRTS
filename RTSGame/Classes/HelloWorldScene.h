@@ -9,11 +9,12 @@ public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
+
+	void menustartCallback(cocos2d::Ref *pSender);
+	void menusettingCallback(cocos2d::Ref *pSender);
+	void menuaboutusCallback(cocos2d::Ref *pSender);
     
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-    
-    // implement the "static create()" method manually
+	 // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
 };
 

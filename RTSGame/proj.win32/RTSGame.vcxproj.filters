@@ -21,6 +21,9 @@
     <ClCompile Include="..\Classes\HelloWorldScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\AboutUsScene.cpp" />
+    <ClCompile Include="..\Classes\SettingScene.cpp" />
+    <ClCompile Include="..\Classes\StartScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -32,6 +35,9 @@
     <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\AboutUsScene.h" />
+    <ClInclude Include="..\Classes\SettingScene.h" />
+    <ClInclude Include="..\Classes\StartScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
