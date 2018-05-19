@@ -11,7 +11,11 @@ public:
     virtual bool init();
     
     // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
+	void menuIntoLabelNewgame(cocos2d::Ref* pSender);
+	void menuIntoLabelSetting(cocos2d::Ref* pSender);
+	void menuIntoLabelDeveloper(cocos2d::Ref* pSender);
+ 
+	void menuCloseCallback(cocos2d::Ref* pSender);
     
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);

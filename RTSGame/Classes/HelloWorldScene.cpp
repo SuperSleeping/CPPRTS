@@ -1,4 +1,5 @@
 #include "HelloWorldScene.h"
+#include "Settings.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
@@ -29,10 +30,41 @@ bool HelloWorld::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
     /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+    // 2.menu create
+	//create 3 lables
+	//each lable-type menu item relates to a new scene.
 
-    // add a "close" icon to exit the progress. it's an autorelease object
+	auto labelNewgame = Label::createWithTTF("New Game", "fonts/consola.ttf", 30);
+
+	auto labelSetting = Label::createWithTTF("Settings", "fonts/consola.ttf", 30);
+
+	auto labelDeveloper = Label::createWithTTF("Developers", "fonts/consola.ttf", 30);
+
+	//put lables into menu
+
+	auto newgameItem = MenuItemLabel::create(
+										labelNewgame,
+										CC_CALLBACK_1(HelloWorld::menuIntoLabelNewgame, this));
+
+	auto settingItem = MenuItemLabel::create(
+										labelSetting,
+										CC_CALLBACK_1(HelloWorld::menuIntoLabelSetting, this));
+
+	auto developerItem = MenuItemLabel::create(
+										labelDeveloper,
+										CC_CALLBACK_1(HelloWorld::menuIntoLabelDeveloper, this));
+
+	float menuPositionX = visibleSize.width / 2 + origin.x;
+	float menuPositionY = visibleSize.height / 3 + origin.y;
+
+	newgameItem->setPosition(Vec2(menuPositionX, menuPositionY));
+	settingItem->setPosition(Vec2(menuPositionX, menuPositionY - settingItem->getContentSize().height - 10));
+	developerItem->setPosition(Vec2(menuPositionX, menuPositionY - 2*developerItem->getContentSize().height - 20));
+
+	//add a menu item with "X" image, which is clicked to quit the program
+	//    you may modify it.
+
+	// add a "close" icon to exit the progress. it's an autorelease object
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
@@ -53,8 +85,14 @@ bool HelloWorld::init()
 
     // create menu, it's an autorelease object
     auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+ 
+	menu->addChild(newgameItem, 1);
+	menu->addChild(settingItem, 1);
+	menu->addChild(developerItem, 1);
+
+	menu->setPosition(Vec2::ZERO);	
+	this->addChild(menu, 1);
+
 
     /////////////////////////////
     // 3. add your codes below...
@@ -62,10 +100,11 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
 
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
+	/*
+    auto label = Label::createWithTTF("Welcome", "fonts/consola.ttf", 50);
     if (label == nullptr)
     {
-        problemLoading("'fonts/Marker Felt.ttf'");
+        problemLoading("'fonts/consola.ttf'");
     }
     else
     {
@@ -76,23 +115,45 @@ bool HelloWorld::init()
         // add the label as a child to this layer
         this->addChild(label, 1);
     }
+	*/
 
     // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
+    auto sprite = Sprite::create("enteringScene/enterPic.jpg");
     if (sprite == nullptr)
     {
-        problemLoading("'HelloWorld.png'");
+        problemLoading("'enterPic.jpg'");
     }
     else
     {
         // position the sprite on the center of the screen
-        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/3*2 - 20 + origin.y));
 
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
     return true;
 }
+
+void HelloWorld::menuIntoLabelNewgame(cocos2d::Ref* pSender)
+{
+
+}
+
+void HelloWorld::menuIntoLabelSetting(cocos2d::Ref* pSender)
+{
+	auto SettingScene = Setting::createScene();
+
+	auto transToSetting = TransitionFade::create(0.5f, SettingScene);
+
+	Director::getInstance()->pushScene(transToSetting);
+
+}
+
+void HelloWorld::menuIntoLabelDeveloper(cocos2d::Ref* pSender)
+{
+
+}
+
 
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
