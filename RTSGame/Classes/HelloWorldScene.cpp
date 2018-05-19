@@ -1,6 +1,8 @@
 #include "HelloWorldScene.h"
-#include "Settings.h"
 #include "SimpleAudioEngine.h"
+#include "Game.h"
+#include "Setting.h"
+#include "Developer.h"
 
 USING_NS_CC;
 
@@ -84,8 +86,9 @@ bool HelloWorld::init()
     }
 
     // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
+    auto menu = Menu::create();
  
+	menu->addChild(closeItem, 1);
 	menu->addChild(newgameItem, 1);
 	menu->addChild(settingItem, 1);
 	menu->addChild(developerItem, 1);
@@ -131,12 +134,19 @@ bool HelloWorld::init()
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
+
+
+
     return true;
 }
 
 void HelloWorld::menuIntoLabelNewgame(cocos2d::Ref* pSender)
 {
+	auto GameScene = Game::createScene();
 
+	auto transToGame = TransitionFade::create(0.5f, GameScene);
+
+	Director::getInstance()->pushScene(transToGame);
 }
 
 void HelloWorld::menuIntoLabelSetting(cocos2d::Ref* pSender)
@@ -146,12 +156,15 @@ void HelloWorld::menuIntoLabelSetting(cocos2d::Ref* pSender)
 	auto transToSetting = TransitionFade::create(0.5f, SettingScene);
 
 	Director::getInstance()->pushScene(transToSetting);
-
 }
 
 void HelloWorld::menuIntoLabelDeveloper(cocos2d::Ref* pSender)
 {
+	auto DeveloperScene = Developer::createScene();
 
+	auto transToDeveloper = TransitionFade::create(0.5f, DeveloperScene);
+
+	Director::getInstance()->pushScene(transToDeveloper);
 }
 
 
