@@ -37,7 +37,7 @@ bool HelloWorld::init()
 	this->addChild(background);
 
 	//3.menu
-	MenuItemFont::setFontName("Times New Roman");
+	//MenuItemFont::setFontName("Times New Roman");
 	MenuItemFont::setFontSize(30);
 	MenuItemFont *start = MenuItemFont::create("Start", CC_CALLBACK_1(HelloWorld::menustartCallback, this));
 	MenuItemFont *setting = MenuItemFont::create("Setting", CC_CALLBACK_1(HelloWorld::menusettingCallback, this));
