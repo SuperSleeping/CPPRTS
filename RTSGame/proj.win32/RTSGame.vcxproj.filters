@@ -24,6 +24,7 @@
     <ClCompile Include="..\Classes\AboutUsScene.cpp" />
     <ClCompile Include="..\Classes\SettingScene.cpp" />
     <ClCompile Include="..\Classes\StartScene.cpp" />
+    <ClCompile Include="..\Classes\UDP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -38,6 +39,7 @@
     <ClInclude Include="..\Classes\AboutUsScene.h" />
     <ClInclude Include="..\Classes\SettingScene.h" />
     <ClInclude Include="..\Classes\StartScene.h" />
+    <ClInclude Include="..\Classes\UDP.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
