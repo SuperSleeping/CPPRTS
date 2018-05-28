@@ -1,3 +1,7 @@
+/*
+解决newgame的while循环何时跳出
+*/
+
 #include "UDP.h"
 
 bool getHostIp(char *ip)
@@ -52,7 +56,11 @@ bool serverOperation()
 				{
 					return false;
 				}
-				/*在此让最大连接数-1*/
+			}
+			else if (strcmp(buf, "success") == 0)
+			{
+				break;
+				//单客户端连接。多客户端预设连接人数。在此--。
 			}
 			else
 			{
@@ -108,6 +116,7 @@ bool clientOperation(char *hostIp)
 		}
 		if (strlen(hostIp))
 		{
+			sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
 			break;
 		}
 	}

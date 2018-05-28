@@ -62,6 +62,8 @@ void Start::menujoinCallback(Ref *pSender)
 {
 	char hostIp[30];
 	clientOperation(hostIp);
+	strcat(hostIp, ":3000");
+	sioClient = SocketIO::connect(hostIp, *this);
 	return;
 }
 void Start::menunewCallback(Ref *pSender)
