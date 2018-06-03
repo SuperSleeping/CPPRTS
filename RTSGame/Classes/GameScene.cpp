@@ -5,9 +5,9 @@
 USING_NS_CC;
 using namespace CocosDenshion;
 
-Scene* game::createScene()
+Scene* GameScene::createScene()
 {
-	return game::create();
+	return GameScene::create();
 }
 
 static void problemLoading(const char* filename)
@@ -16,7 +16,7 @@ static void problemLoading(const char* filename)
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-bool game::init()
+bool GameScene::init()
 {
 	if (!Scene::init())
 	{

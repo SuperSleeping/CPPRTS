@@ -5,7 +5,7 @@
 
 USING_NS_CC;
 
-class mysetting :public Scene
+class MySetting:public Scene
 {
 public:
 	static Scene* createScene();
@@ -17,6 +17,6 @@ public:
 	void soundCallback(Ref* pSender);
 	void backtorootCallback(Ref* pSender);
 
-	CREATE_FUNC(mysetting);
+	CREATE_FUNC(MySetting);
 };
 #endif

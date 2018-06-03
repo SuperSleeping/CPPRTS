@@ -4,7 +4,7 @@
 #include"cocos2d.h"
 USING_NS_CC;
 
-class endverify :public Scene
+class EndVerify :public Scene
 {
 public:
 	static Scene* createScene();
@@ -14,6 +14,6 @@ public:
 	void verifyCallback(Ref* pSender);
 	void cancelCallback(Ref* pSender);
 
-	CREATE_FUNC(endverify);
+	CREATE_FUNC(EndVerify);
 };
 #endif

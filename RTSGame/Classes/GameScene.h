@@ -5,12 +5,12 @@
 
 USING_NS_CC;
 
-class game :public Scene
+class GameScene :public Scene
 {
 public:
 	static Scene* createScene();
 	virtual bool init();
 
-	CREATE_FUNC(game);
+	CREATE_FUNC(GameScene);
 };
 #endif

@@ -18,12 +18,6 @@
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\AboutUsScene.cpp" />
-    <ClCompile Include="..\Classes\SettingScene.cpp" />
-    <ClCompile Include="..\Classes\StartScene.cpp" />
     <ClCompile Include="..\Classes\RootScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -44,12 +38,6 @@
     <ClInclude Include="..\Classes\AppDelegate.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\HelloWorldScene.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\AboutUsScene.h" />
-    <ClInclude Include="..\Classes\SettingScene.h" />
-    <ClInclude Include="..\Classes\StartScene.h" />
     <ClInclude Include="..\Classes\RootScene.h">
       <Filter>src</Filter>
     </ClInclude>

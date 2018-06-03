@@ -4,7 +4,7 @@
 #include"cocos2d.h"
 USING_NS_CC;
 
-class root:public Scene
+class RootScene:public Scene
 {
 public:
 	static Scene* createScene();
@@ -17,6 +17,6 @@ public:
 	void menumakerCallback(Ref* pSender);
 	void menuendCallback(Ref* pSender);
 
-	CREATE_FUNC(root);
+	CREATE_FUNC(RootScene);
 };
 #endif
