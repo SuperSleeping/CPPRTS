@@ -36,7 +36,7 @@ bool GameScene::init()
 	MouseEvent->onMouseMove = [](Event* event) {
 		EventMouse* e = (EventMouse*)event;
 		Vec2 position = e->getLocationInView();
-		log("%d %d", position.x, position.y);
+		log("%f %f", position.x, position.y);
 	};
 
 
