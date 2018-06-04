@@ -3,9 +3,9 @@
 
 USING_NS_CC;
 
-Scene* endverify::createScene()
+Scene* EndVerify::createScene()
 {
-	return endverify::create();
+	return EndVerify::create();
 }
 
 static void problemLoading(const char* filename)
@@ -14,7 +14,7 @@ static void problemLoading(const char* filename)
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-bool endverify::init()
+bool EndVerify::init()
 {
 	if (!Scene::init())
 	{
@@ -33,12 +33,12 @@ bool endverify::init()
 	MenuItemImage *verifyitem = MenuItemImage::create(
 		"menu/yes.png",
 		"menu/yes.png",
-		CC_CALLBACK_1(endverify::verifyCallback, this));
+		CC_CALLBACK_1(EndVerify::verifyCallback, this));
 
 	MenuItemImage *cancelitem = MenuItemImage::create(
 		"menu/cancel.png",
 		"menu/cancel.png",
-		CC_CALLBACK_1(endverify::cancelCallback, this));
+		CC_CALLBACK_1(EndVerify::cancelCallback, this));
 
 	Menu *mn = Menu::create(verifyitem,cancelitem,nullptr);
 	mn->alignItemsHorizontallyWithPadding(200);
@@ -48,12 +48,12 @@ bool endverify::init()
 	return true;
 }
 
-void endverify::verifyCallback(Ref* pSender)
+void EndVerify::verifyCallback(Ref* pSender)
 {
 	Director::getInstance()->end();
 }
 
-void endverify::cancelCallback(Ref* pSender)
+void EndVerify::cancelCallback(Ref* pSender)
 {
 	Director::getInstance()->popScene();
 }

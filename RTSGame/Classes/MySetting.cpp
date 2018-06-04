@@ -3,9 +3,9 @@
 
 USING_NS_CC;
 
-Scene* mysetting::createScene()
+Scene* MySetting::createScene()
 {
-	return mysetting::create();
+	return MySetting::create();
 }
 
 static void problemLoading(const char* filename)
@@ -14,7 +14,7 @@ static void problemLoading(const char* filename)
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-bool mysetting::init()
+bool MySetting::init()
 {
 	if (!Scene::init())
 	{
@@ -40,21 +40,21 @@ bool mysetting::init()
 	//menu
 	auto difficultyitem1= MenuItemImage::create("menu/left.png", "menu/left.png");
 	auto difficultyitem2 = MenuItemImage::create("menu/right.png", "menu/right.png");
-	auto difficultyitem = MenuItemToggle::createWithCallback(CC_CALLBACK_1(mysetting::difficultyCallback, this),//函数指针
+	auto difficultyitem = MenuItemToggle::createWithCallback(CC_CALLBACK_1(MySetting::difficultyCallback, this),//函数指针
 		difficultyitem1, difficultyitem2,//菜单项集合
 		NULL//集合结束
 	);
 
 	auto speeditem1 = MenuItemImage::create("menu/left.png", "menu/left.png");
 	auto speeditem2 = MenuItemImage::create("menu/right.png", "menu/right.png");
-	auto speeditem = MenuItemToggle::createWithCallback(CC_CALLBACK_1(mysetting::speedCallback, this),//函数指针
+	auto speeditem = MenuItemToggle::createWithCallback(CC_CALLBACK_1(MySetting::speedCallback, this),//函数指针
 		speeditem1, speeditem2,//菜单项集合
 		NULL//集合结束
 	);
 
 	auto sounditem1 = MenuItemImage::create("menu/left.png", "menu/left.png");
 	auto sounditem2 = MenuItemImage::create("menu/right.png", "menu/right.png");
-	auto sounditem = MenuItemToggle::createWithCallback(CC_CALLBACK_1(mysetting::soundCallback, this),//函数指针
+	auto sounditem = MenuItemToggle::createWithCallback(CC_CALLBACK_1(MySetting::soundCallback, this),//函数指针
 		sounditem1, sounditem2,//菜单项集合
 		NULL//集合结束
 	);
@@ -62,7 +62,7 @@ bool mysetting::init()
 	MenuItemImage *backtorootitem = MenuItemImage::create(
 		"menu/backtoroot.png",
 		"menu/backtoroot.png",
-		CC_CALLBACK_1(mysetting::backtorootCallback, this));
+		CC_CALLBACK_1(MySetting::backtorootCallback, this));
 
 	Menu *mn = Menu::create(difficultyitem,speeditem,sounditem,backtorootitem,nullptr);
 	mn->alignItemsVerticallyWithPadding(45);
@@ -72,22 +72,22 @@ bool mysetting::init()
 	return true;
 }
 
-void mysetting::backtorootCallback(Ref* pSender)
+void MySetting::backtorootCallback(Ref* pSender)
 {
 	Director::getInstance()->popScene();
 }
 
-void mysetting::difficultyCallback(Ref* pSender)
+void MySetting::difficultyCallback(Ref* pSender)
 {
 	
 }
 
-void mysetting::speedCallback(Ref* pSender)
+void MySetting::speedCallback(Ref* pSender)
 {
 	
 }
 
-void mysetting::soundCallback(Ref* pSender)
+void MySetting::soundCallback(Ref* pSender)
 {
 	
 }
