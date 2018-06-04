@@ -1,6 +1,5 @@
 #include "StartScene.h"
 #include "SimpleAudioEngine.h"
-#include "HelloWorldScene.h"
 #include "UDP.h"
 #include <stdlib.h>
 
@@ -56,8 +55,8 @@ void Start::menubeginCallback(Ref *pSender)
 }
 void Start::menureturnCallback(Ref *pSender)
 {
-	auto sc = HelloWorld::createScene();
-	Director::getInstance()->replaceScene(sc);
+	/*auto sc = HelloWorld::createScene();
+	Director::getInstance()->replaceScene(sc);*/
 }
 void Start::menujoinCallback(Ref *pSender)
 {
