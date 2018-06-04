@@ -50,6 +50,12 @@
     <ClInclude Include="..\Classes\GameScene.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="Soldier.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Building.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
