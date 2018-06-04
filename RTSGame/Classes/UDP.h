@@ -1,3 +1,4 @@
+//UDP协议下的局域网广播以获取服务端ip建立连接
 #include <WinSock2.h>
 #include <stdio.h>
 #include <iostream>

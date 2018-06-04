@@ -6,21 +6,25 @@
 
 bool getHostIp(char *ip)
 {
+	//启动套接字
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData))
 	{
 		return false;
 	}
+	//获取主机名
 	char hostname[256];
 	if (SOCKET_ERROR == gethostname(hostname, sizeof(hostname)))
 	{
 		return false;
 	}
+	//获取主机ip
 	HOSTENT *host = gethostbyname(hostname);
 	if (NULL == host)
 	{
 		return false;
 	}
+	//复制ip地址
 	strcpy(ip, inet_ntoa(*reinterpret_cast<in_addr*>(*host->h_addr_list)));
 	return true;
 }
@@ -34,7 +38,9 @@ bool serverOperation()
 	{
 		return false;
 	}
+	//UDP套接字
 	sClient = socket(AF_INET, SOCK_DGRAM, 0);
+	//设置为广播类型
 	bool optval = true;
 	bindAddr.sin_family = AF_INET;
 	bindAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -43,8 +49,8 @@ bool serverOperation()
 	bind(sClient, reinterpret_cast<sockaddr*>(&bindAddr), sizeof(sockaddr_in));
 
 	int addrLen = sizeof(SOCKADDR);
-	char buf[256] = { 0 };
-	char ipaddr[30] = { 0 };
+	char buf[256] = { 0 };			//储存接收到的命令
+	char ipaddr[30] = { 0 };		//储存本机ip
 	getHostIp(ipaddr);
 	while (true)
 	{
@@ -52,6 +58,7 @@ bool serverOperation()
 		{
 			if (strcmp(buf, "GET_HOST_IP") == 0)
 			{
+				//发送ip地址
 				if (SOCKET_ERROR == sendto(sClient, ipaddr, 30, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen))
 				{
 					return false;
@@ -59,11 +66,13 @@ bool serverOperation()
 			}
 			else if (strcmp(buf, "success") == 0)
 			{
+				//成功建立连接
 				break;
 				//单客户端连接。多客户端预设连接人数。在此--。
 			}
 			else
 			{
+				//无效指令
 				continue;
 			}
 		}
@@ -82,11 +91,13 @@ bool clientOperation(char *hostIp)
 	SOCKET connectSocket;
 	connectSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
+	//绑定套接字
 	SOCKADDR_IN sin;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(CLIENT_PORT);
 	sin.sin_addr.s_addr = 0;
 
+	//接受广播的地址
 	SOCKADDR_IN sinFrom;
 	sinFrom.sin_family = AF_INET;
 	sinFrom.sin_port = htons(SERVER_PORT);
@@ -116,6 +127,7 @@ bool clientOperation(char *hostIp)
 		}
 		if (strlen(hostIp))
 		{
+			//成功获取ip
 			sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
 			break;
 		}

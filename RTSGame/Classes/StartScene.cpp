@@ -2,6 +2,7 @@
 #include "SimpleAudioEngine.h"
 #include "HelloWorldScene.h"
 #include "UDP.h"
+#include <stdlib.h>
 
 USING_NS_CC;
 using namespace cocos2d::network;
@@ -68,6 +69,7 @@ void Start::menujoinCallback(Ref *pSender)
 }
 void Start::menunewCallback(Ref *pSender)
 {
+	WinExec("node ../../nodejs/app.js",SW_NORMAL);
 	serverOperation();
 	return;
 }
@@ -94,7 +96,7 @@ void Start::onClose(SIOClient *client)
 
 void Start::onMessage(SIOClient *client, const std::string& data)
 {
-
+	log("%s", data.c_str());
 }
 
 void Start::onError(SIOClient *client, const std::string& data)
