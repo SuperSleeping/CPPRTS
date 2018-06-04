@@ -1,10 +1,10 @@
 #include "StartScene.h"
 #include "SimpleAudioEngine.h"
 #include "UDP.h"
+#include "ClientSocket.h"
 #include <stdlib.h>
 
 USING_NS_CC;
-using namespace cocos2d::network;
 
 Scene* Start::createScene()
 {
@@ -63,12 +63,12 @@ void Start::menujoinCallback(Ref *pSender)
 	char hostIp[30];
 	clientOperation(hostIp);
 	strcat(hostIp, ":3000");
-	sioClient = SocketIO::connect(hostIp, *this);
+	mySocket.buildConnection(hostIp);
 	return;
 }
 void Start::menunewCallback(Ref *pSender)
 {
-	WinExec("node ../../nodejs/app.js",SW_NORMAL);
+	WinExec("node ../../nodejs/app.js", SW_NORMAL);
 	serverOperation();
 	return;
 }
@@ -78,27 +78,4 @@ void Start::menurefreshCallback(Ref *pSender)
 	/*
 	构建一个房间列表
 	*/
-}
-
-
-
-//委托协议方法
-void Start::onConnect(SIOClient *client)
-{
-
-}
-
-void Start::onClose(SIOClient *client)
-{
-
-}
-
-void Start::onMessage(SIOClient *client, const std::string& data)
-{
-	log("%s", data.c_str());
-}
-
-void Start::onError(SIOClient *client, const std::string& data)
-{
-
 }

@@ -4,9 +4,8 @@
 #include "cocos2d.h"
 #include "network/SocketIO.h"
 
-class Start :public cocos2d::Scene,public cocos2d::network::SocketIO::SIODelegate
+class Start :public cocos2d::Scene
 {
-	cocos2d::network::SIOClient *sioClient;
 public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
@@ -18,11 +17,6 @@ public:
 	void menubeginCallback(cocos2d::Ref *pSender);
 
 	CREATE_FUNC(Start);
-
-	virtual void onConnect(cocos2d::network::SIOClient *client);
-	virtual void onMessage(cocos2d::network::SIOClient *client, const std::string& data);
-	virtual void onClose(cocos2d::network::SIOClient *client);
-	virtual void onError(cocos2d::network::SIOClient *client, const std::string& data);
 };
 
 #endif //__START_SCENE_H__

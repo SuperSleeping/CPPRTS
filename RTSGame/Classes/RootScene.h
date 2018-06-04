@@ -2,14 +2,20 @@
 #define _ROOT_SCNEE_H_
 
 #include"cocos2d.h"
-USING_NS_CC;
+#include "SimpleAudioEngine.h"
+//USING_NS_CC;
 
-class RootScene:public Scene
+class RootScene:public cocos2d::Scene
 {
 public:
-	static Scene* createScene();
+	static cocos2d::Scene* createScene();
 	virtual bool init();
-	
+	virtual void onEnter();
+	virtual void onEnterTransitionDidFinish();
+	virtual void onExit();
+	virtual void onExitTransitionDidStart();
+	virtual void cleanup();
+
 	//menu
 	void menusinmemchoiceCallback(Ref* pSender);
 	void menumulmemchoiceCallback(Ref* pSender);
