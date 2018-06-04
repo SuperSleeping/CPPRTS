@@ -26,7 +26,36 @@ bool GameScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	////top label
+	auto menu = Sprite::create("menu.png");
+	this->addChild(menu);
+	menu->setAnchorPoint(Vec2(0, 0));
+	menu->setPosition(Vec2(1100, 0));
+
+	auto MouseEvent = EventListenerMouse::create();
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(MouseEvent, this);
+	MouseEvent->onMouseMove = [](Event* event) {
+		EventMouse* e = (EventMouse*)event;
+		Vec2 position = e->getLocationInView();
+		log("%d %d", position.x, position.y);
+	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*	////top label
 	//runtime
 	auto runtime = Label::createWithSystemFont("Runtime:6min", "Arial", 18);
 	runtime->setPosition(Vec2(origin.x + visibleSize.width / 11, origin.y + visibleSize.height *29/30));
@@ -84,7 +113,7 @@ bool GameScene::init()
 	//sound
 	
 
-	//return
+	//return*/
 
 	return true;
 }
