@@ -65,6 +65,14 @@ bool RootScene::init()
 	mn->alignItemsVerticallyWithPadding(30);
 	mn->setPosition(Vec2(origin.x+visibleSize.width*3/4,origin.y+visibleSize.height/2));
 	this->addChild(mn);
+	
+	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY,1))
+	{
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/HM2.mp3", true);
+		//检验背景音乐是否正在播放
+		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
+		log("%d", flag);
+	}
 
 	return true;
 }
@@ -110,10 +118,13 @@ void RootScene::onEnterTransitionDidFinish()
 {
 	Scene::onEnterTransitionDidFinish();
 	log("onEnterTransitionDidFinish");
-	SimpleAudioEngine::getInstance()->playBackgroundMusic("music/HM2.mp3", true);
-	/*检验背景音乐是否正在播放
-	bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
-	log("%d", flag);*/
+	/*if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
+	{
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/HM2.mp3", true);
+		//检验背景音乐是否正在播放
+		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
+		log("%d", flag);
+	}*/
 	return;
 }
 
@@ -135,5 +146,6 @@ void RootScene::cleanup()
 {
 	Scene::cleanup();
 	log("cleanup");
-	SimpleAudioEngine::getInstance()->stopBackgroundMusic("music/HM2.mp3");
+	//SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+	return;
 }

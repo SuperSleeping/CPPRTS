@@ -166,6 +166,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\ClientSocket.h" />
     <ClInclude Include="..\Classes\StartScene.h" />
     <ClInclude Include="..\Classes\UDP.h" />
+    <ClInclude Include="..\Classes\UserDefault.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

@@ -3,12 +3,13 @@
 
 #include"cocos2d.h"
 #include "SimpleAudioEngine.h"
-//USING_NS_CC;
+#include "UserDefault.h"
+USING_NS_CC;
 
-class RootScene:public cocos2d::Scene
+class RootScene:public Scene
 {
 public:
-	static cocos2d::Scene* createScene();
+	static Scene* createScene();
 	virtual bool init();
 	virtual void onEnter();
 	virtual void onEnterTransitionDidFinish();

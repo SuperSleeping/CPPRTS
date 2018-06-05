@@ -65,6 +65,9 @@
     <ClInclude Include="..\Classes\ClientSocket.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\UserDefault.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

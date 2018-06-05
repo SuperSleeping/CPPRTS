@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 Scene* Start::createScene()
 {
@@ -40,6 +41,14 @@ bool Start::init()
 	mn->alignItemsVertically();
 
 	this->addChild(mn);
+
+	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
+	{
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/Ready The Army.mp3", true);
+		//检验背景音乐是否正在播放
+		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
+		log("%d", flag);
+	}
 
 	return true;
 }

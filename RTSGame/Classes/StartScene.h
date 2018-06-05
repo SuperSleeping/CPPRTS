@@ -3,6 +3,8 @@
 
 #include "cocos2d.h"
 #include "network/SocketIO.h"
+#include "SimpleAudioEngine.h"
+#include "UserDefault.h"
 
 class Start :public cocos2d::Scene
 {
