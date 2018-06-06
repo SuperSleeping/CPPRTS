@@ -46,8 +46,6 @@ bool Developer::init()
 
 	returnItem->setPosition(Vec2(visibleSize.width / 2 + 200, visibleSize.height / 3 * 2 - labelReturn->getContentSize().height - 20));
 
-	returnItem->setColor(Color3B(1, 1, 1));
-
 	auto menu = Menu::create();
 
 	menu->addChild(returnItem, 1);
@@ -66,5 +64,5 @@ void Developer::menuReturn(cocos2d::Ref* pSender)
 
 	auto transToHelloWorld = TransitionFade::create(0.5f, HelloWorldScene);
 
-	Director::getInstance()->pushScene(transToHelloWorld);
+	Director::getInstance()->popScene();
 }

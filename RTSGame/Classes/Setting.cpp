@@ -40,24 +40,31 @@ bool Setting::init()
 
 
 	auto labelAudioOn = Label::createWithTTF("Audio On", "fonts/consola.ttf", 30);
+	auto labelAudioOff = Label::createWithTTF("Audio Off","fonts/consola.ttf", 30);
 	auto labelReturn = Label::createWithTTF("Return", "fonts/consola.ttf", 30);
 
 	auto audioOnItem = MenuItemLabel::create(labelAudioOn);
-	audioOnItem->activate();
+	auto audioOffItem = MenuItemLabel::create(labelAudioOff);
+
+	//	audioOnItem->activate();
+	auto audioSwitchItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(Setting::menuSoundToggleCallBack, this),
+		audioOnItem,
+		audioOffItem,
+		NULL);
+
 
 
 	auto returnItem = MenuItemLabel::create(
 		labelReturn,
 		CC_CALLBACK_1(Setting::menuReturn, this));
 
-	audioOnItem->setPosition(Vec2(visibleSize.width / 2 + 200, visibleSize.height / 3 * 2));
+	audioSwitchItem->setPosition(Vec2(visibleSize.width / 2 + 200, visibleSize.height / 3 * 2));
 	returnItem->setPosition(Vec2(visibleSize.width / 2 + 200, visibleSize.height / 3 * 2 - labelReturn->getContentSize().height - 20));
-
-	returnItem->setColor(Color3B(1,1,1));
 
 	auto menu = Menu::create();
 
-	menu->addChild(audioOnItem, 1);
+	menu->addChild(audioSwitchItem, 1);
 	menu->addChild(returnItem, 1);
 
 	menu->setPosition(Vec2::ZERO);
@@ -77,5 +84,10 @@ void Setting::menuReturn(cocos2d::Ref* pSender)
 
 	auto transToHelloWorld = TransitionFade::create(0.5f, HelloWorldScene);
 
-	Director::getInstance()->pushScene(transToHelloWorld);
+	Director::getInstance()->popScene();
+}
+
+void Setting::menuSoundToggleCallBack(cocos2d::Ref* pSender)
+{
+	
 }

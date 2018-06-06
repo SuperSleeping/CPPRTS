@@ -11,6 +11,12 @@ Scene* HelloWorld::createScene()
     return HelloWorld::create();
 }
 
+void HelloWorld::update(float dt)
+{
+	auto picture = this->getChildByTag(1);
+	picture->setPosition(picture->getPosition() + Vec2(2, -2));
+}
+
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
@@ -131,11 +137,13 @@ bool HelloWorld::init()
         // position the sprite on the center of the screen
         sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/3*2 - 20 + origin.y));
 
+		sprite->setTag(1);
+
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
 
-
+	this->scheduleUpdate();
 
     return true;
 }

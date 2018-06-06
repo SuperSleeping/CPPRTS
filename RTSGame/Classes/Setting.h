@@ -13,6 +13,7 @@ public:
 	// a selector callback
 	void menuAudioChange(cocos2d::Ref* pSender);
 	void menuReturn(cocos2d::Ref* pSender);
+	void menuSoundToggleCallBack(cocos2d::Ref* pSender);
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(Setting);
