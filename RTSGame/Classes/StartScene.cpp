@@ -27,9 +27,6 @@ bool Start::init()
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	Sprite *background = Sprite::create("background.jpg");
-	background->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
-	this->addChild(background);
 
 	MenuItemFont *itemnew = MenuItemFont::create("New Game", CC_CALLBACK_1(Start::menunewCallback, this));
 	MenuItemFont *itemjoin = MenuItemFont::create("Join", CC_CALLBACK_1(Start::menujoinCallback, this));
