@@ -9,6 +9,8 @@ public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
+
+	virtual void update(float dt);
     
     // a selector callback
 	void menuIntoLabelNewgame(cocos2d::Ref* pSender);
