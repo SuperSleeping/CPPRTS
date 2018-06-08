@@ -3,6 +3,7 @@
 #include"SimpleAudioEngine.h"
 using namespace std;
 USING_NS_CC;
+static int CreateTag = 0;
 float Distance(Vec2 pt1, Vec2 pt2);
 class Soldier :public Sprite {
 private:
@@ -11,11 +12,13 @@ private:
 	bool auto_attack = 1;
 	float attack_interval;						//每次攻击间隔时间（秒）
 	Soldier* attack_target;
+	
 	float attack_distance = 200;
 	int Hitpoint = 100;
 	int ATK = 10;
 	int count = 0;
 	ProgressTimer* blood;
+	Vec2 destination;
 public:
 	static Soldier *create(std::string filename);
 
@@ -24,6 +27,7 @@ public:
 
 	void SetSide(int side);
 	void SetTarget(Soldier* tg);
+	//void SetTarget(Building* tg);
 	void update(float di) override;
 	void updateAttack(float di);
 	void updateBegin(float di);
@@ -31,6 +35,8 @@ public:
 	int Hp();
 
 	bool Died();
+
+	void SetDestination(Vec2 dest);
 
 	void Select(bool select);
 	bool Selected();
@@ -58,6 +64,7 @@ void Soldier::SelectedReply() {
 
 Soldier *Soldier::create(std::string filename)
 {
+	CreateTag++;
 	Soldier *sprite = new Soldier();
 	//auto hp = CCProgressTimer::create(Sprite::create("blood.png"));
 
@@ -67,10 +74,19 @@ Soldier *Soldier::create(std::string filename)
 		return sprite;
 	}
 	CC_SAFE_DELETE(sprite);
+	
 	return nullptr;
 
 
 }
+
+void Soldier::SetDestination(Vec2 dest) {
+	this->destination = dest;
+	this->stopAllActions();
+	auto move_target = MoveTo::create(Distance(dest, this->getPosition()) / 50, dest);
+	this->runAction(move_target);
+}
+
 void Soldier::Refresh() {
 	selected = 0;
 }
@@ -128,6 +144,7 @@ bool Soldier::Died() {
 void Soldier::update(float di) {
 	if (attack_target && (Distance(this->getPosition(), attack_target->getPosition())>attack_distance) && count % 10 == 0) {
 		this->stopAllActions();
+		
 		auto move_to_target = MoveTo::create(Distance(this->getPosition(), attack_target->getPosition()) / 50, attack_target->getPosition());
 		this->runAction(move_to_target);
 	}
@@ -143,7 +160,7 @@ void Soldier::update(float di) {
 void Soldier::updateAttack(float di) {
 	if (attack_target && (Distance(this->getPosition(), attack_target->getPosition()) <= attack_distance)) {
 		attack_target->BeAttacked(this->ATK);
-		log("%d", attack_target->Hp());
+		//log("%d", attack_target->Hp());
 	}
 	if (attack_target && attack_target->Died()) {
 		//attack_target->removeFromParent();
@@ -152,11 +169,14 @@ void Soldier::updateAttack(float di) {
 
 }
 void Soldier::updateBegin(float di) {
+	this->setTag(CreateTag);
+	//log("%d", this->getTag());
 	this->blood = ProgressTimer::create(Sprite::create("blood.png"));
-	blood->setPercentage(100);
+	this->addChild(blood);
+	
 	blood->setAnchorPoint(Vec2(0, 0));
 	blood->setType(ProgressTimer::Type::BAR);
-	blood->setMidpoint(Point(0, 0.5));
-	blood->setBarChangeRate(Point(1.0, 0));
-	this->addChild(blood);
+	blood->setMidpoint(Vec2(0,0.5f));
+	blood->setBarChangeRate(Vec2(1,0));
+	blood->setPercentage(100);
 }
