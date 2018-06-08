@@ -1,8 +1,9 @@
 #include "StartScene.h"
 #include "SimpleAudioEngine.h"
 #include "UDP.h"
-#include "ClientSocket.h"
+#include "GameScene.h"
 #include <stdlib.h>
+#include <Windows.h>
 
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -69,13 +70,18 @@ void Start::menujoinCallback(Ref *pSender)
 	char hostIp[30];
 	clientOperation(hostIp);
 	strcat(hostIp, ":3000");
-	mySocket.buildConnection(hostIp);
+	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
+	auto sc = GameScene::createScene();
+	Director::getInstance()->replaceScene(sc);
 	return;
 }
 void Start::menunewCallback(Ref *pSender)
 {
+	/*将参数2改为SW_HIDE即可隐藏运行窗口 暂时用于查看服务端输出*/
 	WinExec("node ../../nodejs/app.js", SW_NORMAL);
 	serverOperation();
+	auto sc = GameScene::createScene();
+	Director::getInstance()->replaceScene(sc);
 	return;
 }
 void Start::menurefreshCallback(Ref *pSender)

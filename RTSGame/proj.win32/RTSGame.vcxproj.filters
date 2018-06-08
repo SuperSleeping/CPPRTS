@@ -62,9 +62,6 @@
     <ClInclude Include="..\Classes\UDP.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\ClientSocket.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\UserDefault.h">
       <Filter>src</Filter>
     </ClInclude>
