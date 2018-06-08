@@ -1,9 +1,13 @@
 #include"GameScene.h"
 #include"SimpleAudioEngine.h"
 #include "ui/CocosGUI.h"
+#include "UserDefault.h"
+#include "extensions/cocos-ext.h"			//editbox
 
 USING_NS_CC;
+USING_NS_CC_EXT;
 using namespace CocosDenshion;
+using namespace cocos2d::ui;
 
 Scene* GameScene::createScene()
 {
@@ -22,6 +26,9 @@ bool GameScene::init()
 	{
 		return false;
 	}
+
+	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
+	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -79,12 +86,93 @@ bool GameScene::init()
 	tank->setPosition(Vec2(origin.x + visibleSize.width * 25/36, origin.y + visibleSize.height*5/18));
 	this->addChild(tank);
 
+	//content
+	auto content = RichText::create();
+	content->setContentSize(Size(400, 200));
+	content->ignoreContentAdaptWithSize(false);
+	content->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
+	content->setTag(112);
+	this->addChild(content);
+	auto text = RichElementText::create(1, Color3B::RED, 255, "Hi!", "Arial", 20);
+	content->pushBackElement(text);
 
+	//chat
+	auto chatbox = EditBox::create(Size(400, 20), Scale9Sprite::create("editbox.jpg"));
+	chatbox->setPlaceHolder("Press Enter to chat: ");
+	chatbox->setFontColor(Color3B::BLACK);
+	chatbox->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
+	chatbox->setTag(111);
+	this->addChild(chatbox);
+
+	auto sendItem = MenuItemFont::create("send", CC_CALLBACK_1(GameScene::sendCallback, this));
+	sendItem->setPosition(Vec2(origin.x, origin.y + visibleSize.height / 3));
+	Menu *mn = Menu::create(sendItem, NULL);
+	this->addChild(mn);
 
 	//sound
-	
+	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
+	{
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/Ready The Army.mp3", true);
+		//检验背景音乐是否正在播放
+		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
+		log("%d", flag);
+	}
 
 	//return
 
 	return true;
+}
+
+void GameScene::sendCallback(Ref *pSender)
+{
+	int playerNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
+	std::string message = std::to_string(playerNumber);
+	std::string playerName = UserDefault::getInstance()->getStringForKey(USER_NAME,"User");
+	auto editbox = reinterpret_cast<EditBox*>(this->getChildByTag(111));
+	std::string content = editbox->getText();
+	message = message + "c" + playerName + ":" + content;
+	sioClient->send(message);
+	return;
+}
+
+void GameScene::onConnect(cocos2d::network::SIOClient *client)
+{
+	return;
+}
+
+void GameScene::onMessage(cocos2d::network::SIOClient *client, const std::string& data)
+{
+	const char *cData = data.c_str();
+	/*从服务端接受指令并根据指令执行相应的函数*/
+	if (data[2] == 'c')
+	{
+		log("1");
+		chatResponse(data);
+	}
+	return;
+}
+
+void GameScene::onClose(cocos2d::network::SIOClient *client)
+{
+	return;
+}
+
+void GameScene::onError(cocos2d::network::SIOClient *client, const std::string& data)
+{
+	return;
+}
+
+void GameScene::chatResponse(const std::string& data)
+{
+	/*根据data[0]决定添加富文本的颜色暂时懒得实现*/
+	auto content = reinterpret_cast<RichText*>(this->getChildByTag(112));
+	//提取聊天内容
+	std::string message = data;
+	message.erase(0, 3);
+	log("%s", message.c_str());
+	auto re1 = RichElementNewLine::create(0, Color3B::WHITE, 255);
+	auto re2 = RichElementText::create(1, Color3B::WHITE, 255, message, "Arial", 20);
+	content->pushBackElement(re1);
+	content->pushBackElement(re2);
+	return;
 }
