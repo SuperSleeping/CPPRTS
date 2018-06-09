@@ -30,7 +30,7 @@ void Building::GiveSide(int side) {
 
 Building *Building::create(std::string filename)
 {
-	CreateTag++;
+	//CreateTag++;
 	Building *sprite = new Building();
 
 	if (sprite && sprite->initWithFile(filename))

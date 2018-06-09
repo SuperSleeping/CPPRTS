@@ -64,7 +64,7 @@ void Soldier::SelectedReply() {
 
 Soldier *Soldier::create(std::string filename)
 {
-	CreateTag++;
+	//CreateTag++;
 	Soldier *sprite = new Soldier();
 	//auto hp = CCProgressTimer::create(Sprite::create("blood.png"));
 
@@ -145,8 +145,9 @@ void Soldier::update(float di) {
 	if (attack_target && (Distance(this->getPosition(), attack_target->getPosition())>attack_distance) && count % 10 == 0) {
 		this->stopAllActions();
 		
-		auto move_to_target = MoveTo::create(Distance(this->getPosition(), attack_target->getPosition()) / 50, attack_target->getPosition());
-		this->runAction(move_to_target);
+		this->SetDestination(attack_target->getPosition());
+		//auto move_to_target = MoveTo::create(Distance(this->getPosition(), attack_target->getPosition()) / 50, attack_target->getPosition());
+		//this->runAction(move_to_target);
 	}
 	if (attack_target && (Distance(this->getPosition(), attack_target->getPosition()) <= attack_distance) && count % 10 == 0) {
 		this->stopAllActions();
@@ -169,6 +170,7 @@ void Soldier::updateAttack(float di) {
 
 }
 void Soldier::updateBegin(float di) {
+	CreateTag++;
 	this->setTag(CreateTag);
 	//log("%d", this->getTag());
 	this->blood = ProgressTimer::create(Sprite::create("blood.png"));

@@ -13,7 +13,10 @@ public:
 	//static cocos2d::Scene* createScene();
 
 	//virtual void update(float di) override;
-	
+	void buildRespone(const std::string &data);
+	void createRespone(const std::string &data);
+	void attackRespone(const std::string &data);
+	void moveRespone(const std::string &data);
 	void updateErase(float di);
 	CREATE_FUNC(GameScene);
 };
