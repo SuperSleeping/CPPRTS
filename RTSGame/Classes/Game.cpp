@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "HelloWorldScene.h"
 
-
+#include <iostream>
 
 Scene* Game::createScene()
 {
@@ -16,16 +16,8 @@ Scene* Game::createScene()
 
 void Game::update(float dt)
 {
-	/*
-	//Read in instructions
-	auto mouseListener = EventListenerMouse::create();
-	mouseListener->onMouseDown = CC_CALLBACK_1(Game::mouseDown, this);
-	
-	character[0]->positionGoal = pos;
-	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
-	character[0]->move();
-	*/
+	
 }
 
 bool Game::init()
@@ -36,13 +28,17 @@ bool Game::init()
 	}
 	visibleSize = Director::getInstance()->getVisibleSize();
 
+
 	/*
 	mapChoice();
 	mapInit(mapType);
 	*/
 	mapInit(1);
 
-
+	//GameScene上的鼠标监听、事件分配
+	auto mouseListener = EventListenerMouse::create();
+	mouseListener->onMouseDown = CC_CALLBACK_1(Game::mouseDown, this);
+	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
 
 
@@ -136,7 +132,10 @@ void Game::mapInit(int type)
 void Game::mouseDown(cocos2d::Event* event)
 {
 	EventMouse *e = (EventMouse*)event;
-	pos = e->getLocation();
+	character[0]->positionGoal = e->getLocation();
+
+	//人物移动
+	character[0]->move();
 }
 
 

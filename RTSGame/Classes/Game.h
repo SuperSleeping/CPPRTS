@@ -16,9 +16,9 @@ private:
 	Vec2 visibleSize;
 	
 	TMXTiledMap* map;
-	CCTMXLayer* _background;
-	CCTMXLayer* _object;
-	CCTMXLayer* _meta;
+	TMXLayer* _background;
+	TMXLayer* _object;
+	TMXLayer* _meta;
 
 	Sprite *player;
 
@@ -64,7 +64,6 @@ public:
 	// implement the "static create()" method manually
 	CREATE_FUNC(Game);
 
-	Vec2 pos;
 };
 
 #endif // __GAME_H__

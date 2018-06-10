@@ -11,7 +11,6 @@ class GameElement : public Node
 {
 public:
 	//Name&Number
-	std::string name;
 	int number;
 
 	//Constructor
