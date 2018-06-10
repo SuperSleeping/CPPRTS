@@ -2,6 +2,8 @@
 #define _ROOT_SCNEE_H_
 
 #include"cocos2d.h"
+#include "SimpleAudioEngine.h"
+#include "UserDefault.h"
 USING_NS_CC;
 
 class RootScene:public Scene
@@ -9,7 +11,12 @@ class RootScene:public Scene
 public:
 	static Scene* createScene();
 	virtual bool init();
-	
+	virtual void onEnter();
+	virtual void onEnterTransitionDidFinish();
+	virtual void onExit();
+	virtual void onExitTransitionDidStart();
+	virtual void cleanup();
+
 	//menu
 	void menusinmemchoiceCallback(Ref* pSender);
 	void menumulmemchoiceCallback(Ref* pSender);
