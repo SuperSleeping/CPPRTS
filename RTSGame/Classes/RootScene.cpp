@@ -1,11 +1,10 @@
 #include"RootScene.h"
+#include"SimpleAudioEngine.h"
 #include"GameScene.h"
 #include"EndVerify.h"
 #include"MySetting.h"
-#include "StartScene.h"
 
 USING_NS_CC;
-using namespace CocosDenshion;
 
 Scene* RootScene::createScene()
 {
@@ -24,16 +23,15 @@ bool RootScene::init()
 	{
 		return false;
 	}
-	log("init");
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	
+
 	//left picture
 	Sprite *leftbg = Sprite::create("enteringScene/enterPic.jpg");
 	leftbg->setPosition(Vec2(visibleSize.width / 3, visibleSize.height / 2));
 	this->addChild(leftbg);
-	
+
 	//menu
 	MenuItemImage *singleitem = MenuItemImage::create(
 		"menu/single.png",
@@ -65,14 +63,6 @@ bool RootScene::init()
 	mn->alignItemsVerticallyWithPadding(30);
 	mn->setPosition(Vec2(origin.x+visibleSize.width*3/4,origin.y+visibleSize.height/2));
 	this->addChild(mn);
-	
-	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY,1))
-	{
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/HM2.mp3", true);
-		//检验背景音乐是否正在播放
-		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
-		log("%d", flag);
-	}
 
 	return true;
 }
@@ -85,8 +75,7 @@ void RootScene::menusinmemchoiceCallback(Ref* pSender)
 
 void RootScene::menumulmemchoiceCallback(Ref* pSender)
 {
-	auto sc = Start::createScene();
-	Director::getInstance()->replaceScene(sc);
+
 }
 
 void RootScene::menusettingCallback(Ref* pSender)
@@ -104,48 +93,4 @@ void RootScene::menuendCallback(Ref* pSender)
 {
 	auto sc= EndVerify::createScene();
 	Director::getInstance()->pushScene(sc);
-}
-
-//Scene生命周期函数
-void RootScene::onEnter()
-{
-	Scene::onEnter();
-	log("onEnter");
-	return;
-}
-
-void RootScene::onEnterTransitionDidFinish()
-{
-	Scene::onEnterTransitionDidFinish();
-	log("onEnterTransitionDidFinish");
-	/*if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
-	{
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/HM2.mp3", true);
-		//检验背景音乐是否正在播放
-		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
-		log("%d", flag);
-	}*/
-	return;
-}
-
-void RootScene::onExit()
-{
-	Scene::onExit();
-	log("onExit");
-	return;
-}
-
-void RootScene::onExitTransitionDidStart()
-{
-	Scene::onExitTransitionDidStart();
-	log("onExitTransitionDidStart");
-	return;
-}
-
-void RootScene::cleanup()
-{
-	Scene::cleanup();
-	log("cleanup");
-	//SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-	return;
 }

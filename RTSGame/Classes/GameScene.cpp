@@ -1,28 +1,20 @@
 #include"GameScene.h"
-#include"SimpleAudioEngine.h"
-#include "ui/CocosGUI.h"
-#include "UserDefault.h"
-#include "extensions/cocos-ext.h"			//editbox
 #include"cocos2d.h"
 #include"Soldier.h"
 #include"Building.h"
 #include<memory>
 USING_NS_CC;
-USING_NS_CC_EXT;
 bool ContainRect(Vec2 current, Vec2 pt1, Vec2 pt2);
 bool ContainSprite(Sprite* sp, Vec2 position, float di);
 float Distance(Vec2 pt1, Vec2 pt2);
 static Vector<Soldier*> OpSoldierList;
 static Vector<Soldier*> MySoldierList;
 using namespace CocosDenshion;
-using namespace cocos2d::ui;
 static Vector<Soldier*> SoldierList[4];
 static Vector<Building*> BuildingList[4];
 //static int SoldierTag = 0;
 static int MyNumber = 0;
 static TMXTiledMap *PlayMap;
-
-
 Scene* GameScene::createScene()
 {
 	return GameScene::create();
@@ -41,16 +33,14 @@ bool GameScene::init()
 		return false;
 	}
 
-	//ä¼ è¾“ä¸²ç   p    a      t   xxxxyyy  
-			//ç©å®¶ åŠ¨ä½œ   ç±»å‹
-	MyNumber = 0;			//è·å–ç©å®¶ç¼–å·0/1/2/3  
-							//0å’Œ2 1å’Œ3ä¸€é˜Ÿ
+	//´«Êä´®Âë  p    a      t   xxxxyyy  
+			//Íæ¼Ò ¶¯×÷   ÀàĞÍ
+	MyNumber = 0;			//»ñÈ¡Íæ¼Ò±àºÅ0/1/2/3  
+							//0ºÍ2 1ºÍ3Ò»¶Ó
 
 	
-  std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
-	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
 
-  auto visibleSize = Director::getInstance()->getVisibleSize();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	auto menu = Sprite::create("menucube.png");
@@ -80,38 +70,6 @@ bool GameScene::init()
 	//map->setScale(1 / 0.78125, 1 / 0.78125);
 
 	//log("%f %f", map->getContentSize().width, map->getContentSize().height);
-  
-  //content
-	auto content = RichText::create();
-	content->setContentSize(Size(400, 200));
-	content->ignoreContentAdaptWithSize(false);
-	content->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
-	content->setTag(112);
-	this->addChild(content);
-	auto text = RichElementText::create(1, Color3B::RED, 255, "Hi!", "Arial", 20);
-	content->pushBackElement(text);
-
-	//chat
-	auto chatbox = EditBox::create(Size(400, 20), Scale9Sprite::create("editbox.jpg"));
-	chatbox->setPlaceHolder("Press Enter to chat: ");
-	chatbox->setFontColor(Color3B::BLACK);
-	chatbox->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
-	chatbox->setTag(111);
-	this->addChild(chatbox);
-
-	auto sendItem = MenuItemFont::create("send", CC_CALLBACK_1(GameScene::sendCallback, this));
-	sendItem->setPosition(Vec2(origin.x, origin.y + visibleSize.height / 3));
-	Menu *mn = Menu::create(sendItem, NULL);
-	this->addChild(mn);
-
-	//sound
-	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
-	{
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/Ready The Army.mp3", true);
-		//æ£€éªŒèƒŒæ™¯éŸ³ä¹æ˜¯å¦æ­£åœ¨æ’­æ”¾
-		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
-		log("%d", flag);
-	}
 
 
 	auto testenem = Soldier::create("enemy.png");
@@ -137,15 +95,15 @@ bool GameScene::init()
 
 
 	static auto MouseReply = EventListenerMouse::create();
-	MouseReply->onMouseUp = [=](Event *event) {					//ç›‘å¬é¼ æ ‡å¼¹èµ·äº‹ä»¶
+	MouseReply->onMouseUp = [=](Event *event) {					//¼àÌıÊó±êµ¯ÆğÊÂ¼ş
 
 		EventMouse* e = (EventMouse*)event;
-		Vec2 position = e->getLocationInView();					//é¼ æ ‡äº‹ä»¶çš„å±å¹•åæ ‡ç³»ä½ç½®
-		Vec2 target = position - PlayMap->getPosition();			//é¼ æ ‡äº‹ä»¶çš„åœ°å›¾åæ ‡ç³»ä½ç½®
+		Vec2 position = e->getLocationInView();					//Êó±êÊÂ¼şµÄÆÁÄ»×ø±êÏµÎ»ÖÃ
+		Vec2 target = position - PlayMap->getPosition();			//Êó±êÊÂ¼şµÄµØÍ¼×ø±êÏµÎ»ÖÃ
 		//target = target * 0.78125;							
 		//log("%f %f", e->getLocationInView().x, e->getLocationInView().y);
-		if (!bool(e->getMouseButton())) {					//left button å·¦é”®
-			if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 0))) {		//ç‚¹å‡»èŒƒå›´åŒ…å«åœ¨å³ä¸‹æ¡†
+		if (!bool(e->getMouseButton())) {					//left button ×ó¼ü
+			if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 0))) {		//µã»÷·¶Î§°üº¬ÔÚÓÒÏÂ¿ò
 				if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 200))) {
 					for (Building* factory : BuildingList[MyNumber]) {
 
@@ -159,9 +117,9 @@ bool GameScene::init()
 							soldier->schedule(schedule_selector(Soldier::updateAttack), 1.0f, kRepeatForever, 0);
 							soldier->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
 							PlayMap->addChild(soldier, 100);
-							SoldierList[MyNumber].pushBack(soldier);											//åœ¨å›ºå®šä½ç½®åˆ›å»ºä¸€åªå¦™è›™ç§å­å¹¶æ¨å…¥soldierlistå®¹å™¨
-							//è¾“å‡ºâ€œ%MyNumber c  %(factory->getPosition()-Vec2(0,75)).x  %(factory->getPosition()-Vec2(0,75)).yâ€
-							for (auto sp_obj : SoldierList[MyNumber]) {										//éå†soldierlistå®¹å™¨å…ƒç´ ï¼Œå…¨éƒ¨è®¾æˆæœªé€‰ä¸­çŠ¶æ€
+							SoldierList[MyNumber].pushBack(soldier);											//ÔÚ¹Ì¶¨Î»ÖÃ´´½¨Ò»Ö»ÃîÍÜÖÖ×Ó²¢ÍÆÈësoldierlistÈİÆ÷
+							//Êä³ö¡°%MyNumber c  %(factory->getPosition()-Vec2(0,75)).x  %(factory->getPosition()-Vec2(0,75)).y¡±
+							for (auto sp_obj : SoldierList[MyNumber]) {										//±éÀúsoldierlistÈİÆ÷ÔªËØ£¬È«²¿Éè³ÉÎ´Ñ¡ÖĞ×´Ì¬
 								sp_obj->Select(0);
 								sp_obj->SelectedReply();
 							}
@@ -169,32 +127,32 @@ bool GameScene::init()
 					}
 				}
 				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {
-					building = 1;															//ç‚¹å‡»èŒƒå›´åŒ…å«åœ¨å³ä¸‹æ–¹ä¸Šé¢é‚£ä¸ªæ¡†ï¼Œæ ‡å¿—è¿›å…¥å»ºé€ çŠ¶æ€
+					building = 1;															//µã»÷·¶Î§°üº¬ÔÚÓÒÏÂ·½ÉÏÃæÄÇ¸ö¿ò£¬±êÖ¾½øÈë½¨Ôì×´Ì¬
 
 				}
 			}
 
 			else {
-				if (building) {															//å»ºé€ çŠ¶æ€
-					if (!virtual_factory.empty()) {										//è™šå»ºç­‘å®¹å™¨éç©ºï¼Œå³è·Ÿéšé¼ æ ‡ç§»åŠ¨çš„é€æ˜å»ºç­‘å­˜åœ¨
+				if (building) {															//½¨Ôì×´Ì¬
+					if (!virtual_factory.empty()) {										//Ğé½¨ÖşÈİÆ÷·Ç¿Õ£¬¼´¸úËæÊó±êÒÆ¶¯µÄÍ¸Ã÷½¨Öş´æÔÚ
 						for (auto fac : virtual_factory) {
-							fac->removeFromParent();									//ç§»é™¤è™šçš„é€æ˜å»ºç­‘
+							fac->removeFromParent();									//ÒÆ³ıĞéµÄÍ¸Ã÷½¨Öş
 						}
 						virtual_factory.popBack();
 					}
 
 
-					auto fac = Building::create("bd.png");								//åœ¨è¯¥ä½ç½®æ·»åŠ å®é™…å»ºç­‘å¹¶æ”¹å˜æ ‡å¿—buildingï¼Œé€€å‡ºå»ºç­‘çŠ¶æ€
+					auto fac = Building::create("bd.png");								//ÔÚ¸ÃÎ»ÖÃÌí¼ÓÊµ¼Ê½¨Öş²¢¸Ä±ä±êÖ¾building£¬ÍË³ö½¨Öş×´Ì¬
 					BuildingList[MyNumber].pushBack(fac);
 					fac->setAnchorPoint(Vec2(0.5, 0.5));
 					PlayMap->addChild(fac, 3);
 					fac->setPosition(target);
 					fac->SetType(1);
 					building = 0;
-					//è¾“å‡ºå­—ç¬¦ä¸²â€œ %MyNumber b  %target.x  %target.yâ€
+					//Êä³ö×Ö·û´®¡° %MyNumber b  %target.x  %target.y¡±
 				}
 				else {
-					for (auto sp_obj : SoldierList[MyNumber]) {									//éå†soldierlistå®¹å™¨å…ƒç´ ï¼Œå°†ç¬¬ä¸€ä¸ªè¢«é¼ æ ‡ç‚¹ä¸­çš„soldierå˜ä¸ºè¢«é€‰ä¸­çŠ¶æ€
+					for (auto sp_obj : SoldierList[MyNumber]) {									//±éÀúsoldierlistÈİÆ÷ÔªËØ£¬½«µÚÒ»¸ö±»Êó±êµãÖĞµÄsoldier±äÎª±»Ñ¡ÖĞ×´Ì¬
 						if (ContainSprite(sp_obj, target, 20)) {
 							for (auto sp_objt : SoldierList[MyNumber]) {
 								sp_objt->Select(0);
@@ -203,19 +161,19 @@ bool GameScene::init()
 							log("%d", sp_obj->getTag());
 							sp_obj->Select(1);
 							sp_obj->SelectedReply();
-							swallow = 1;												//åå™¬æ ‡å¿—ï¼Œé¿å…ç‚¹å‡»äº‹ä»¶ç»§ç»­è§¦å‘æ¥ä¸‹æ¥çš„if
+							swallow = 1;												//ÍÌÊÉ±êÖ¾£¬±ÜÃâµã»÷ÊÂ¼ş¼ÌĞø´¥·¢½ÓÏÂÀ´µÄif
 							break;
 						}
 					}
 					if (!swallow) {
 						for (int i = 0; i < 4; i++) {
 							if (i % 2 != MyNumber % 2) {
-								for (auto enemy : SoldierList[i]) {								//ç‚¹ä¸­æ•Œæ–¹soldierï¼Œç»™æ‰€æœ‰é€‰ä¸­ç›®æ ‡è®¾ç½®æ”»å‡»target
+								for (auto enemy : SoldierList[i]) {								//µãÖĞµĞ·½soldier£¬¸øËùÓĞÑ¡ÖĞÄ¿±êÉèÖÃ¹¥»÷target
 									if (ContainSprite(enemy, target, 20) && !enemy->Died()) {
 										for (auto myso : SoldierList[MyNumber]) {
 											if (myso->Selected()) {
 												myso->SetTarget(enemy);
-												//è¾“å‡ºâ€œ%MyNumber a %myso->getTag() %enemy->getTag()â€ 
+												//Êä³ö¡°%MyNumber a %myso->getTag() %enemy->getTag()¡± 
 											}
 										}
 
@@ -231,20 +189,20 @@ bool GameScene::init()
 						}
 					}
 
-					if (!swallow) {														//å³æ²¡æœ‰ç‚¹ä¸­ä»»ä½•soldierï¼Œä¹Ÿæ²¡æœ‰ä¸‹è¾¾æ”»å‡»æŒ‡ä»¤ï¼Œé‚£ä¹ˆå°±éå†å®¹å™¨å°†æ‰€æœ‰è¢«é€‰ä¸­çš„å£«å…µå‘ç‚¹å‡»ä½ç½®ç§»åŠ¨
+					if (!swallow) {														//¼´Ã»ÓĞµãÖĞÈÎºÎsoldier£¬Ò²Ã»ÓĞÏÂ´ï¹¥»÷Ö¸Áî£¬ÄÇÃ´¾Í±éÀúÈİÆ÷½«ËùÓĞ±»Ñ¡ÖĞµÄÊ¿±øÏòµã»÷Î»ÖÃÒÆ¶¯
 						for (auto sp_obj : SoldierList[MyNumber]) {
 							if (sp_obj->Selected()) {
 
 								sp_obj->SetTarget(nullptr);
 
 								sp_obj->SetDestination(target);
-								//è¾“å‡ºâ€œ%MyNumber m %sp_obj->getTag() %target.x %target.yâ€
+								//Êä³ö¡°%MyNumber m %sp_obj->getTag() %target.x %target.y¡±
 							}
 						}
 					}
 				}
 			}
-			swallow = 0;									//é‡ç½®åå™¬æ ‡å¿—
+			swallow = 0;									//ÖØÖÃÍÌÊÉ±êÖ¾
 
 
 
@@ -256,17 +214,17 @@ bool GameScene::init()
 			//log("%d", OpSoldierList.size());
 
 		}
-		if (bool(e->getMouseButton())) {												//right button å³é”®äº‹ä»¶
-			if (ContainRect(position, Vec2(xView - 300, 200), Vec2(xView, 0))) {		//å³ä¸‹ç¬¬ä¸€ä¸ªæ¡†èŒƒå›´äº‹ä»¶
+		if (bool(e->getMouseButton())) {												//right button ÓÒ¼üÊÂ¼ş
+			if (ContainRect(position, Vec2(xView - 300, 200), Vec2(xView, 0))) {		//ÓÒÏÂµÚÒ»¸ö¿ò·¶Î§ÊÂ¼ş
 
 			}
 			else {
-				for (auto sp_obj : SoldierList[MyNumber]) {										//éå†å®¹å™¨ï¼Œæ‰€æœ‰soldierå˜æˆæœªé€‰ä¸­çŠ¶æ€
+				for (auto sp_obj : SoldierList[MyNumber]) {										//±éÀúÈİÆ÷£¬ËùÓĞsoldier±ä³ÉÎ´Ñ¡ÖĞ×´Ì¬
 					sp_obj->Select(0);
 					sp_obj->SelectedReply();
 				}
 			}
-			building = 0;																//é€€å‡ºå»ºç­‘çŠ¶æ€å¹¶æŠŠè™šå»ºç­‘ç§»é™¤
+			building = 0;																//ÍË³ö½¨Öş×´Ì¬²¢°ÑĞé½¨ÖşÒÆ³ı
 			if (!virtual_factory.empty()) {
 				for (auto fac : virtual_factory) {
 					fac->removeFromParent();
@@ -275,45 +233,45 @@ bool GameScene::init()
 			}
 		}
 	};
-	MouseReply->onMouseMove = [=](Event *event) {								//é¼ æ ‡ç§»åŠ¨äº‹ä»¶
+	MouseReply->onMouseMove = [=](Event *event) {								//Êó±êÒÆ¶¯ÊÂ¼ş
 		EventMouse* e = (EventMouse*)event;
 		Vec2 position = e->getLocationInView();
 		Vec2 target = position - PlayMap->getPosition();
 		//target = target * 0.78125;
 		//log("%f %f",position.x,position.y);
 		//log("%f %f", target.x, target.y);
-		//map->stopAllActions();							//åœ°å›¾å¤§å°ä¸º2000*1500ï¼Œæ›´æ”¹åœ°å›¾è¯·å¯¹åº”æ›´æ”¹magic numbers
-		if (position.x > xView - 100) {							//é¼ æ ‡é è¿‘å±å¹•å³ä¾§
-			if (!(PlayMap->numberOfRunningActions())) {				//è¿™ä¸€å¥æ˜¯ä¸ºäº†åœ°å›¾è§†è§’ç§»åŠ¨æ›´åŠ æµç•…
+		//map->stopAllActions();							//µØÍ¼´óĞ¡Îª2000*1500£¬¸ü¸ÄµØÍ¼Çë¶ÔÓ¦¸ü¸Ämagic numbers
+		if (position.x > xView - 100) {							//Êó±ê¿¿½üÆÁÄ»ÓÒ²à
+			if (!(PlayMap->numberOfRunningActions())) {				//ÕâÒ»¾äÊÇÎªÁËµØÍ¼ÊÓ½ÇÒÆ¶¯¸ü¼ÓÁ÷³©
 				auto map_move = MoveTo::create((PlayMap->getPosition().x + (4000 - xView)) / 2000, Vec2(-(4000 - xView), PlayMap->getPosition().y));
 				PlayMap->runAction(map_move);
 			}
 		}
-		else if (position.x < 100) {							//é¼ æ ‡é è¿‘å±å¹•è¾¹ç¼˜å·¦ä¾§ï¼Œå°†è§†è§’å·¦ç§»ï¼Œå³å°†åœ°å›¾å³ç§»
+		else if (position.x < 100) {							//Êó±ê¿¿½üÆÁÄ»±ßÔµ×ó²à£¬½«ÊÓ½Ç×óÒÆ£¬¼´½«µØÍ¼ÓÒÒÆ
 			if (!(PlayMap->numberOfRunningActions())) {
 				auto map_move = MoveTo::create((-(PlayMap->getPosition().x)) / 2000, Vec2(0, PlayMap->getPosition().y));
 				PlayMap->runAction(map_move);
 			}
 		}
-		else if (position.y < 100) {							//é¼ æ ‡é è¿‘è¾¹ç¼˜ä¸Šä¾§
+		else if (position.y < 100) {							//Êó±ê¿¿½ü±ßÔµÉÏ²à
 			if (!(PlayMap->numberOfRunningActions())) {
 				auto map_move = MoveTo::create((-(PlayMap->getPosition().y)) / 2000, Vec2(PlayMap->getPosition().x, 0));
 				PlayMap->runAction(map_move);
 			}
 		}
-		else if (position.y > yView - 100) {					//ä¸‹ä¾§
+		else if (position.y > yView - 100) {					//ÏÂ²à
 			if (!(PlayMap->numberOfRunningActions())) {
 				auto map_move = MoveTo::create((PlayMap->getPosition().y + (4000 - yView)) / 2000, Vec2(PlayMap->getPosition().x, -(4000 - yView)));
 				PlayMap->runAction(map_move);
 			}
 		}
 		else {
-			PlayMap->stopAllActions();								//ç§»åˆ°å±å¹•ä¸­å¤®æ—¶åœæ­¢ç§»åŠ¨
+			PlayMap->stopAllActions();								//ÒÆµ½ÆÁÄ»ÖĞÑëÊ±Í£Ö¹ÒÆ¶¯
 		}
-		if (building) {											//å»ºç­‘çŠ¶æ€ä¼šåŒæ—¶å“åº”å±å¹•ç§»åŠ¨å’Œè™šå»ºç­‘è·Ÿéšé¼ æ ‡ç§»åŠ¨
+		if (building) {											//½¨Öş×´Ì¬»áÍ¬Ê±ÏìÓ¦ÆÁÄ»ÒÆ¶¯ºÍĞé½¨Öş¸úËæÊó±êÒÆ¶¯
 
 			auto factory = Sprite::create("bd.png");
-			if (!virtual_factory.empty()) {						//ä¸€æ—¦é¼ æ ‡ç§»åŠ¨ï¼Œç§»é™¤è™šå»ºç­‘å®¹å™¨ä¸­å”¯ä¸€çš„å…ƒç´ ï¼Œæ¨å…¥æ–°çš„è™šå»ºç­‘å…ƒç´ åˆ°å½“å‰é¼ æ ‡ä½ç½®
+			if (!virtual_factory.empty()) {						//Ò»µ©Êó±êÒÆ¶¯£¬ÒÆ³ıĞé½¨ÖşÈİÆ÷ÖĞÎ¨Ò»µÄÔªËØ£¬ÍÆÈëĞÂµÄĞé½¨ÖşÔªËØµ½µ±Ç°Êó±êÎ»ÖÃ
 				for (auto fac : virtual_factory) {
 					fac->removeFromParent();
 				}
@@ -328,7 +286,7 @@ bool GameScene::init()
 
 		}
 	};
-	auto dispatcher = Director::getInstance()->getEventDispatcher();					//æ·»åŠ é¼ æ ‡äº‹ä»¶ç›‘å¬å™¨
+	auto dispatcher = Director::getInstance()->getEventDispatcher();					//Ìí¼ÓÊó±êÊÂ¼ş¼àÌıÆ÷
 	dispatcher->addEventListenerWithSceneGraphPriority(MouseReply, this);
 
 	//for (auto myso : MySoldierList) {
@@ -340,7 +298,7 @@ bool GameScene::init()
 
 
 
-	//è¾“å…¥æ¥å£
+	//ÊäÈë½Ó¿Ú
 
 
 
@@ -448,7 +406,7 @@ void GameScene::buildRespone(const std::string &data) {
 		a++;
 	}
 	y = atoi(y_c);
-	auto fac = Building::create("bd.png");								//åœ¨è¯¥ä½ç½®æ·»åŠ å®é™…å»ºç­‘å¹¶æ”¹å˜æ ‡å¿—buildingï¼Œé€€å‡ºå»ºç­‘çŠ¶æ€
+	auto fac = Building::create("bd.png");								//ÔÚ¸ÃÎ»ÖÃÌí¼ÓÊµ¼Ê½¨Öş²¢¸Ä±ä±êÖ¾building£¬ÍË³ö½¨Öş×´Ì¬
 	BuildingList[Player].pushBack(fac);
 	fac->setAnchorPoint(Vec2(0.5, 0.5));
 	PlayMap->addChild(fac, 3);
@@ -518,6 +476,7 @@ void GameScene::moveRespone(const std::string &data) {
 	index++;
 	a = 0;
 	for (index; data[index] && data[index] != 32; index++) {
+
 		y_c[a] = data[index];
 		a++;
 	}
@@ -532,7 +491,7 @@ void GameScene::moveRespone(const std::string &data) {
 }
 
 //current point,top left point,lower right point
-bool ContainRect(Vec2 current, Vec2 pt1, Vec2 pt2) {						//åˆ¤æ–­currentåæ ‡æ˜¯å¦åŒ…å«åœ¨å·¦ä¸Šç‚¹pt1å’Œå³ä¸‹ç‚¹pt2ä¹‹é—´çš„çŸ©å½¢
+bool ContainRect(Vec2 current, Vec2 pt1, Vec2 pt2) {						//ÅĞ¶Ïcurrent×ø±êÊÇ·ñ°üº¬ÔÚ×óÉÏµãpt1ºÍÓÒÏÂµãpt2Ö®¼äµÄ¾ØĞÎ
 	if ((current.x > pt1.x) && (current.x < pt2.x) && (current.y < pt1.y) && (current.y > pt2.y)) {
 		return true;
 	}
@@ -540,7 +499,8 @@ bool ContainRect(Vec2 current, Vec2 pt1, Vec2 pt2) {						//åˆ¤æ–­currentåæ ‡æ
 		return false;
 	}
 }
-float Distance(Vec2 pt1, Vec2 pt2) {					//è¿”å›ä¸¤ç‚¹é—´çš„ç›´çº¿è·ç¦»
+float Distance(Vec2 pt1, Vec2 pt2) {					//·µ»ØÁ½µã¼äµÄÖ±Ïß¾àÀë
+
 	float dist = 0;
 	dist += pow(pt1.x - pt2.x, 2);
 	dist += pow((pt1.y - pt2.y), 2);
@@ -548,8 +508,7 @@ float Distance(Vec2 pt1, Vec2 pt2) {					//è¿”å›ä¸¤ç‚¹é—´çš„ç›´çº¿è·ç¦»
 	return dist;
 
 }
-
-bool ContainSprite(Sprite* sp, Vec2 position, float di) {				//åˆ¤æ–­positionç‚¹æ˜¯å¦åœ¨spå…ƒç´ çš„ä½ç½®çš„x yç›´å¾„dièŒƒå›´å†…
+bool ContainSprite(Sprite* sp, Vec2 position, float di) {				//ÅĞ¶ÏpositionµãÊÇ·ñÔÚspÔªËØµÄÎ»ÖÃµÄx yÖ±¾¶di·¶Î§ÄÚ
 	Vec2 spv = sp->getPosition();
 	if (spv.x > position.x - di && spv.x < position.x + di && spv.y<position.y + di && spv.y>position.y - di) {
 		return true;
@@ -577,17 +536,11 @@ void GameScene::onConnect(cocos2d::network::SIOClient *client)
 
 void GameScene::onMessage(cocos2d::network::SIOClient *client, const std::string& data)
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	/*´Ó·şÎñ¶Ë½ÓÊÜÖ¸Áî²¢¸ù¾İÖ¸ÁîÖ´ĞĞÏàÓ¦µÄº¯Êı*/
-=======
 	const char *cData = data.c_str();
 	/*ä»æœåŠ¡ç«¯æ¥å—æŒ‡ä»¤å¹¶æ ¹æ®æŒ‡ä»¤æ‰§è¡Œç›¸åº”çš„å‡½æ•°*/
->>>>>>> d01685df61991db8137d92869d002c0da0cc308a
-=======
 	const char *cData = data.c_str();
 	/*ä»æœåŠ¡ç«¯æ¥å—æŒ‡ä»¤å¹¶æ ¹æ®æŒ‡ä»¤æ‰§è¡Œç›¸åº”çš„å‡½æ•°*/
->>>>>>> d01685df61991db8137d92869d002c0da0cc308a
 	if (data[2] == 'c')
 	{
 		log("1");

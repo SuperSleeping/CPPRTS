@@ -2,9 +2,6 @@
 #define _MY_SETTING_SCENE_
 
 #include "cocos2d.h"
-#include "UserDefault.h"
-#include "SimpleAudioEngine.h"
-#include "ui/CocosGUI.h"
 
 USING_NS_CC;
 
@@ -15,10 +12,10 @@ public:
 	virtual bool init();
 
 	//menu
-	void musicCallback(Ref* pSender);
+	void difficultyCallback(Ref* pSender);
+	void speedCallback(Ref* pSender);
 	void soundCallback(Ref* pSender);
 	void backtorootCallback(Ref* pSender);
-	void saveCallback(Ref* pSender);
 
 	CREATE_FUNC(MySetting);
 };
