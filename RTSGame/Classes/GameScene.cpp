@@ -14,9 +14,8 @@ using namespace cocos2d::ui;
 bool ContainRect(Vec2 current, Vec2 pt1, Vec2 pt2);
 bool ContainSprite(Sprite* sp, Vec2 position, float di);
 float Distance(Vec2 pt1, Vec2 pt2);
-static Vector<Soldier*> OpSoldierList;
-static Vector<Soldier*> MySoldierList;
-using namespace CocosDenshion;
+string SpawnDatastring(int Player, char type, int n, int m);
+string SpawnDatastring(int Player, char type, int n, int m,int t);
 static Vector<Soldier*> SoldierList[4];
 static Vector<Building*> BuildingList[4];
 //static int SoldierTag = 0;
@@ -109,7 +108,9 @@ bool GameScene::init()
 
 	static auto MouseReply = EventListenerMouse::create();
 	MouseReply->onMouseUp = [=](Event *event) {					//º‡Ã˝ Û±ÍµØ∆ ¬º˛
-
+		string str = "11";
+		sioClient->send(str);
+		log("%d", SoldierList[0].size());
 		EventMouse* e = (EventMouse*)event;
 		Vec2 position = e->getLocationInView();					// Û±Í ¬º˛µƒ∆¡ƒª◊¯±ÍœµŒª÷√
 		Vec2 target = position - PlayMap->getPosition();			// Û±Í ¬º˛µƒµÿÕº◊¯±ÍœµŒª÷√
@@ -122,7 +123,7 @@ bool GameScene::init()
 
 						if (factory->Type() == 1) {
 
-							Soldier* soldier = Soldier::create("seedz.png");
+							/*Soldier* soldier = Soldier::create("seedz.png");
 							soldier->setPosition(factory->getPosition() - Vec2(0, 75));
 							soldier->SetSide(MyNumber);
 							//soldier->setTag(1);
@@ -131,7 +132,9 @@ bool GameScene::init()
 							soldier->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
 							PlayMap->addChild(soldier, 100);
 							SoldierList[MyNumber].pushBack(soldier);											//‘⁄πÃ∂®Œª÷√¥¥Ω®“ª÷ª√ÓÕ‹÷÷◊”≤¢Õ∆»Îsoldierlist»›∆˜
-																												// ‰≥ˆ°∞%MyNumber c  %(factory->getPosition()-Vec2(0,75)).x  %(factory->getPosition()-Vec2(0,75)).y°±
+							*/																					// ‰≥ˆ°∞%MyNumber c  %(factory->getPosition()-Vec2(0,75)).x  %(factory->getPosition()-Vec2(0,75)).y°±
+							
+							createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
 							for (auto sp_obj : SoldierList[MyNumber]) {										//±È¿˙soldierlist»›∆˜‘™Àÿ£¨»´≤ø…Ë≥…Œ¥—°÷–◊¥Ã¨
 								sp_obj->Select(0);
 								sp_obj->SelectedReply();
@@ -155,18 +158,19 @@ bool GameScene::init()
 					}
 
 
-					auto fac = Building::create("bd.png");								//‘⁄∏√Œª÷√ÃÌº” µº Ω®÷˛≤¢∏ƒ±‰±Í÷æbuilding£¨ÕÀ≥ˆΩ®÷˛◊¥Ã¨
+					/*auto fac = Building::create("bd.png");								//‘⁄∏√Œª÷√ÃÌº” µº Ω®÷˛≤¢∏ƒ±‰±Í÷æbuilding£¨ÕÀ≥ˆΩ®÷˛◊¥Ã¨
 					BuildingList[MyNumber].pushBack(fac);
 					fac->setAnchorPoint(Vec2(0.5, 0.5));
 					PlayMap->addChild(fac, 3);
 					fac->setPosition(target);
-					fac->SetType(1);
+					fac->SetType(1);*/
 					building = 0;
+					buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y));
 					// ‰≥ˆ◊÷∑˚¥Æ°∞ %MyNumber b  %target.x  %target.y°±
 				}
 				else {
 					for (auto sp_obj : SoldierList[MyNumber]) {									//±È¿˙soldierlist»›∆˜‘™Àÿ£¨Ω´µ⁄“ª∏ˆ±ª Û±Íµ„÷–µƒsoldier±‰Œ™±ª—°÷–◊¥Ã¨
-						if (ContainSprite(sp_obj, target, 20)) {
+						if (ContainSprite(sp_obj, target, 20) && !sp_obj->Died()) {
 							for (auto sp_objt : SoldierList[MyNumber]) {
 								sp_objt->Select(0);
 								sp_objt->SelectedReply();
@@ -185,8 +189,9 @@ bool GameScene::init()
 									if (ContainSprite(enemy, target, 20) && !enemy->Died()) {
 										for (auto myso : SoldierList[MyNumber]) {
 											if (myso->Selected()) {
-												myso->SetTarget(enemy);
+												//myso->SetTarget(enemy);
 												// ‰≥ˆ°∞%MyNumber a %myso->getTag() %enemy->getTag()°± 
+												attackRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
 											}
 										}
 
@@ -206,9 +211,10 @@ bool GameScene::init()
 						for (auto sp_obj : SoldierList[MyNumber]) {
 							if (sp_obj->Selected()) {
 
-								sp_obj->SetTarget(nullptr);
-
-								sp_obj->SetDestination(target);
+								//sp_obj->SetTarget(nullptr);
+								attackRespone(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
+								//sp_obj->SetDestination(target);
+								moveRespone(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
 								// ‰≥ˆ°∞%MyNumber m %sp_obj->getTag() %target.x %target.y°±
 							}
 						}
@@ -342,7 +348,7 @@ bool GameScene::init()
 	}*/
 
 	//return
-
+	
 	return true;
 }
 
@@ -365,12 +371,14 @@ void GameScene::onConnect(cocos2d::network::SIOClient *client)
 
 void GameScene::onMessage(cocos2d::network::SIOClient *client, const std::string& data)
 {
-	const char *cData = data.c_str();
+	//const char *cData = data.c_str();
 	/*¥”∑˛ŒÒ∂ÀΩ” ‹÷∏¡Ó≤¢∏˘æ›÷∏¡Ó÷¥––œ‡”¶µƒ∫Ø ˝*/
-	if (data[2] == 'c')
+	log("get");
+	if (data[3] == 'c')
 	{
 		log("1");
-		chatResponse(data);
+		//chatResponse(data);
+		createRespone(data);
 	}
 	return;
 }
@@ -400,7 +408,7 @@ void GameScene::chatResponse(const std::string& data)
 	return;
 }
 
-void GameScene::updateErase(float di) {
+/*void GameScene::updateErase(float di) {
 
 	for (auto en : OpSoldierList) {
 
@@ -424,16 +432,16 @@ void GameScene::updateErase(float di) {
 			break;
 		}
 	}
-}
+}*/
 
 void GameScene::attackRespone(const std::string &data) {
-
-	int Player = data[0];
+	int index = 0;
+	int Player = data[0]-48;
 	char atk[5];
 	char tgt[5];
 	int atk_tag;
 	int tgt_tag;
-	int index = 4;
+	index += 4;
 	int a = 0;
 	for (index; data[index] != 32; index++) {
 
@@ -449,9 +457,14 @@ void GameScene::attackRespone(const std::string &data) {
 		a++;
 	}
 	tgt_tag = atoi(tgt);
+
 	for (auto sd : SoldierList[Player]) {
 		if (sd->getTag() == atk_tag) {
 			bool find = 0;
+			if (tgt_tag == 0) {
+				sd->SetTarget(nullptr);
+				break;
+			}
 			for (int i = (Player + 1) % 2; i < 4; i = i + 2) {
 				for (auto en : SoldierList[i]) {
 					if (en->getTag() == tgt_tag) {
@@ -471,12 +484,14 @@ void GameScene::attackRespone(const std::string &data) {
 }
 
 void GameScene::buildRespone(const std::string &data) {
-	int Player = data[0];
+	//log("create");
+	int index = 0;
+	int Player = data[0] - 48;
 	char x_c[4];
 	char y_c[4];
 	int x;
 	int y;
-	int index = 4;
+	index += 4;
 	int a = 0;
 	for (index; data[index] != 32; index++) {
 
@@ -501,12 +516,13 @@ void GameScene::buildRespone(const std::string &data) {
 }
 
 void GameScene::createRespone(const std::string &data) {
-	int Player = data[0];
+	int index = 0;
+	int Player = data[0]-48;
 	char x_c[4];
 	char y_c[4];
 	int x;
 	int y;
-	int index = 4;
+	index+=4;
 	int a = 0;
 	for (index; data[index] != 32; index++) {
 
@@ -537,14 +553,15 @@ void GameScene::createRespone(const std::string &data) {
 }
 
 void GameScene::moveRespone(const std::string &data) {
-	int Player = data[0];
+	int index = 0;
+	int Player = data[0] - 48;
 	char tag_c[5];
 	char x_c[4];
 	char y_c[4];
 	int tag;
 	int x;
 	int y;
-	int index = 4;
+	index += 4;
 	int a = 0;
 	for (index; data[index] != 32; index++) {
 		tag_c[a] = data[index];
@@ -602,4 +619,43 @@ bool ContainSprite(Sprite* sp, Vec2 position, float di) {				//≈–∂œpositionµ„ «∑
 	else {
 		return false;
 	}
+}
+
+string SpawnDatastring(int Player, char type, int n, int m) {
+	string data;
+	char tp[5];
+	char tpx[5];
+	char tpy[5];
+	_itoa_s(Player, tp, 10);
+	data += tp;
+	data += " ";
+	data += type;
+	data += " ";
+	_itoa_s(n, tpx, 10);
+	_itoa_s(m, tpy, 10);
+	data += tpx;
+	data += " ";
+	data += tpy;
+	return data;
+}
+string SpawnDatastring(int Player, char type, int n, int m, int t) {
+	string data;
+	char tp[5];
+	char tpx[5];
+	char tpy[5];
+	char tpz[5];
+	_itoa_s(Player, tp, 10);
+	data += tp;
+	data += " ";
+	data += type;
+	data += " ";
+	_itoa_s(n, tpx, 10);
+	_itoa_s(m, tpy, 10);
+	_itoa_s(t, tpz, 10);
+	data += tpx;
+	data += " ";
+	data += tpy;
+	data += " ";
+	data += tpz;
+	return data;
 }
