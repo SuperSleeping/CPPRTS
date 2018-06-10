@@ -16,7 +16,16 @@ Scene* Game::createScene()
 
 void Game::update(float dt)
 {
+	/*
+	//Read in instructions
+	auto mouseListener = EventListenerMouse::create();
+	mouseListener->onMouseDown = CC_CALLBACK_1(Game::mouseDown, this);
+	
+	character[0]->positionGoal = pos;
+	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
+	character[0]->move();
+	*/
 }
 
 bool Game::init()
@@ -47,6 +56,7 @@ void Game::menuReturn(cocos2d::Ref* pSender)
 }
 
 //map init
+/*
 void Game::mapChoice()
 {
 	auto Map1 = MenuItemImage::create("Game/mapChoice/button1.png", "Game/mapChoice/button1.png", CC_CALLBACK_1(Game::setMapType1, this));
@@ -69,15 +79,16 @@ void Game::setMapType2(cocos2d::Ref* pSender)
 {
 	mapType = 2;
 }
-
+*/
 void Game::mapInit(int type)
 {
+	//Map setting init
 	if (type == 1)
 		map = TMXTiledMap::create("test.tmx");
 	else
 		map = TMXTiledMap::create("maptest.tmx");
 
-//	map->setPosition(visibleSize.x / 2, visibleSize.y / 2);
+	map->setPosition(visibleSize.x / 2, visibleSize.y / 2);
 	this->addChild(map);
 
 	_background = map->getLayer("background");
@@ -86,6 +97,17 @@ void Game::mapInit(int type)
 
 	_meta->setVisible(false);
 
+
+	//Object init//
+
+	//Object
+	auto object = GameElement::create("character.png", Vec2(200, 200));
+
+	character.push_back(object);
+	this->addChild(object->picture);
+
+	/*/////////////////////////////////////////////////////////
+	//Player for test
 	player = Sprite::create("character.png");
 	this->addChild(player);
 
@@ -98,15 +120,11 @@ void Game::mapInit(int type)
 
 	player->setAnchorPoint(Point(0, 0));
 	player->setPosition(playerPoint);
+	*//////////////////////////////////////////////////////////
 
 	dispatcher = Director::getInstance()->getEventDispatcher();
 
-	auto keyboardListener = EventListenerKeyboard::create();
-	keyboardListener->onKeyPressed = CC_CALLBACK_2(Game::keyPressed, this);
 
-	dispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
-
-//	this->schedule(schedule_selector(Game::update), 0.1);
 	this->scheduleUpdate();
 }
 
@@ -115,62 +133,10 @@ void Game::mapInit(int type)
 //moving constructions:
 //@up-W @donw-S @left-A @right-D
 ***************/
-void Game::keyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event *event)
+void Game::mouseDown(cocos2d::Event* event)
 {
-	auto curPosition = player->getPosition();
-
-	if (keycode == EventKeyboard::KeyCode::KEY_W)
-	{
-		player->setPositionY(curPosition.y + 5);
-	}
-	else if (keycode == EventKeyboard::KeyCode::KEY_A)
-	{
-		player->setPositionX(curPosition.x - 5);
-	}
-	else if (keycode == EventKeyboard::KeyCode::KEY_S)
-	{
-		player->setPositionY(curPosition.y - 5);
-	}
-	else if (keycode == EventKeyboard::KeyCode::KEY_D)
-	{
-		player->setPositionX(curPosition.x + 5);
-	}
+	EventMouse *e = (EventMouse*)event;
+	pos = e->getLocation();
 }
 
-/*
-void Game::touchReW()
-{
-
-}
-
-void Game::touchOnA()
-{
-
-}
-
-void Game::touchReA()
-{
-
-}
-
-void Game::touchOnS()
-{
-
-}
-
-void Game::touchReS()
-{
-
-}
-
-void Game::touchOnD()
-{
-
-}
-void Game::touchReD()
-{
-
-}
-
-*/
 

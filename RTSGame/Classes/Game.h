@@ -3,8 +3,12 @@
 
 
 #include "cocos2d.h"
+#include <vector>
+
+#include "GameElement/GameElement.h"
 
 USING_NS_CC;
+using std::vector;
 
 class Game : public cocos2d::Scene
 {
@@ -19,8 +23,16 @@ private:
 	Sprite *player;
 
 	int mapType;
-	void setMapType1(cocos2d::Ref* pSender);
-	void setMapType2(cocos2d::Ref* pSender);
+//	void setMapType1(cocos2d::Ref* pSender);
+//	void setMapType2(cocos2d::Ref* pSender);
+
+	/**********************************************/
+	/*Set Up Vectors To Store Object (GameElement)*/
+	/**********************************************/
+
+	std::vector<GameElement*> character;
+	std::vector<GameElement*> building;
+
 
 
 public:
@@ -40,17 +52,19 @@ public:
 	//event
 	EventDispatcher* dispatcher;
 
-	virtual void keyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event *event);
+	virtual void mouseDown(cocos2d::Event* event);
 
 
 	// a selector callback
 	void menuReturn(cocos2d::Ref* pSender);
 
-	//
+	//a auto-inherited schedual update function
 	virtual void update(float dt);
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(Game);
+
+	Vec2 pos;
 };
 
 #endif // __GAME_H__
