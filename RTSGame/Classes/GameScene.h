@@ -16,7 +16,12 @@ public:
 	virtual void onMessage(cocos2d::network::SIOClient *client, const std::string& data);
 	virtual void onClose(cocos2d::network::SIOClient *client);
 	virtual void onError(cocos2d::network::SIOClient *client, const std::string& data);
-
+	//virtual void update(float di) override;
+	void buildRespone(const std::string &data);
+	void createRespone(const std::string &data);
+	void attackRespone(const std::string &data);
+	void moveRespone(const std::string &data);
+	void updateErase(float di);
 	void sendCallback(Ref *pSender);
 
 	void chatResponse(const std::string& data);

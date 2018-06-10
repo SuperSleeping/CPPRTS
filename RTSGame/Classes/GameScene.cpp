@@ -56,9 +56,6 @@ bool GameScene::init()
 
 
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
 	auto menu = Sprite::create("menucube.png");
 	this->addChild(menu, 100);
 	menu->setAnchorPoint(Vec2(0, 0));

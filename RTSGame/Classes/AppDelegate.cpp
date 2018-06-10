@@ -1,6 +1,6 @@
 #include "AppDelegate.h"
 #include"RootScene.h"
-
+#include"GameScene.h"
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(1600,900);
@@ -74,13 +74,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene =RootScene::createScene();
-
+    //auto scene =RootScene::createScene();
+	auto scene = GameScene::createScene();
     // run
     director->runWithScene(scene);
 
 	//³õÊ¼»¯±³¾°ÒôÀÖ
-	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/HM2.mp3");
+	//SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/HM2.mp3");
 
     return true;
 }
