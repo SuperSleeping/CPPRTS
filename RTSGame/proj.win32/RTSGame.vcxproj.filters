@@ -65,6 +65,8 @@
     <ClInclude Include="..\Classes\UserDefault.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Soldier.h" />
+    <ClInclude Include="..\Classes\Building.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
