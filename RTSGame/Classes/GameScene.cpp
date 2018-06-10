@@ -578,7 +578,12 @@ void GameScene::onConnect(cocos2d::network::SIOClient *client)
 void GameScene::onMessage(cocos2d::network::SIOClient *client, const std::string& data)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	/*从服务端接受指令并根据指令执行相应的函数*/
+=======
+	const char *cData = data.c_str();
+	/*浠庢湇鍔＄鎺ュ彈鎸囦护骞舵牴鎹寚浠ゆ墽琛岀浉搴旂殑鍑芥暟*/
+>>>>>>> d01685df61991db8137d92869d002c0da0cc308a
 =======
 	const char *cData = data.c_str();
 	/*浠庢湇鍔＄鎺ュ彈鎸囦护骞舵牴鎹寚浠ゆ墽琛岀浉搴旂殑鍑芥暟*/
