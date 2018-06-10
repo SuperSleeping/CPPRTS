@@ -11,6 +11,14 @@ class GameScene :public Scene,public cocos2d::network::SocketIO::SIODelegate
 public:
 	static Scene* createScene();
 	virtual bool init();
+	//static cocos2d::Scene* createScene();
+
+	//virtual void update(float di) override;
+	void buildRespone(const std::string &data);
+	void createRespone(const std::string &data);
+	void attackRespone(const std::string &data);
+	void moveRespone(const std::string &data);
+	void updateErase(float di);
 
 	virtual void onConnect(cocos2d::network::SIOClient *client);
 	virtual void onMessage(cocos2d::network::SIOClient *client, const std::string& data);

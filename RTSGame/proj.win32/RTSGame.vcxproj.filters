@@ -56,6 +56,10 @@
     <ClInclude Include="..\Classes\GameScene.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="Soldier.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Building.h">
     <ClInclude Include="..\Classes\StartScene.h">
       <Filter>src</Filter>
     </ClInclude>

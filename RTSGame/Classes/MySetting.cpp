@@ -112,7 +112,10 @@ void MySetting::saveCallback(Ref* pSender)
 {
 	auto name = reinterpret_cast<EditBox*>(this->getChildByTag(123));
 	std::string newname = name->getText();
-	UserDefault::getInstance()->setStringForKey(USER_NAME, newname);
+	if (newname.length())
+	{
+		UserDefault::getInstance()->setStringForKey(USER_NAME, newname);
+	}
 	Director::getInstance()->popScene();
 }
 

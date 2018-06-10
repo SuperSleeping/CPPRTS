@@ -79,6 +79,11 @@ void Start::menunewCallback(Ref *pSender)
 {
 	/*将参数2改为SW_HIDE即可隐藏运行窗口 暂时用于查看服务端输出*/
 	WinExec("node ../../nodejs/app.js", SW_NORMAL);
+	char hostIp[30];
+	getHostIp(hostIp);
+	strcat(hostIp, ":3000");
+	log("%s", hostIp);
+	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
 	serverOperation();
 	auto sc = GameScene::createScene();
 	Director::getInstance()->replaceScene(sc);
