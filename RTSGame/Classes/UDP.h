@@ -9,5 +9,5 @@
 #define CLIENT_PORT 6001
 
 bool getHostIp(char *ip);
-bool serverOperation();
+bool serverOperation(int players);
 bool clientOperation(char *hostIp);
