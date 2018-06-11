@@ -22,6 +22,7 @@ public:
 	void attackRespone(const std::string &data);
 	void moveRespone(const std::string &data);
 	void updateErase(float di);
+	void updateTime(float di);
 	void sendCallback(Ref *pSender);
 
 	void chatResponse(const std::string& data);
