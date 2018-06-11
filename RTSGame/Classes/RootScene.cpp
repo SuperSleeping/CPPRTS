@@ -2,7 +2,9 @@
 #include"GameScene.h"
 #include"EndVerify.h"
 #include"MySetting.h"
-#include "StartScene.h"
+#include"StartScene.h"
+#include"AboutScene.h"
+#include"TransScene.h"
 
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -29,41 +31,44 @@ bool RootScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	
-	//background
-	Sprite *bg = Sprite::create("enteringScene/enterPic.jpg");
-	bg->setPosition(Vec2(visibleSize.width / 3, visibleSize.height / 2));
+	//set background scene  
+	auto bg = Sprite::create("enteringScene/enterPic.jpg");
+	bg->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));//这句自己根据需要修改  
+	float bgx = bg->getTextureRect().getMaxX();
+	float bgy = bg->getTextureRect().getMaxY();
+	bg->setScaleX(visibleSize.width / bgx); //设置精灵宽度缩放比例  
+	bg->setScaleY(visibleSize.height / bgy);
 	this->addChild(bg);
 	
 	//menu
-	MenuItemImage *singleitem = MenuItemImage::create(
-		"menu/single.png",
-		"menu/single.png",
-		CC_CALLBACK_1(RootScene::menusinmemchoiceCallback, this));
-
-	MenuItemImage *doubleitem = MenuItemImage::create(
-		"menu/double.png",
-		"menu/double.png",
-		CC_CALLBACK_1(RootScene::menumulmemchoiceCallback, this));
+	MenuItemImage *gamebeganitem = MenuItemImage::create(
+		"menu/gamebegan.png",
+		"menu/gamebegan.png",
+		CC_CALLBACK_1(RootScene::menugamebeganCallback, this));
 
 	MenuItemImage *settingitem = MenuItemImage::create(
-		"menu/setting.png",
-		"menu/setting.png",
+		"menu/setting1.png",
+		"menu/setting1.png",
 		CC_CALLBACK_1(RootScene::menusettingCallback, this));
 
-	MenuItemImage *makeritem = MenuItemImage::create(
-		"menu/maker.png",
-		"menu/maker.png",
-		CC_CALLBACK_1(RootScene::menumakerCallback, this));
+	MenuItemImage *exititem = MenuItemImage::create(
+		"menu/exit1.png",
+		"menu/exit1.png",
+		CC_CALLBACK_1(RootScene::menuexitCallback, this));
 
-	MenuItemImage *enditem = MenuItemImage::create(
-		"menu/exit.png",
-		"menu/exit.png",
-		CC_CALLBACK_1(RootScene::menuendCallback, this));
+	MenuItemImage *aboutitem = MenuItemImage::create(
+		"menu/about.png",
+		"menu/about.png",
+		CC_CALLBACK_1(RootScene::menuaboutCallback, this));
 
-	MenuItemFont::setFontSize(33);
-	Menu *mn = Menu::create(singleitem,doubleitem,settingitem,makeritem,enditem,nullptr);
-	mn->alignItemsVerticallyWithPadding(30);
-	mn->setPosition(Vec2(origin.x+visibleSize.width*3/4,origin.y+visibleSize.height/2));
+	gamebeganitem->setScale(0.5);
+	settingitem->setScale(0.5);
+	exititem->setScale(0.5);
+	aboutitem->setScale(0.5);
+
+	Menu *mn = Menu::create(gamebeganitem,settingitem,aboutitem,exititem,nullptr);
+	mn->alignItemsVerticallyWithPadding(15);
+	mn->setPosition(Vec2(origin.x+visibleSize.width*10/27,origin.y+visibleSize.height*3/8));
 	this->addChild(mn);
 	
 	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY,1))
@@ -77,16 +82,10 @@ bool RootScene::init()
 	return true;
 }
 
-void RootScene::menusinmemchoiceCallback(Ref* pSender)
+void RootScene::menugamebeganCallback(Ref* pSender)
 {
-	auto sc = GameScene::createScene();
-	Director::getInstance()->replaceScene(sc);
-}
-
-void RootScene::menumulmemchoiceCallback(Ref* pSender)
-{
-	auto sc = Start::createScene();
-	Director::getInstance()->replaceScene(sc);
+	auto sc = TransScene::createScene();
+	Director::getInstance()->pushScene(sc);
 }
 
 void RootScene::menusettingCallback(Ref* pSender)
@@ -95,14 +94,15 @@ void RootScene::menusettingCallback(Ref* pSender)
 	Director::getInstance()->pushScene(sc);
 }
 
-void RootScene::menumakerCallback(Ref* pSender)
-{
-
-}
-
-void RootScene::menuendCallback(Ref* pSender)
+void RootScene::menuexitCallback(Ref* pSender)
 {
 	auto sc= EndVerify::createScene();
+	Director::getInstance()->pushScene(sc);
+}
+
+void RootScene::menuaboutCallback(Ref* pSender)
+{
+	auto sc = AboutScene::createScene();
 	Director::getInstance()->pushScene(sc);
 }
 

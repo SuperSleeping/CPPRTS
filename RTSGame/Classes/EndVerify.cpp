@@ -31,18 +31,19 @@ bool EndVerify::init()
 
 	//menu
 	MenuItemImage *verifyitem = MenuItemImage::create(
-		"menu/yes.png",
-		"menu/yes.png",
+		"menu/bye.png",
+		"menu/bye.png",
 		CC_CALLBACK_1(EndVerify::verifyCallback, this));
 
 	MenuItemImage *cancelitem = MenuItemImage::create(
-		"menu/cancel.png",
-		"menu/cancel.png",
+		"menu/return.png",
+		"menu/return.png",
 		CC_CALLBACK_1(EndVerify::cancelCallback, this));
-
+	verifyitem->setScale(0.5);
+	cancelitem->setScale(0.5);
 	Menu *mn = Menu::create(verifyitem,cancelitem,nullptr);
-	mn->alignItemsHorizontallyWithPadding(200);
-	mn->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height/3));
+	mn->alignItemsHorizontallyWithPadding(250);
+	mn->setPosition(Vec2(origin.x + visibleSize.width*5/12, origin.y + visibleSize.height/3));
 	this->addChild(mn);
 
 	return true;

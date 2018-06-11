@@ -17,7 +17,7 @@ public:
 	//menu
 	void musicCallback(Ref* pSender);
 	void soundCallback(Ref* pSender);
-	void backtorootCallback(Ref* pSender);
+	void returnCallback(Ref* pSender);
 	void saveCallback(Ref* pSender);
 
 	CREATE_FUNC(MySetting);

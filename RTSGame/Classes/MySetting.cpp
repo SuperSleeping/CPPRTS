@@ -27,18 +27,14 @@ bool MySetting::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	//label
-	auto label1 = Label::createWithSystemFont("Name", "Arial", 45);
-	label1->setPosition(Vec2(origin.x + visibleSize.width / 4, origin.y + visibleSize.height*13/16));
-	this->addChild(label1);
-
-	auto label2 = Label::createWithSystemFont("Music", "Arial", 45);
-	label2->setPosition(Vec2(origin.x + visibleSize.width / 4, origin.y + visibleSize.height *17/32));
-	this->addChild(label2);
-
-	auto label3 = Label::createWithSystemFont("Sound", "Arial", 45);
-	label3->setPosition(Vec2(origin.x + visibleSize.width / 4, origin.y + visibleSize.height *9/32));
-	this->addChild(label3);
+	auto bg = Sprite::create("menu/settingbg.png");
+	bg->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(bg);
+	
+	//cin
+	auto cin = Sprite::create("menu/cin.png");
+	cin->setPosition(Vec2(origin.x+visibleSize.width*19/36, origin.y+visibleSize.height*12/16));
+	this->addChild(cin);
 
 	//menu
 	auto musicitem1 = MenuItemImage::create("menu/left.png", "menu/left.png");
@@ -55,21 +51,27 @@ bool MySetting::init()
 		NULL//集合结束
 	);
 
-	MenuItemImage *backtorootitem = MenuItemImage::create(
-		"menu/backtoroot.png",
-		"menu/backtoroot.png",
-		CC_CALLBACK_1(MySetting::backtorootCallback, this));
-
-	//保存设置项暂时用了返回的图片来做菜单
-	MenuItemImage *saveitem = MenuItemImage::create(
-		"menu/backtoroot.png",
-		"menu/backtoroot.png",
-		CC_CALLBACK_1(MySetting::saveCallback, this));
-	//下面那个返回改成保存
-	Menu *mn = Menu::create(musicitem,sounditem,backtorootitem,saveitem,nullptr);
-	mn->alignItemsVerticallyWithPadding(45);
-	mn->setPosition(Vec2(origin.x + visibleSize.width*2/3, origin.y + visibleSize.height / 2));
+	Menu *mn = Menu::create(musicitem, sounditem, nullptr);
+	mn->alignItemsVerticallyWithPadding(70);
+	mn->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height * 4 / 9));
 	this->addChild(mn);
+
+	MenuItemImage *returnitem = MenuItemImage::create(
+		"menu/return.png",
+		"menu/return.png",
+		CC_CALLBACK_1(MySetting::returnCallback, this));
+
+	MenuItemImage *saveitem = MenuItemImage::create(
+		"menu/save.png",
+		"menu/save.png",
+		CC_CALLBACK_1(MySetting::saveCallback, this));
+
+	returnitem->setScale(0.5);
+	saveitem->setScale(0.5);
+	Menu *mn1 = Menu::create(saveitem,returnitem, nullptr);
+	mn1->alignItemsHorizontallyWithPadding(300);
+	mn1->setPosition(Vec2(origin.x + visibleSize.width*13/27, origin.y + visibleSize.height*10/54));
+	this->addChild(mn1);
 
 	UserDefault *defaults = UserDefault::getInstance();
 	//设置开关项状态
@@ -103,7 +105,7 @@ bool MySetting::init()
 	return true;
 }
 
-void MySetting::backtorootCallback(Ref* pSender)
+void MySetting::returnCallback(Ref* pSender)
 {
 	Director::getInstance()->popScene();
 }

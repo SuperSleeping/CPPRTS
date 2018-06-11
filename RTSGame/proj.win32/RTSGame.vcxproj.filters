@@ -36,6 +36,12 @@
     <ClCompile Include="..\Classes\UDP.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\AboutScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\TransScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -67,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Soldier.h" />
     <ClInclude Include="..\Classes\Building.h" />
+    <ClInclude Include="..\Classes\AboutScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\TransScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
