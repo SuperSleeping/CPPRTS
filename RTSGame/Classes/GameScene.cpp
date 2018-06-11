@@ -43,6 +43,7 @@ bool GameScene::init()
 
 	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
 	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
+	sioClient->on("numberClientEvent", CC_CALLBACK_2(GameScene::numberClientEvent, this));
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -366,6 +367,14 @@ void GameScene::sendCallback(Ref *pSender)
 	return;
 }
 
+void GameScene::numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data)
+{
+	log("Client Called");
+	log("%s", data.c_str());
+	int number = atoi(data.c_str());
+	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number);
+	return;
+}
 void GameScene::onConnect(cocos2d::network::SIOClient *client)
 {
 	return;

@@ -29,8 +29,9 @@ bool getHostIp(char *ip)
 	return true;
 }
 
-bool serverOperation()
+bool serverOperation(int players)
 {
+	int number = players - 1;
 	SOCKET sClient;
 	sockaddr_in clientAddr, bindAddr;
 	WSADATA wsaData;
@@ -52,7 +53,7 @@ bool serverOperation()
 	char buf[256] = { 0 };			//储存接收到的命令
 	char ipaddr[30] = { 0 };		//储存本机ip
 	getHostIp(ipaddr);
-	while (true)
+	while (number)
 	{
 		if (SOCKET_ERROR != recvfrom(sClient, buf, 256, 0, reinterpret_cast<struct sockaddr FAR*>(&clientAddr), reinterpret_cast<int FAR*>(&addrLen)))
 		{
@@ -67,7 +68,8 @@ bool serverOperation()
 			else if (strcmp(buf, "success") == 0)
 			{
 				//成功建立连接
-				break;
+				number--;
+				//break;
 				//单客户端连接。多客户端预设连接人数。在此--。
 			}
 			else
@@ -76,8 +78,9 @@ bool serverOperation()
 				continue;
 			}
 		}
-		Sleep(1000);
+		Sleep(100);
 	}
+	sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
 	return true;
 }
 
@@ -113,7 +116,7 @@ bool clientOperation(char *hostIp)
 
 	int addrLen = sizeof(SOCKADDR);
 	char order[] = "GET_HOST_IP";
-	//char hostIp[30] = { 0 };
+	char command[30];
 
 	if (SOCKET_ERROR == sendto(connectSocket, order, strlen(order), 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom)))
 	{
@@ -121,15 +124,17 @@ bool clientOperation(char *hostIp)
 	}
 	while (true)
 	{
-		if (SOCKET_ERROR == recvfrom(connectSocket, hostIp, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
+		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
-			return false;
-		}
-		if (strlen(hostIp))
-		{
-			//成功获取ip
-			sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
-			break;
+			if (strcmp(command, "begin") == 0)
+			{
+				break;
+			}
+			else if (strlen(command))
+			{
+				strcpy(hostIp, command);
+				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
+			}
 		}
 	}
 	return true;
