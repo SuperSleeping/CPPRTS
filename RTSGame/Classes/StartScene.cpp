@@ -78,27 +78,8 @@ void Start::menujoinCallback(Ref *pSender)
 }
 void Start::menunewCallback(Ref *pSender)
 {
-	char filePath[500] = { 0 };
-	getcwd(filePath, 500);
-	for (int i = 0; i < 50; i++)
-	{
-		log("%d", filePath[i]);
-	}
-	log("%s", filePath);
-	char path[520] = "set path=\"";
-	strcat(path, filePath);
-	strcat(path, "\\nodejs\"");
-	//WinExec(path, SW_NORMAL);
-	log("%s", path);
 	/*将参数2改为SW_HIDE即可隐藏运行窗口 暂时用于查看服务端输出*/
-	char server[520] = "node ";
-	strcat(server, filePath);
-	strcat(server, "\\nodejs\\app.js");
-	strcat(path, "&&");
-	strcat(path, server);
-	system(path);
-	//WinExec(path, SW_NORMAL);
-	log("%s", path);
+	WinExec("order.bat", SW_NORMAL);
 	char hostIp[30];
 	getHostIp(hostIp);
 	strcat(hostIp, ":3000");
