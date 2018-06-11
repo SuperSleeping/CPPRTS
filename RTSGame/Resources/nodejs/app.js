@@ -1,5 +1,5 @@
 var io = require('socket.io').listen(3000);
-var number = 1;
+var number = 0;
 var snumber = String(number);
 console.log(snumber);
 console.log('Server on port 3000.');
