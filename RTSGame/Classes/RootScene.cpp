@@ -29,10 +29,10 @@ bool RootScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	
-	//left picture
-	Sprite *leftbg = Sprite::create("enteringScene/enterPic.jpg");
-	leftbg->setPosition(Vec2(visibleSize.width / 3, visibleSize.height / 2));
-	this->addChild(leftbg);
+	//background
+	Sprite *bg = Sprite::create("enteringScene/enterPic.jpg");
+	bg->setPosition(Vec2(visibleSize.width / 3, visibleSize.height / 2));
+	this->addChild(bg);
 	
 	//menu
 	MenuItemImage *singleitem = MenuItemImage::create(
