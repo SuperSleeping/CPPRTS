@@ -67,6 +67,8 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Soldier.h" />
     <ClInclude Include="..\Classes\Building.h" />
+    <ClInclude Include="Elements.h" />
+    <ClInclude Include="..\Classes\Elements.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

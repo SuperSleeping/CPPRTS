@@ -20,6 +20,7 @@ public:
 	void buildRespone(const std::string &data);
 	void createRespone(const std::string &data);
 	void attackRespone(const std::string &data);
+	void destroyRespone(const std::string &data);
 	void moveRespone(const std::string &data);
 	void updateErase(float di);
 	void sendCallback(Ref *pSender);
