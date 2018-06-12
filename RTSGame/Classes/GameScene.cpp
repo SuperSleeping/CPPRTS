@@ -160,8 +160,43 @@ bool GameScene::init()
 						}
 					}
 				}
-				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {
-					building = 1;															//点击范围包含在右下方上面那个框，标志进入建造状态
+				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {				//点击范围包含在右下方上面那个框，标志进入建造状态
+					if (ContainRect(position, Vec2(1100, 200), Vec2(1200, 100))) {
+						building = 1;
+					}
+					else  if (ContainRect(position, Vec2(1200, 200), Vec2(1300, 100))) {		//电厂
+						if (ConstructionYard[MyNumber] ) {
+							building = 2;
+						}
+						else {
+							//反馈：前置条件不足-需要基地
+						}
+					}
+					else if (ContainRect(position, Vec2(1300, 200), Vec2(1400, 100))) {			//矿厂
+						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50) {
+							building = 3;
+						}
+						else {
+							//反馈：前置条件不足-缺少电厂或足够电力
+						}
+					}
+					else if (ContainRect(position, Vec2(1400, 200), Vec2(1500, 100))) {			//兵营
+						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50) {
+							building = 4;
+						}
+						else {
+							//反馈：前置条件不足-缺少电厂或足够电力
+						}
+					}
+					else if (ContainRect(position, Vec2(1500, 200), Vec2(1600, 100))) {
+						if (PowerPlant[MyNumber] && OreRefinery[MyNumber] && Power[MyNumber] >= 80) {
+							building = 5;
+						}
+						else {
+							//反馈：前置条件不足-缺少电厂/矿厂或足够电力
+						}
+					}
+					
 
 				}
 			}
@@ -633,7 +668,8 @@ void GameScene::buildRespone(const std::string &data) {
 	type = atoi(type_c);
 
 	switch (type) {
-	case 1:
+		//Building* fac;
+	case 1: {
 		auto fac = Building::create("bd.png");
 		fac->SetType(1);
 		fac->SetSide(Player);
@@ -644,7 +680,59 @@ void GameScene::buildRespone(const std::string &data) {
 		//fac->scheduleUpdate();
 		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
 		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
-		break;
+		break; }
+	case 2: {
+		auto fac = Building::create("dianchang.png");
+		fac->SetType(2);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+
+		break; }
+	case 3: {
+		auto fac = Building::create("kuangchang.png");
+		fac->SetType(3);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+		fac->schedule(schedule_selector(Building::updateOre), 1.0f, kRepeatForever, 10.0f);
+		break; }
+	case 4: {
+		auto fac = Building::create("bingying.png");
+		fac->SetType(4);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+
+		break; }
+	case 5: {
+		auto fac = Building::create("chechang.png");
+		fac->SetType(5);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+
+		break; }
 	}
 
 
@@ -806,4 +894,15 @@ string SpawnDatastring(int Player, char type, int n, int m, int t) {
 	data += tpz;
 	data += " ";
 	return data;
+}
+
+string GoldString(int player) {
+	string str;
+	char gd[10];
+	char gp[4];
+	_itoa_s(Gold[player], gd, 10);
+	_itoa_s(OreRefinery[player] * 50, gp, 10);
+	str += gd;
+	return str;
+
 }

@@ -12,6 +12,8 @@ private:
 	int type;
 	int side;
 	int Hitpoint = 0;
+	int power;
+	bool power_return = 0;
 	float build_progress = 0;
 	ProgressTimer* blood;
 public:
@@ -22,6 +24,7 @@ public:
 	int Side();
 	void updateBegin(float di);
 	void updateBuild(float di);
+	void updateOre(float di);
 	void BeAttacked(int damage);
 	bool Destroyed();
 	//virtual void create();
@@ -31,6 +34,11 @@ void Building::BeAttacked(int damage) {
 	this->Hitpoint = this->Hitpoint - damage;
 	this->blood->setPercentage(Hitpoint/10);
 	if (this->Destroyed()) {
+		if (!this->power_return) {
+			this->power_return = 1;
+			Power[this->side] += this->power;;
+		}
+		
 		this->cleanup();
 		this->removeAllChildren();
 		this->removeFromParent();
@@ -99,15 +107,39 @@ void Building::updateBuild(float di) {
 		
 		switch (this->type) {
 		case 1: 
-			ConstructionYard = 1;
+			ConstructionYard[this->side] = 1;
 			this->Hitpoint = 1000;
 			break;
 		case 2:
-			PowerPlant = 1;
+			PowerPlant[this->side]++;
 			this->Hitpoint = 1000;
-			Power += 200;
+			Power[this->side] += 100;
+			this->power = -100;
 			break;
+		case 3:
+			OreRefinery[this->side] ++;
+			this->Hitpoint = 1000;
+			Power[this->side] -= 50;
+			this->power = 50;
+			break;
+		case 4:
+			Barracks[this->side] ++;
+			this->Hitpoint = 1000;
+			Power[this->side] -= 50;
+			this->power = 50;
+			break;
+		case 5:
+			WarFactory[this->side] ++;
+			this->Hitpoint = 1000;
+			Power[this->side] -= 100;
+			this->power = 100;
 		}
 	
+	}
+}
+
+void Building::updateOre(float di) {
+	if (!this->Destroyed()) {
+		Gold[this->side] += 50;
 	}
 }
