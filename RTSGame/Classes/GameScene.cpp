@@ -71,6 +71,28 @@ bool GameScene::init()
 	menu->setAnchorPoint(Vec2(0, 0));
 	menu->setPosition(Vec2(1100, 0));
 
+
+
+	auto dianchang = Sprite::create("dianchang2.png");
+	menu->addChild(dianchang);
+	dianchang->setAnchorPoint(Vec2(0, 0));
+	dianchang->setPosition(100, 100);
+
+	auto kuangchang = Sprite::create("kuangchang2.png");
+	menu->addChild(kuangchang);
+	kuangchang->setAnchorPoint(Vec2(0, 0));
+	kuangchang->setPosition(200, 100);
+
+	auto bingying = Sprite::create("bingying2.png");
+	menu->addChild(bingying);
+	bingying->setAnchorPoint(Vec2(0, 0));
+	bingying->setPosition(300, 100);
+
+	auto chechang = Sprite::create("chechang2.png");
+	menu->addChild(chechang);
+	chechang->setAnchorPoint(Vec2(0, 0));
+	chechang->setPosition(400, 100);
+
 	static float xView = Director::getInstance()->getVisibleSize().width;
 	static float yView = Director::getInstance()->getVisibleSize().height;
 
@@ -116,6 +138,7 @@ bool GameScene::init()
 
 	testenem->SetTarget(testmy);
 
+	buildRespone(SpawnDatastring(1, 'b', 300, 300, 1));
 
 	static auto MouseReply = EventListenerMouse::create();
 	MouseReply->onMouseUp = [=](Event *event) {					//监听鼠标弹起事件
@@ -132,20 +155,10 @@ bool GameScene::init()
 				if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 200))) {
 					for (Building* factory : BuildingList[MyNumber]) {
 
-						if (factory->Type() == 1) {
+						if (factory->Type() == 1 && !factory->Destroyed()) {
 
-							/*Soldier* soldier = Soldier::create("seedz.png");
-							soldier->setPosition(factory->getPosition() - Vec2(0, 75));
-							soldier->SetSide(MyNumber);
-							//soldier->setTag(1);
-							soldier->scheduleUpdate();
-							soldier->schedule(schedule_selector(Soldier::updateAttack), 1.0f, kRepeatForever, 0);
-							soldier->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
-							PlayMap->addChild(soldier, 100);
-							SoldierList[MyNumber].pushBack(soldier);											//在固定位置创建一只妙蛙种子并推入soldierlist容器
-							*/																					//输出“%MyNumber c  %(factory->getPosition()-Vec2(0,75)).x  %(factory->getPosition()-Vec2(0,75)).y”
-							sioClient->send(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
-							//createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
+							//sioClient->send(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
+							createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
 							for (auto sp_obj : SoldierList[MyNumber]) {										//遍历soldierlist容器元素，全部设成未选中状态
 								sp_obj->Select(0);
 								sp_obj->SelectedReply();
@@ -153,8 +166,43 @@ bool GameScene::init()
 						}
 					}
 				}
-				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {
-					building = 1;															//点击范围包含在右下方上面那个框，标志进入建造状态
+				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {				//点击范围包含在右下方上面那个框，标志进入建造状态
+					if (ContainRect(position, Vec2(1100, 200), Vec2(1200, 100))) {
+						building = 1;
+					}
+					else  if (ContainRect(position, Vec2(1200, 200), Vec2(1300, 100))) {		//电厂
+						if (ConstructionYard[MyNumber]) {
+							building = 2;
+						}
+						else {
+							//反馈：前置条件不足-需要基地
+						}
+					}
+					else if (ContainRect(position, Vec2(1300, 200), Vec2(1400, 100))) {			//矿厂
+						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50) {
+							building = 3;
+						}
+						else {
+							//反馈：前置条件不足-缺少电厂或足够电力
+						}
+					}
+					else if (ContainRect(position, Vec2(1400, 200), Vec2(1500, 100))) {			//兵营
+						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50) {
+							building = 4;
+						}
+						else {
+							//反馈：前置条件不足-缺少电厂或足够电力
+						}
+					}
+					else if (ContainRect(position, Vec2(1500, 200), Vec2(1600, 100))) {
+						if (PowerPlant[MyNumber] && OreRefinery[MyNumber] && Power[MyNumber] >= 80) {
+							building = 5;
+						}
+						else {
+							//反馈：前置条件不足-缺少电厂/矿厂或足够电力
+						}
+					}
+
 
 				}
 			}
@@ -175,10 +223,11 @@ bool GameScene::init()
 					PlayMap->addChild(fac, 3);
 					fac->setPosition(target);
 					fac->SetType(1);*/
-					building = 0;
-					//buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y));
-					sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y));
+
+					buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y, building));
+					//sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y,building));
 					//输出字符串“ %MyNumber b  %target.x  %target.y”
+					building = 0;
 				}
 				else {
 					for (auto sp_obj : SoldierList[MyNumber]) {									//遍历soldierlist容器元素，将第一个被鼠标点中的soldier变为被选中状态
@@ -203,8 +252,33 @@ bool GameScene::init()
 											if (myso->Selected()) {
 												//myso->SetTarget(enemy);
 												//输出“%MyNumber a %myso->getTag() %enemy->getTag()” 
-												//attackRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
-												sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												attackRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												//sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+											}
+										}
+
+										//log("1");
+										swallow = 1;
+										break;
+									}
+									if (swallow) {
+										break;
+									}
+								}
+							}
+						}
+					}
+					if (!swallow) {														//没有点中soldier，判断是否点中building作为攻击对象
+						for (int i = 0; i < 4; i++) {
+							if (i % 2 != MyNumber % 2) {
+								for (auto enemy : BuildingList[i]) {								//点中敌方soldier，给所有选中目标设置攻击target
+									if (ContainSprite(enemy, target, 50) && !enemy->Destroyed()) {
+										for (auto myso : SoldierList[MyNumber]) {
+											if (myso->Selected()) {
+												//myso->SetTarget(enemy);
+												//输出“%MyNumber a %myso->getTag() %enemy->getTag()” 
+												destroyRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												//sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
 											}
 										}
 
@@ -224,11 +298,15 @@ bool GameScene::init()
 						for (auto sp_obj : SoldierList[MyNumber]) {
 							if (sp_obj->Selected()) {
 
-								sioClient->send(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
-								//attackRespone(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
-								sioClient->send(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
-								//moveRespone(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
-								//输出“%MyNumber m %sp_obj->getTag() %target.x %target.y”
+								//sioClient->send(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
+								//sioClient->send(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
+								//sioClient->send(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
+
+								attackRespone(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
+								destroyRespone(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
+
+								moveRespone(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
+
 							}
 						}
 					}
@@ -242,8 +320,7 @@ bool GameScene::init()
 
 
 
-															//log("%d", MySoldierList.size());
-															//log("%d", OpSoldierList.size());
+
 
 		}
 		if (bool(e->getMouseButton())) {												//right button 右键事件
@@ -272,9 +349,9 @@ bool GameScene::init()
 		//target = target * 0.78125;
 		//log("%f %f",position.x,position.y);
 		//log("%f %f", target.x, target.y);
-		//map->stopAllActions();							//地图大小为2000*1500，更改地图请对应更改magic numbers
+		//map->stopAllActions();							
 		if (position.x > xView - 100) {							//鼠标靠近屏幕右侧
-			if (!(PlayMap->numberOfRunningActions())) {				//这一句是为了地图视角移动更加流畅
+			if (!(PlayMap->numberOfRunningActions())) {
 				auto map_move = MoveTo::create((PlayMap->getPosition().x + (4000 - xView)) / 2000, Vec2(-(4000 - xView), PlayMap->getPosition().y));
 				PlayMap->runAction(map_move);
 			}
@@ -413,8 +490,12 @@ void GameScene::onMessage(cocos2d::network::SIOClient *client, const std::string
 	else if (data[3] == 'm') {
 		moveRespone(data);
 	}
+	else if (data[3] == 'd') {
+		destroyRespone(data);
+	}
 	return;
 }
+
 
 void GameScene::onClose(cocos2d::network::SIOClient *client)
 {
@@ -468,7 +549,7 @@ void GameScene::chatResponse(const std::string& data)
 }*/
 
 void GameScene::attackRespone(const std::string &data) {
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char atk[5];
 	char tgt[5];
@@ -516,14 +597,65 @@ void GameScene::attackRespone(const std::string &data) {
 	//sd=PlayMap->getChildByTag(atk_tag)
 }
 
+void GameScene::destroyRespone(const std::string &data) {
+	int index = 0;
+	int Player = data[index] - 48;
+	char atk[5];
+	char tgt[5];
+	int atk_tag;
+	int tgt_tag;
+	index += 4;
+	int a = 0;
+	for (index; data[index] != 32; index++) {
+
+		atk[a] = data[index];
+		a++;
+	}
+	atk_tag = atoi(atk);
+	index++;
+	a = 0;
+	for (index; data[index] && data[index] != 32; index++) {
+
+		tgt[a] = data[index];
+		a++;
+	}
+	tgt_tag = atoi(tgt);
+
+	for (auto sd : SoldierList[Player]) {
+		if (sd->getTag() == atk_tag) {
+			bool find = 0;
+			if (tgt_tag == 0) {
+				sd->SetDestroy(nullptr);
+				break;
+			}
+			for (int i = (Player + 1) % 2; i < 4; i = i + 2) {
+				for (auto en : BuildingList[i]) {
+					if (en->getTag() == tgt_tag) {
+						sd->SetDestroy(en);
+						find = 1;
+						break;
+					}
+				}
+				if (find) {
+					break;
+				}
+			}
+			break;
+		}
+	}
+	//sd=PlayMap->getChildByTag(atk_tag)
+}
+
 void GameScene::buildRespone(const std::string &data) {
 	//log("create");
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char x_c[4];
 	char y_c[4];
+	char type_c[1];
 	int x;
 	int y;
+	int type;
 	index += 4;
 	int a = 0;
 	for (index; data[index] != 32; index++) {
@@ -540,20 +672,89 @@ void GameScene::buildRespone(const std::string &data) {
 		a++;
 	}
 	y = atoi(y_c);
-	auto fac = Building::create("bd.png");								//在该位置添加实际建筑并改变标志building，退出建筑状态
-	BuildingList[Player].pushBack(fac);
-	fac->setAnchorPoint(Vec2(0.5, 0.5));
-	PlayMap->addChild(fac, 3);
-	fac->setPosition(Vec2(x, y));
-	fac->SetType(1);
+	index++;
+	type_c[0] = data[index];
+	type = atoi(type_c);
+
+	switch (type) {
+		//Building* fac;
+	case 1: {
+		auto fac = Building::create("bd.png");
+		fac->SetType(1);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+		break; }
+	case 2: {
+		auto fac = Building::create("dianchang.png");
+		fac->SetType(2);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+
+		break; }
+	case 3: {
+		auto fac = Building::create("kuangchang.png");
+		fac->SetType(3);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+		fac->schedule(schedule_selector(Building::updateOre), 1.0f, kRepeatForever, 10.0f);
+		break; }
+	case 4: {
+		auto fac = Building::create("bingying.png");
+		fac->SetType(4);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+
+		break; }
+	case 5: {
+		auto fac = Building::create("chechang.png");
+		fac->SetType(5);
+		fac->SetSide(Player);
+		BuildingList[Player].pushBack(fac);
+		fac->setAnchorPoint(Vec2(0.5, 0.5));
+		PlayMap->addChild(fac, 3);
+		fac->setPosition(Vec2(x, y));
+		//fac->scheduleUpdate();
+		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
+		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
+
+		break; }
+	}
+
+
+
+
 	//log("%f %f", fac->getPosition().x, fac->getPosition().y);
-	log("Player: %d", Player);
+	/*log("Player: %d", Player);
 	log("MyNumber: %d", Player);
-	log("size:  %d", SoldierList[Player].size());
+	log("size:  %d", SoldierList[Player].size());*/
 }
 
 void GameScene::createRespone(const std::string &data) {
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char x_c[4];
 	char y_c[4];
@@ -595,7 +796,7 @@ void GameScene::createRespone(const std::string &data) {
 }
 
 void GameScene::moveRespone(const std::string &data) {
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char tag_c[5];
 	char x_c[4];
@@ -634,7 +835,6 @@ void GameScene::moveRespone(const std::string &data) {
 		}
 	}
 }
-
 //current point,top left point,lower right point
 bool ContainRect(Vec2 current, Vec2 pt1, Vec2 pt2) {						//判断current坐标是否包含在左上点pt1和右下点pt2之间的矩形
 	if ((current.x > pt1.x) && (current.x < pt2.x) && (current.y < pt1.y) && (current.y > pt2.y)) {

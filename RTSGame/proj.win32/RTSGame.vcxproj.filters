@@ -73,6 +73,7 @@
     <ClInclude Include="..\Classes\TransScene.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Elements.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
