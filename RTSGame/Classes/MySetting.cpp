@@ -30,11 +30,6 @@ bool MySetting::init()
 	auto bg = Sprite::create("menu/settingbg.png");
 	bg->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(bg);
-	
-	//cin
-	auto cin = Sprite::create("menu/cin.png");
-	cin->setPosition(Vec2(origin.x+visibleSize.width*19/36, origin.y+visibleSize.height*12/16));
-	this->addChild(cin);
 
 	//menu
 	auto musicitem1 = MenuItemImage::create("menu/left.png", "menu/left.png");
@@ -94,9 +89,8 @@ bool MySetting::init()
 	}
 
 	std::string username = defaults->getStringForKey(USER_NAME, "User");
-	auto nameSetting = EditBox::create(Size(500, 70), Scale9Sprite::create("editbox.jpg"));
-	nameSetting->setAnchorPoint(Point(0, 0));
-	nameSetting->setPosition(Vec2(0,0));
+	auto nameSetting = EditBox::create(Size(500, 70), Scale9Sprite::create("menu/cin.png"));
+	nameSetting->setPosition(Vec2(origin.x + visibleSize.width * 19 / 36, origin.y + visibleSize.height * 12 / 16));
 	nameSetting->setPlaceHolder(username.c_str());
 	nameSetting->setFontColor(Color3B::BLACK);
 	nameSetting->setTag(123);

@@ -329,27 +329,27 @@ bool GameScene::init()
 
 
 	//content
-	/*auto content = RichText::create();
+	auto content = RichText::create();
 	content->setContentSize(Size(400, 200));
 	content->ignoreContentAdaptWithSize(false);
 	content->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
 	content->setTag(112);
 	this->addChild(content);
 	auto text = RichElementText::create(1, Color3B::RED, 255, "Hi!", "Arial", 20);
-	content->pushBackElement(text);*/
+	content->pushBackElement(text);
 
 	//chat
-	/*auto chatbox = EditBox::create(Size(400, 20), Scale9Sprite::create("editbox.jpg"));
+	auto chatbox = EditBox::create(Size(400, 20), Scale9Sprite::create("editbox.jpg"));
 	chatbox->setPlaceHolder("Press Enter to chat: ");
 	chatbox->setFontColor(Color3B::BLACK);
 	chatbox->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
 	chatbox->setTag(111);
-	this->addChild(chatbox);*/
+	this->addChild(chatbox);
 
-	/*auto sendItem = MenuItemFont::create("send", CC_CALLBACK_1(GameScene::sendCallback, this));
+	auto sendItem = MenuItemFont::create("send", CC_CALLBACK_1(GameScene::sendCallback, this));
 	sendItem->setPosition(Vec2(origin.x, origin.y + visibleSize.height / 3));
 	Menu *mn = Menu::create(sendItem, NULL);
-	this->addChild(mn);*/
+	this->addChild(mn);
 
 	//sound
 	/*if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
@@ -374,6 +374,7 @@ void GameScene::sendCallback(Ref *pSender)
 	auto editbox = reinterpret_cast<EditBox*>(this->getChildByTag(111));
 	std::string content = editbox->getText();
 	message = message + "c" + playerName + ":" + content;
+	editbox->setText(" ");
 	sioClient->send(message);
 	return;
 }

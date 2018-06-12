@@ -2,6 +2,9 @@
 #define _TRANS_SCNEE_H_
 
 #include"cocos2d.h"
+#include "network/SocketIO.h"
+#include "SimpleAudioEngine.h"
+#include "UserDefault.h"
 USING_NS_CC;
 
 class TransScene :public Scene

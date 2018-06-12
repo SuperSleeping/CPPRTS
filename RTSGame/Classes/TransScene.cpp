@@ -1,8 +1,13 @@
 #include"TransScene.h"
 #include"SimpleAudioEngine.h"
 #include"GameScene.h"
+#include "UDP.h"
+#include <stdlib.h>
+#include <Windows.h>
+#include <direct.h>
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 Scene* TransScene::createScene()
 {
@@ -52,17 +57,43 @@ bool TransScene::init()
 	mn->setPosition(Vec2(origin.x + visibleSize.width*2/3, origin.y + visibleSize.height / 2));
 	this->addChild(mn);
 
+	//music
+	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
+	{
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("music/Ready The Army.mp3", true);
+		//检验背景音乐是否正在播放
+		bool flag = &SimpleAudioEngine::isBackgroundMusicPlaying;
+		log("%d", flag);
+	}
+
 	return true;
 }
 
 void TransScene::newCallback(Ref* pSender)
 {
-	
+	/*将参数2改为SW_HIDE即可隐藏运行窗口 暂时用于查看服务端输出*/
+	WinExec("order.bat", SW_NORMAL);
+	char hostIp[30];
+	getHostIp(hostIp);
+	strcat(hostIp, ":3000");
+	log("%s", hostIp);
+	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
+	int number = 2;								//加入游戏的玩家人数。允许玩家设置为2或4
+	serverOperation(number);
+	auto sc = GameScene::createScene();
+	Director::getInstance()->replaceScene(sc);
+	return;
 }
 
 void TransScene::joinCallback(Ref* pSender)
 {
-	
+	char hostIp[30];
+	clientOperation(hostIp);
+	strcat(hostIp, ":3000");
+	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
+	auto sc = GameScene::createScene();
+	Director::getInstance()->replaceScene(sc);
+	return;
 }
 
 void TransScene::returnCallback(Ref* pSender)
