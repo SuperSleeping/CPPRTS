@@ -18,6 +18,8 @@ string SpawnDatastring(int Player, char type, int n, int m);
 string SpawnDatastring(int Player, char type, int n, int m, int t);
 static Vector<Soldier*> SoldierList[4];
 static Vector<Building*> BuildingList[4];
+std::vector <Sprite*>MiniSoldierList[4];
+std::vector<Sprite*> MiniBuildingList[4];
 //static int SoldierTag = 0;
 static int MyNumber = 0;
 static TMXTiledMap *PlayMap;
@@ -90,6 +92,10 @@ bool GameScene::init()
 
 	PlayMap = TMXTiledMap::create("newmap.tmx");
 	addChild(PlayMap);
+
+	auto minimap = Sprite::create("tem/minimap.png");
+	minimap->setPosition(Vec2(150,150));
+	this->addChild(minimap, 300);
 	//map->setScale(1 / 0.78125, 1 / 0.78125);
 
 	//log("%f %f", map->getContentSize().width, map->getContentSize().height);
@@ -103,7 +109,10 @@ bool GameScene::init()
 	testenem->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
 	testenem->scheduleUpdate();
 	testenem->schedule(schedule_selector(Soldier::updateAttack), 1.0f, kRepeatForever, 0);
-
+	auto e = Sprite::create("tem/sr.png");
+	e->setPosition(Vec2(30,30));
+	this->addChild(e, 400);
+	MiniSoldierList[1].push_back(e);
 
 	auto testmy = Soldier::create("seedz.png");
 	testmy->SetSide(1);
@@ -113,6 +122,10 @@ bool GameScene::init()
 	testmy->scheduleUpdate();
 	testmy->schedule(schedule_selector(Soldier::updateAttack), 1.0f, kRepeatForever, 0);
 	testmy->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
+	auto m = Sprite::create("tem/sy.png");
+	m->setPosition(Vec2(45/2, 30));
+	this->addChild(m, 400);
+	MiniSoldierList[0].push_back(m);
 
 	testenem->SetTarget(testmy);
 
@@ -179,6 +192,11 @@ bool GameScene::init()
 					//buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y));
 					sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y));
 					//输出字符串“ %MyNumber b  %target.x  %target.y”
+
+					auto b = Sprite::create("tem/br.png");
+					b->setPosition(target*3/40);
+					this->addChild(b, 400);
+					MiniBuildingList[0].push_back(b);
 				}
 				else {
 					for (auto sp_obj : SoldierList[MyNumber]) {									//遍历soldierlist容器元素，将第一个被鼠标点中的soldier变为被选中状态
@@ -361,8 +379,8 @@ bool GameScene::init()
 	}*/
 
 	//return
-
-	this->schedule(schedule_selector(GameScene::updateTime), 1.0f, kRepeatForever, 0);
+	this->schedule(schedule_selector(GameScene::updateMini), 0.5f, kRepeatForever, 0);
+	this->schedule(schedule_selector(GameScene::updateTime), 0.5f, kRepeatForever, 0);
 	return true;
 }
 
@@ -717,4 +735,25 @@ void GameScene::updateTime(float di)
 	tem = tem - min * 60;
 	second = tem;
 	gametime->setString(to_string(hour) + "h" + to_string(min) + "m" + to_string(second) + "s");
+}
+void GameScene::updateMini(float di)
+{
+	for (int i = 0; i < 4; ++i)
+	{
+		int j = 0;
+		for (auto soldier :SoldierList[i])
+		{
+			if (!soldier->Died())
+			{
+				auto p = soldier->getPosition();
+				MiniSoldierList[i][j]->setPosition(Vec2(p.x *3/40, p.y*3/40));
+			}
+			if (soldier->Died())
+			{
+				auto p = Director::getInstance()->getVisibleSize();
+				MiniSoldierList[i][j]->setPosition(Vec2(p.width * 2, p.height * 2));
+			}
+			j+= 1;
+		}
+	}
 }

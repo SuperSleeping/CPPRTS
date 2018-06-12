@@ -96,6 +96,25 @@ bool MySetting::init()
 	nameSetting->setTag(123);
 	this->addChild(nameSetting);
 
+	//try
+	auto tem = Sprite::create("tem/br.png");
+	tem->setPosition(Vec2(1400, 150));
+	this->addChild(tem);
+	auto eventListener = EventListenerKeyboard::create();
+	eventListener->onKeyPressed = [](EventKeyboard::KeyCode keyCode, Event* event) {
+		auto loc = event->getCurrentTarget()->getPosition();
+		switch (keyCode) {
+		case EventKeyboard::KeyCode::KEY_ENTER:
+		{
+			loc.x += 50;
+			loc.y += 50;
+			event->getCurrentTarget()->setPosition(loc.x, loc.y);
+		}
+			break;
+		}
+	};
+	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener,tem);
+
 	return true;
 }
 

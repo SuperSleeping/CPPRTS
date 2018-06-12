@@ -23,6 +23,7 @@ public:
 	void moveRespone(const std::string &data);
 	void updateErase(float di);
 	void updateTime(float di);
+	void updateMini(float di);
 	void sendCallback(Ref *pSender);
 
 	void chatResponse(const std::string& data);
