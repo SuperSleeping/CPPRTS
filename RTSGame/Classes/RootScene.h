@@ -18,11 +18,10 @@ public:
 	virtual void cleanup();
 
 	//menu
-	void menusinmemchoiceCallback(Ref* pSender);
-	void menumulmemchoiceCallback(Ref* pSender);
+	void menugamebeganCallback(Ref* pSender);
 	void menusettingCallback(Ref* pSender);
-	void menumakerCallback(Ref* pSender);
-	void menuendCallback(Ref* pSender);
+	void menuexitCallback(Ref* pSender);
+	void menuaboutCallback(Ref* pSender);
 
 	CREATE_FUNC(RootScene);
 };

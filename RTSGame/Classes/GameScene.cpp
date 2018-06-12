@@ -21,6 +21,9 @@ static Vector<Building*> BuildingList[4];
 //static int SoldierTag = 0;
 static int MyNumber = 0;
 static TMXTiledMap *PlayMap;
+time_t initTime;
+time_t Time;
+Label* gametime;
 
 
 Scene* GameScene::createScene()
@@ -48,6 +51,13 @@ bool GameScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+	auto timebg = Sprite::create("timebg.png");
+	timebg->setPosition(Vec2(origin.x+visibleSize.width / 6, origin.y+visibleSize.height* 17 / 18));
+	this->addChild(timebg, 400);
+	gametime = Label::create("", "Arial", 20);
+	gametime->setPosition(Vec2(origin.x + visibleSize.width / 6, origin.y + visibleSize.height * 17 / 18));
+	this->addChild(gametime, 400);
+	time(&initTime);
 
 	//传输串码  p    a      t   xxxxyyy  
 	//玩家 动作   类型
@@ -352,6 +362,7 @@ bool GameScene::init()
 
 	//return
 
+	this->schedule(schedule_selector(GameScene::updateTime), 1.0f, kRepeatForever, 0);
 	return true;
 }
 
@@ -690,4 +701,19 @@ string SpawnDatastring(int Player, char type, int n, int m, int t) {
 	data += tpz;
 	data += " ";
 	return data;
+}
+void GameScene::updateTime(float di)
+{
+	double tem;
+	time(&Time);
+	tem = difftime(Time, initTime);
+	int second = static_cast<int>(tem);
+	int min = 0;
+	int hour = 0;
+	hour = tem / 3600;
+	tem = tem - hour * 3600;
+	min = tem / 60;
+	tem = tem - min * 60;
+	second = tem;
+	gametime->setString(to_string(hour) + "h" + to_string(min) + "m" + to_string(second) + "s");
 }
