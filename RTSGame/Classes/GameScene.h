@@ -26,6 +26,7 @@ public:
 	void sendCallback(Ref *pSender);
 
 	void chatResponse(const std::string& data);
+	void numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data);
 
 	CREATE_FUNC(GameScene);
 };
