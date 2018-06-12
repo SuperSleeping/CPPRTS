@@ -96,12 +96,15 @@ bool MySetting::init()
 	nameSetting->setTag(123);
 	this->addChild(nameSetting);
 
-	//try
+	//ENTER
+	//我现在是在屏幕右边创建了一个红点，然后通过按ENTER键改变它的位置
 	auto tem = Sprite::create("tem/br.png");
 	tem->setPosition(Vec2(1400, 150));
 	this->addChild(tem);
+	//键盘监听器
 	auto eventListener = EventListenerKeyboard::create();
 	eventListener->onKeyPressed = [](EventKeyboard::KeyCode keyCode, Event* event) {
+		//得到红点的位置
 		auto loc = event->getCurrentTarget()->getPosition();
 		switch (keyCode) {
 		case EventKeyboard::KeyCode::KEY_ENTER:
@@ -113,6 +116,7 @@ bool MySetting::init()
 			break;
 		}
 	};
+	//第二个参数是绑定的节点，这里要改变红点的位置，所以是tem
 	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener,tem);
 
 	return true;
