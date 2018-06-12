@@ -92,6 +92,18 @@ void Building::updateBegin(float di) {
 	this->addChild(blood);
 	this->setOpacity(50);
 
+	switch (this->type){
+	case 3:
+		Power[this->side] -= 50;
+		break;
+	case 4:
+		Power[this->side] -= 50;
+		break;
+	case 5:
+		Power[this->side] -= 100;
+		break;
+	}
+
 	blood->setAnchorPoint(Vec2(0, 0));
 	blood->setType(ProgressTimer::Type::BAR);
 	blood->setMidpoint(Vec2(0, 0.5f));
@@ -119,19 +131,19 @@ void Building::updateBuild(float di) {
 		case 3:
 			OreRefinery[this->side] ++;
 			this->Hitpoint = 1000;
-			Power[this->side] -= 50;
+			
 			this->power = 50;
 			break;
 		case 4:
 			Barracks[this->side] ++;
 			this->Hitpoint = 1000;
-			Power[this->side] -= 50;
+			
 			this->power = 50;
 			break;
 		case 5:
 			WarFactory[this->side] ++;
 			this->Hitpoint = 1000;
-			Power[this->side] -= 100;
+			
 			this->power = 100;
 		}
 	

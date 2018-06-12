@@ -24,8 +24,10 @@ public:
 	void destroyRespone(const std::string &data);
 	void updateErase(float di);
 	void updateTime(float di);
-	void sendCallback(Ref *pSender);
+	void updateResources(float di);
 
+	void sendCallback(Ref *pSender);
+	
 	void chatResponse(const std::string& data);
 	void numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data);
 

@@ -24,7 +24,10 @@ static TMXTiledMap *PlayMap;
 time_t initTime;
 time_t Time;
 Label* gametime;
-
+Label* resources_gold;
+Label* resources_gold_per_second;
+Label* resources_power_avaliable;
+Label* resources_power_sum;
 
 Scene* GameScene::createScene()
 {
@@ -58,6 +61,23 @@ bool GameScene::init()
 	gametime->setPosition(Vec2(origin.x + visibleSize.width / 6, origin.y + visibleSize.height * 17 / 18));
 	this->addChild(gametime, 400);
 	time(&initTime);
+
+	resources_gold = Label::create("", "Arial", 20);
+	this->addChild(resources_gold,400);
+	resources_gold->setPosition(Vec2(1400, 880));
+
+
+	resources_gold_per_second = Label::create("", "Arial", 20);
+	this->addChild(resources_gold_per_second, 400);
+	resources_gold_per_second->setPosition(Vec2(1500, 880));
+
+	resources_power_avaliable = Label::create("", "Arial", 20);
+	this->addChild(resources_power_avaliable, 400);
+	resources_power_avaliable->setPosition(Vec2(1400, 860));
+
+	resources_power_sum = Label::create("", "Arial", 20);
+	this->addChild(resources_power_sum, 400);
+	resources_power_sum->setPosition(Vec2(1500, 860));
 
 	//传输串码  p    a      t   xxxxyyy  
 	//玩家 动作   类型
@@ -155,7 +175,7 @@ bool GameScene::init()
 				if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 200))) {
 					for (Building* factory : BuildingList[MyNumber]) {
 
-						if (factory->Type() == 1 && !factory->Destroyed()) {
+						if (factory->Type() == 4 && !factory->Destroyed() && Gold[MyNumber] >= 500) {
 
 							//sioClient->send(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
 							createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
@@ -378,8 +398,25 @@ bool GameScene::init()
 			PlayMap->stopAllActions();								//移到屏幕中央时停止移动
 		}
 		if (building) {											//建筑状态会同时响应屏幕移动和虚建筑跟随鼠标移动
-
-			auto factory = Sprite::create("bd.png");
+			string build_type;
+			switch (building) {
+			case 1:
+				build_type = "bd.png";
+				break;
+			case 2:
+				build_type = "dianchang.png";
+				break;
+			case 3:
+				build_type = "kuangchang.png";
+				break;
+			case 4:
+				build_type = "bingying.png";
+				break;
+			case 5:
+				build_type = "chechang.png";
+				break;
+			}
+			auto factory = Sprite::create(build_type);
 			if (!virtual_factory.empty()) {						//一旦鼠标移动，移除虚建筑容器中唯一的元素，推入新的虚建筑元素到当前鼠标位置
 				for (auto fac : virtual_factory) {
 					fac->removeFromParent();
@@ -440,6 +477,7 @@ bool GameScene::init()
 	//return
 
 	this->schedule(schedule_selector(GameScene::updateTime), 1.0f, kRepeatForever, 0);
+	this->schedule(schedule_selector(GameScene::updateResources), 1.0f, kRepeatForever, 0);
 	return true;
 }
 
@@ -450,7 +488,7 @@ void GameScene::sendCallback(Ref *pSender)
 	std::string playerName = UserDefault::getInstance()->getStringForKey(USER_NAME, "User");
 	auto editbox = reinterpret_cast<EditBox*>(this->getChildByTag(111));
 	std::string content = editbox->getText();
-	message = message + " p" + playerName + ":" + content;
+	message = message + "c" + playerName + ":" + content;
 	editbox->setText(" ");
 	sioClient->send(message);
 	return;
@@ -474,11 +512,7 @@ void GameScene::onMessage(cocos2d::network::SIOClient *client, const std::string
 	//const char *cData = data.c_str();
 	/*从服务端接受指令并根据指令执行相应的函数*/
 	//log("get");
-	if (data[3] == 'p')
-	{
-		chatResponse(data);
-	}
-	else if (data[3] == 'c') {
+	if (data[3] == 'c') {
 		//log("1");
 		//chatResponse(data);
 		createRespone(data);
@@ -516,26 +550,13 @@ void GameScene::chatResponse(const std::string& data)
 	/*根据data[0]决定添加富文本的颜色暂时懒得实现*/
 	auto content = reinterpret_cast<RichText*>(this->getChildByTag(112));
 	//提取聊天内容
-	int mSide = data[1];
-	int mySide = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
 	std::string message = data;
-	message.erase(0, 4);
-	message.pop_back();
+	message.erase(0, 3);
 	log("%s", message.c_str());
-	if (mSide % 2 == mySide % 2)
-	{
-		auto re1 = RichElementNewLine::create(0, Color3B::WHITE, 255);
-		auto re2 = RichElementText::create(1, Color3B::WHITE, 255, message, "Arial", 20);
-		content->pushBackElement(re1);
-		content->pushBackElement(re2);
-	}
-	else
-	{
-		auto re1 = RichElementNewLine::create(0, Color3B::RED, 255);
-		auto re2 = RichElementText::create(1, Color3B::RED, 255, message, "Arial", 20);
-		content->pushBackElement(re1);
-		content->pushBackElement(re2);
-	}
+	auto re1 = RichElementNewLine::create(0, Color3B::WHITE, 255);
+	auto re2 = RichElementText::create(1, Color3B::WHITE, 255, message, "Arial", 20);
+	content->pushBackElement(re1);
+	content->pushBackElement(re2);
 	return;
 }
 
@@ -805,11 +826,12 @@ void GameScene::createRespone(const std::string &data) {
 	soldier->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
 	PlayMap->addChild(soldier, 100);
 	SoldierList[Player].pushBack(soldier);
+	Gold[Player] -= 500;
 	//log("%f %f", soldier->getPosition().x, soldier->getPosition().y);
 	//log("%s", data);
-	log("Player: %d", Player);
-	log("MyNumber: %d", Player);
-	log("size:  %d", SoldierList[Player].size());
+	//log("Player: %d", Player);
+	//log("MyNumber: %d", Player);
+	//log("size:  %d", SoldierList[Player].size());
 }
 
 void GameScene::moveRespone(const std::string &data) {
@@ -934,4 +956,24 @@ void GameScene::updateTime(float di)
 	tem = tem - min * 60;
 	second = tem;
 	gametime->setString(to_string(hour) + "h" + to_string(min) + "m" + to_string(second) + "s");
+}
+
+string GoldString(int player) {
+	string str;
+	char gd[10];
+	char gp[4];
+	_itoa_s(Gold[player], gd, 10);
+	_itoa_s(OreRefinery[player] * 50, gp, 10);
+	str += gd;
+	str += "  ";
+	str += gp;
+	return str;
+
+}
+
+void GameScene::updateResources(float di) {
+	resources_gold->setString(to_string(Gold[MyNumber]));
+	resources_gold_per_second->setString(to_string(OreRefinery[MyNumber] * 50) + " / second");
+	resources_power_avaliable->setString(to_string(Power[MyNumber]));
+	resources_power_sum->setString("/ " + to_string(PowerPlant[MyNumber] * 100));
 }
