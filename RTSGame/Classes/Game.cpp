@@ -1,7 +1,11 @@
 #include "Game.h"
 #include "HelloWorldScene.h"
-
 #include <iostream>
+
+#include"GameElement/Infantry.h"
+
+
+vector<Infantry> infantry;
 
 Scene* Game::createScene()
 {
@@ -14,12 +18,6 @@ Scene* Game::createScene()
 	return scene;
 }
 
-void Game::update(float dt)
-{
-
-	
-}
-
 bool Game::init()
 {
 	if (!Scene::init())
@@ -27,115 +25,95 @@ bool Game::init()
 		return false;
 	}
 	visibleSize = Director::getInstance()->getVisibleSize();
+	
+	//置入地图
+	map = TMXTiledMap::create("map/map.tmx");
+
+	_grass = map->getLayer("grass");
+	_grasswet = map->getLayer("grasswet");
+	_ground = map->getLayer("ground");
+	_sea = map->getLayer("sea");
+
+	_meta = map->getLayer("meta");
+
+	_meta->setVisible(false);
+
+	
+	this->addChild(map,-1);
+
+
+	//触发事件
+	auto dispatcher = Director::getInstance()->getEventDispatcher();
+
+
+
+
+
+
+
+
+
+
+
 
 
 	/*
-	mapChoice();
-	mapInit(mapType);
-	*/
-	mapInit(1);
-
 	//GameScene上的鼠标监听、事件分配
 	auto mouseListener = EventListenerMouse::create();
 	mouseListener->onMouseDown = CC_CALLBACK_1(Game::mouseDown, this);
 	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
+	*/
 
-
+	this->scheduleUpdate();
 
 	return true;
+}
+
+void Game::update(float dt)
+{
+
+
+}
+
+Point Game::convertToTiledMap(Point position)
+{
+
+}
+
+/**************
+//Player events
+//Constructions:
+***************/
+void Game::mouseDown(cocos2d::Event* event)
+{
+	EventMouse *e = (EventMouse*)event;
+
+}
+
+bool Game::readBlock(Point position)
+{
+	position = convertToWorldSpace(position);
+	Point tmPoint = convertToTiledMap(position);
+	int GID = _meta->getTileGIDAt(tmPoint);
+	if (tmPoint!=NULL)
+	{
+		auto properties = map->getPropertiesForGID(GID).asValueMap;
+		if (!properties.empty())
+		{
+			auto block = properties["Block"].asString();
+			if (block == "True")return 1;
+			else return 0;
+		}
+	}
+}
+
+void Game::setBlock(Point position)
+{
+
 }
 
 
 void Game::menuReturn(cocos2d::Ref* pSender)
 {
-
-}
-
-//map init
-/*
-void Game::mapChoice()
-{
-	auto Map1 = MenuItemImage::create("Game/mapChoice/button1.png", "Game/mapChoice/button1.png", CC_CALLBACK_1(Game::setMapType1, this));
-	auto Map2 = MenuItemImage::create("Game/mapChoice/button2.png", "Game/mapChoice/button2.png", CC_CALLBACK_1(Game::setMapType2, this));
-	Map1->setPositionX(-50);
-	Map2->setPositionX(50);
-
-	auto menu = Menu::create(Map1, Map2, nullptr);
-
-	menu->setPosition(visibleSize.x/2,visibleSize.y/2);
-	this->addChild(menu);
-}
-
-void Game::setMapType1(cocos2d::Ref* pSender)
-{
-	mapType = 1;
-}
-
-void Game::setMapType2(cocos2d::Ref* pSender)
-{
-	mapType = 2;
-}
-*/
-void Game::mapInit(int type)
-{
-	//Map setting init
-	if (type == 1)
-		map = TMXTiledMap::create("test.tmx");
-	else
-		map = TMXTiledMap::create("maptest.tmx");
-
-	map->setPosition(visibleSize.x / 2, visibleSize.y / 2);
-	this->addChild(map);
-
-	_background = map->getLayer("background");
-	_object = map->getLayer("object");
-	_meta = map->getLayer("meta");
-
-	_meta->setVisible(false);
-
-
-	//Object init//
-
-	//Object
-	auto object = GameElement::create("character.png", Vec2(200, 200));
-
-	character.push_back(object);
-	this->addChild(object->picture);
-
-	/*/////////////////////////////////////////////////////////
-	//Player for test
-	player = Sprite::create("character.png");
-	this->addChild(player);
-
-	auto objectgroup = map->getObjectGroup("object");
-	auto spawnpoint = objectgroup->getObject("object");
-	Point playerPoint;
 	
-	playerPoint.x = spawnpoint.at("x").asFloat();
-	playerPoint.y = spawnpoint.at("y").asFloat();
-
-	player->setAnchorPoint(Point(0, 0));
-	player->setPosition(playerPoint);
-	*//////////////////////////////////////////////////////////
-
-	dispatcher = Director::getInstance()->getEventDispatcher();
-
-
-	this->scheduleUpdate();
 }
-
-/**************
-//player events
-//moving constructions:
-//@up-W @donw-S @left-A @right-D
-***************/
-void Game::mouseDown(cocos2d::Event* event)
-{
-	EventMouse *e = (EventMouse*)event;
-	character[0]->positionGoal = e->getLocation();
-
-	//人物移动
-	character[0]->move();
-}
-
-

@@ -36,6 +36,12 @@
     <ClCompile Include="..\Classes\GameElement\GameElement.cpp">
       <Filter>src\GameElement</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Character.cpp">
+      <Filter>src\GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Infantry.cpp">
+      <Filter>src\GameElement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -57,6 +63,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\GameElement\GameElement.h">
+      <Filter>src\GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Character.h">
+      <Filter>src\GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Infantry.h">
       <Filter>src\GameElement</Filter>
     </ClInclude>
   </ItemGroup>

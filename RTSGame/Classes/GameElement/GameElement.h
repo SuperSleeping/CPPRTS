@@ -6,36 +6,17 @@
 USING_NS_CC;
 
 
-
-class GameElement : public Node
+class GameElement : public Sprite
 {
 public:
-	//Name&Number
-	int number;
-
-	//Constructor
+	//创建GameElement的函数
 	static GameElement* create(const char* filename, Vec2 position);
 
-	//Sprite
-	Sprite* picture;
-
-	//State
+	//属性
 	bool selected;
-
-	/********************
-	    INSTRUCTIONS
-	********************/
-	//Moving about:
-	int velocity;
-	void setVelocity(int _velocity);
-	
+	int team;
 	Vec2 positionCurrent;
-	Vec2 positionGoal;
-	void setPositionGoal(float x,float y);
-	void move();
 
-private:
-	float distance(Vec2 a, Vec2 b);
 };
 
 #endif
