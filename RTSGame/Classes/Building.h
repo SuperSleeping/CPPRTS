@@ -93,13 +93,19 @@ void Building::updateBegin(float di) {
 	this->setOpacity(50);
 
 	switch (this->type){
+	case 2:
+		Gold[this->side] -= 1000;
+		break;
 	case 3:
+		Gold[this->side] -= 2000;
 		Power[this->side] -= 50;
 		break;
 	case 4:
+		Gold[this->side] -= 1000;
 		Power[this->side] -= 50;
 		break;
 	case 5:
+		Gold[this->side] -= 2000;
 		Power[this->side] -= 100;
 		break;
 	}

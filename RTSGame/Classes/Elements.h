@@ -8,4 +8,4 @@ static int OreRefinery[4] = { 0,0,0,0 };			//¿ó³§
 
 static int CreateTag = 0;
 static int Power[4] = { 0,0,0,0 };
-static int Gold[4] = { 2000,2000,2000,2000 };
+static int Gold[4] = { 5000,5000,5000,5000 };

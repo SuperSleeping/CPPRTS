@@ -19,7 +19,7 @@ string SpawnDatastring(int Player, char type, int n, int m, int t);
 static Vector<Soldier*> SoldierList[4];
 static Vector<Building*> BuildingList[4];
 //static int SoldierTag = 0;
-static int MyNumber = 0;
+static int MyNumber;
 static TMXTiledMap *PlayMap;
 time_t initTime;
 time_t Time;
@@ -28,6 +28,12 @@ Label* resources_gold;
 Label* resources_gold_per_second;
 Label* resources_power_avaliable;
 Label* resources_power_sum;
+Sprite* menu;
+Sprite* jidi_g;
+Sprite* dianchang_g;
+Sprite* kuangchang_g;
+Sprite* bingying_g;
+Sprite* chechang_g;
 
 Scene* GameScene::createScene()
 {
@@ -55,7 +61,7 @@ bool GameScene::init()
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	auto timebg = Sprite::create("timebg.png");
-	timebg->setPosition(Vec2(origin.x+visibleSize.width / 6, origin.y+visibleSize.height* 17 / 18));
+	timebg->setPosition(Vec2(origin.x + visibleSize.width / 6, origin.y + visibleSize.height * 17 / 18));
 	this->addChild(timebg, 400);
 	gametime = Label::create("", "Arial", 20);
 	gametime->setPosition(Vec2(origin.x + visibleSize.width / 6, origin.y + visibleSize.height * 17 / 18));
@@ -63,7 +69,7 @@ bool GameScene::init()
 	time(&initTime);
 
 	resources_gold = Label::create("", "Arial", 20);
-	this->addChild(resources_gold,400);
+	this->addChild(resources_gold, 400);
 	resources_gold->setPosition(Vec2(1400, 880));
 
 
@@ -81,37 +87,68 @@ bool GameScene::init()
 
 	//传输串码  p    a      t   xxxxyyy  
 	//玩家 动作   类型
-	MyNumber = 0;			//获取玩家编号0/1/2/3  
+				//获取玩家编号0/1/2/3  
 							//0和2 1和3一队
 
 
-
-	auto menu = Sprite::create("menucube.png");
+														//菜单栏
+	menu = Sprite::create("menucube.png");
 	this->addChild(menu, 100);
 	menu->setAnchorPoint(Vec2(0, 0));
 	menu->setPosition(Vec2(1100, 0));
 
-
+	auto jidi = Sprite::create("jidi2.png");
+	menu->addChild(jidi, 1);
+	jidi->setAnchorPoint(Vec2(0, 0));
+	jidi->setPosition(0, 100);
 
 	auto dianchang = Sprite::create("dianchang2.png");
-	menu->addChild(dianchang);
+	menu->addChild(dianchang, 1);
 	dianchang->setAnchorPoint(Vec2(0, 0));
 	dianchang->setPosition(100, 100);
 
 	auto kuangchang = Sprite::create("kuangchang2.png");
-	menu->addChild(kuangchang);
+	menu->addChild(kuangchang, 1);
 	kuangchang->setAnchorPoint(Vec2(0, 0));
 	kuangchang->setPosition(200, 100);
 
 	auto bingying = Sprite::create("bingying2.png");
-	menu->addChild(bingying);
+	menu->addChild(bingying, 1);
 	bingying->setAnchorPoint(Vec2(0, 0));
 	bingying->setPosition(300, 100);
 
 	auto chechang = Sprite::create("chechang2.png");
-	menu->addChild(chechang);
+	menu->addChild(chechang, 1);
 	chechang->setAnchorPoint(Vec2(0, 0));
 	chechang->setPosition(400, 100);
+
+
+	//灰色按钮
+	jidi_g = Sprite::create("jidi3.png");
+	menu->addChild(jidi_g, -2);
+	jidi_g->setAnchorPoint(Vec2(0, 0));
+	jidi_g->setPosition(0, 100);
+
+	dianchang_g = Sprite::create("dianchang3.png");
+	menu->addChild(dianchang_g, -2);
+	dianchang_g->setAnchorPoint(Vec2(0, 0));
+	dianchang_g->setPosition(100, 100);
+
+	kuangchang_g = Sprite::create("kuangchang3.png");
+	menu->addChild(kuangchang_g, -2);
+	kuangchang_g->setAnchorPoint(Vec2(0, 0));
+	kuangchang_g->setPosition(200, 100);
+
+	bingying_g = Sprite::create("bingying3.png");
+	menu->addChild(bingying_g, -2);
+	bingying_g->setAnchorPoint(Vec2(0, 0));
+	bingying_g->setPosition(300, 100);
+
+	chechang_g = Sprite::create("chechang3.png");
+	menu->addChild(chechang_g, -2);
+	chechang_g->setAnchorPoint(Vec2(0, 0));
+	chechang_g->setPosition(400, 100);
+
 
 	static float xView = Director::getInstance()->getVisibleSize().width;
 	static float yView = Director::getInstance()->getVisibleSize().height;
@@ -130,8 +167,25 @@ bool GameScene::init()
 
 	static bool swallow = 0;
 
+	MyNumber = 0;
+	log("MyNumber: %d", MyNumber);
+
 	PlayMap = TMXTiledMap::create("newmap.tmx");
 	addChild(PlayMap);
+	switch (MyNumber) {
+	case 0:
+		break;
+	case 2:
+
+		PlayMap->setPosition(Vec2(0, -3100));
+		break;
+	case 1:
+		PlayMap->setPosition(Vec2(-2400, 0));
+		break;
+	case 3:
+		PlayMap->setPosition(Vec2(-2400, -3100));
+		break;
+	}
 	//map->setScale(1 / 0.78125, 1 / 0.78125);
 
 	//log("%f %f", map->getContentSize().width, map->getContentSize().height);
@@ -155,6 +209,7 @@ bool GameScene::init()
 	testmy->scheduleUpdate();
 	testmy->schedule(schedule_selector(Soldier::updateAttack), 1.0f, kRepeatForever, 0);
 	testmy->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
+
 
 	testenem->SetTarget(testmy);
 
@@ -188,7 +243,12 @@ bool GameScene::init()
 				}
 				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {				//点击范围包含在右下方上面那个框，标志进入建造状态
 					if (ContainRect(position, Vec2(1100, 200), Vec2(1200, 100))) {
-						building = 1;
+						if (!ConstructionYard) {												//基地
+							building = 1;
+						}
+						else {
+							//反馈：已有基地
+						}
 					}
 					else  if (ContainRect(position, Vec2(1200, 200), Vec2(1300, 100))) {		//电厂
 						if (ConstructionYard[MyNumber]) {
@@ -401,7 +461,7 @@ bool GameScene::init()
 			string build_type;
 			switch (building) {
 			case 1:
-				build_type = "bd.png";
+				build_type = "jidi.png";
 				break;
 			case 2:
 				build_type = "dianchang.png";
@@ -478,6 +538,7 @@ bool GameScene::init()
 
 	this->schedule(schedule_selector(GameScene::updateTime), 1.0f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateResources), 1.0f, kRepeatForever, 0);
+	this->schedule(schedule_selector(GameScene::updateGrayButton), 0.5f, kRepeatForever, 0);
 	return true;
 }
 
@@ -717,7 +778,7 @@ void GameScene::buildRespone(const std::string &data) {
 	switch (type) {
 		//Building* fac;
 	case 1: {
-		auto fac = Building::create("bd.png");
+		auto fac = Building::create("jidi.png");
 		fac->SetType(1);
 		fac->SetSide(Player);
 		BuildingList[Player].pushBack(fac);
@@ -976,4 +1037,13 @@ void GameScene::updateResources(float di) {
 	resources_gold_per_second->setString(to_string(OreRefinery[MyNumber] * 50) + " / second");
 	resources_power_avaliable->setString(to_string(Power[MyNumber]));
 	resources_power_sum->setString("/ " + to_string(PowerPlant[MyNumber] * 100));
+}
+
+void GameScene::updateGrayButton(float di) {
+	if (ConstructionYard[MyNumber]) {
+		jidi_g->setZOrder(2);
+	}
+	else {
+		jidi_g->setZOrder(-2);
+	}
 }

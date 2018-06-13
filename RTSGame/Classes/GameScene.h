@@ -25,6 +25,7 @@ public:
 	void updateErase(float di);
 	void updateTime(float di);
 	void updateResources(float di);
+	void updateGrayButton(float di);
 
 	void sendCallback(Ref *pSender);
 	
