@@ -27,7 +27,7 @@ public:
 	void updateResources(float di);
 	void updateGrayButton(float di);
 
-	void sendCallback(Ref *pSender);
+	void sendCallback(EventKeyboard::KeyCode keyCode, Event *event);
 	
 	void chatResponse(const std::string& data);
 	void numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data);
