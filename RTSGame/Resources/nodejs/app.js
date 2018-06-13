@@ -8,7 +8,7 @@ io.sockets.on('connection', function (socket) {
     console.log('someone connected');
     socket.emit('numberClientEvent', String(number));
     number = number + 1;
-    //console.log(number);
+    console.log(number);
     //注册客户端消息
     socket.on('message', function (data) {
         console.log(data);
