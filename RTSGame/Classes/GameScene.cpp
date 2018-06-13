@@ -244,7 +244,7 @@ bool GameScene::init()
 				}
 				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {				//点击范围包含在右下方上面那个框，标志进入建造状态
 					if (ContainRect(position, Vec2(1100, 200), Vec2(1200, 100))) {
-						if (!ConstructionYard) {												//基地
+						if (!ConstructionYard[MyNumber]) {												//基地
 							building = 1;
 						}
 						else {
@@ -252,7 +252,7 @@ bool GameScene::init()
 						}
 					}
 					else  if (ContainRect(position, Vec2(1200, 200), Vec2(1300, 100))) {		//电厂
-						if (ConstructionYard[MyNumber]) {
+						if (ConstructionYard[MyNumber] && Gold[MyNumber] >= 1000;) {
 							building = 2;
 						}
 						else {
@@ -260,7 +260,7 @@ bool GameScene::init()
 						}
 					}
 					else if (ContainRect(position, Vec2(1300, 200), Vec2(1400, 100))) {			//矿厂
-						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50) {
+						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50 && Gold[MyNumber]>=2000) {
 							building = 3;
 						}
 						else {
@@ -268,7 +268,7 @@ bool GameScene::init()
 						}
 					}
 					else if (ContainRect(position, Vec2(1400, 200), Vec2(1500, 100))) {			//兵营
-						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50) {
+						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50 && Gold[MyNumber]>=1000) {
 							building = 4;
 						}
 						else {
@@ -276,7 +276,7 @@ bool GameScene::init()
 						}
 					}
 					else if (ContainRect(position, Vec2(1500, 200), Vec2(1600, 100))) {
-						if (PowerPlant[MyNumber] && OreRefinery[MyNumber] && Power[MyNumber] >= 80) {
+						if (PowerPlant[MyNumber] && OreRefinery[MyNumber] && Power[MyNumber] >= 100 &&Gold[MyNumber]>=2000) {
 							building = 5;
 						}
 						else {
