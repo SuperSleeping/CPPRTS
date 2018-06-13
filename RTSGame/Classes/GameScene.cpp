@@ -167,7 +167,8 @@ bool GameScene::init()
 
 	static bool swallow = 0;
 
-	MyNumber = 0;
+	//MyNumber = 0;
+	MyNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
 	log("MyNumber: %d", MyNumber);
 
 	PlayMap = TMXTiledMap::create("newmap.tmx");
@@ -191,17 +192,17 @@ bool GameScene::init()
 	//log("%f %f", map->getContentSize().width, map->getContentSize().height);
 
 
-	auto testenem = Soldier::create("enemy.png");
+	/*auto testenem = Soldier::create("enemy.png");
 	testenem->SetSide(2);
 	testenem->setPosition(Vec2(400, 400));
 	SoldierList[1].pushBack(testenem);
 	PlayMap->addChild(testenem, 100);
 	testenem->scheduleOnce(schedule_selector(Soldier::updateBegin), 0);
 	testenem->scheduleUpdate();
-	testenem->schedule(schedule_selector(Soldier::updateAttack), 1.0f, kRepeatForever, 0);
+	testenem->schedule(schedule_selector(Soldier::updateAttack), 1.0f, kRepeatForever, 0);*/
 
 
-	auto testmy = Soldier::create("seedz.png");
+	/*auto testmy = Soldier::create("seedz.png");
 	testmy->SetSide(1);
 	testmy->setPosition(Vec2(300, 400));
 	SoldierList[MyNumber].pushBack(testmy);
@@ -213,13 +214,13 @@ bool GameScene::init()
 
 	testenem->SetTarget(testmy);
 
-	buildRespone(SpawnDatastring(1, 'b', 300, 300, 1));
+	buildRespone(SpawnDatastring(1, 'b', 300, 300, 1));*/
 
 	static auto MouseReply = EventListenerMouse::create();
 	MouseReply->onMouseUp = [=](Event *event) {					//监听鼠标弹起事件
-		string str = "11";
-		sioClient->send(str);
-		log("%d", SoldierList[0].size());
+		//string str = "11";
+		//sioClient->send(str);
+		//log("%d", SoldierList[0].size());
 		EventMouse* e = (EventMouse*)event;
 		Vec2 position = e->getLocationInView();					//鼠标事件的屏幕坐标系位置
 		Vec2 target = position - PlayMap->getPosition();			//鼠标事件的地图坐标系位置
@@ -232,8 +233,8 @@ bool GameScene::init()
 
 						if (factory->Type() == 4 && !factory->Destroyed() && Gold[MyNumber] >= 500) {
 
-							//sioClient->send(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
-							createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
+							sioClient->send(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
+							//createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
 							for (auto sp_obj : SoldierList[MyNumber]) {										//遍历soldierlist容器元素，全部设成未选中状态
 								sp_obj->Select(0);
 								sp_obj->SelectedReply();
@@ -297,15 +298,9 @@ bool GameScene::init()
 					}
 
 
-					/*auto fac = Building::create("bd.png");								//在该位置添加实际建筑并改变标志building，退出建筑状态
-					BuildingList[MyNumber].pushBack(fac);
-					fac->setAnchorPoint(Vec2(0.5, 0.5));
-					PlayMap->addChild(fac, 3);
-					fac->setPosition(target);
-					fac->SetType(1);*/
 
-					buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y, building));
-					//sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y,building));
+					//buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y, building));
+					sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y,building));
 					//输出字符串“ %MyNumber b  %target.x  %target.y”
 					building = 0;
 				}
@@ -332,8 +327,8 @@ bool GameScene::init()
 											if (myso->Selected()) {
 												//myso->SetTarget(enemy);
 												//输出“%MyNumber a %myso->getTag() %enemy->getTag()” 
-												attackRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
-												//sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												//attackRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
 											}
 										}
 
@@ -357,8 +352,8 @@ bool GameScene::init()
 											if (myso->Selected()) {
 												//myso->SetTarget(enemy);
 												//输出“%MyNumber a %myso->getTag() %enemy->getTag()” 
-												destroyRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
-												//sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												//destroyRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
 											}
 										}
 
@@ -378,14 +373,14 @@ bool GameScene::init()
 						for (auto sp_obj : SoldierList[MyNumber]) {
 							if (sp_obj->Selected()) {
 
-								//sioClient->send(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
-								//sioClient->send(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
-								//sioClient->send(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
+								sioClient->send(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
+								sioClient->send(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
+								sioClient->send(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
 
-								attackRespone(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
-								destroyRespone(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
+								//attackRespone(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
+								//destroyRespone(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
 
-								moveRespone(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
+								//moveRespone(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
 
 							}
 						}
@@ -648,7 +643,7 @@ void GameScene::chatResponse(const std::string& data)
 }*/
 
 void GameScene::attackRespone(const std::string &data) {
-	int index = 0;
+	int index = 1;
 	int Player = data[index] - 48;
 	char atk[5];
 	char tgt[5];
@@ -697,7 +692,7 @@ void GameScene::attackRespone(const std::string &data) {
 }
 
 void GameScene::destroyRespone(const std::string &data) {
-	int index = 0;
+	int index = 1;
 	int Player = data[index] - 48;
 	char atk[5];
 	char tgt[5];
@@ -747,7 +742,7 @@ void GameScene::destroyRespone(const std::string &data) {
 
 void GameScene::buildRespone(const std::string &data) {
 	//log("create");
-	int index = 0;
+	int index = 1;
 	int Player = data[index] - 48;
 	char x_c[4];
 	char y_c[4];
@@ -853,7 +848,7 @@ void GameScene::buildRespone(const std::string &data) {
 }
 
 void GameScene::createRespone(const std::string &data) {
-	int index = 0;
+	int index = 1;
 	int Player = data[index] - 48;
 	char x_c[4];
 	char y_c[4];
@@ -896,7 +891,7 @@ void GameScene::createRespone(const std::string &data) {
 }
 
 void GameScene::moveRespone(const std::string &data) {
-	int index = 0;
+	int index = 1;
 	int Player = data[index] - 48;
 	char tag_c[5];
 	char x_c[4];
