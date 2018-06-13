@@ -168,7 +168,7 @@ bool GameScene::init()
 	static bool swallow = 0;
 
 	//MyNumber = 0;
-	MyNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
+	MyNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER) ;
 	log("MyNumber: %d", MyNumber);
 
 	PlayMap = TMXTiledMap::create("newmap.tmx");
@@ -252,7 +252,7 @@ bool GameScene::init()
 						}
 					}
 					else  if (ContainRect(position, Vec2(1200, 200), Vec2(1300, 100))) {		//µç³§
-						if (ConstructionYard[MyNumber] && Gold[MyNumber] >= 1000;) {
+						if (ConstructionYard[MyNumber] && Gold[MyNumber] >= 1000) {
 							building = 2;
 						}
 						else {
