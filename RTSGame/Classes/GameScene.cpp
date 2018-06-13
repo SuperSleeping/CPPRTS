@@ -513,6 +513,8 @@ bool GameScene::init()
 	chatbox->setFontColor(Color3B::BLACK);
 	chatbox->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
 	chatbox->setTag(111);
+	chatbox->setVisible(false);
+	chatbox->setInputMode(EditBox::InputMode::SINGLE_LINE);
 	this->addChild(chatbox);
 
 	auto sendMessage = EventListenerKeyboard::create();
@@ -564,9 +566,12 @@ void GameScene::sendCallback(EventKeyboard::KeyCode keyCode,Event *event)
 
 void GameScene::numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data)
 {
+	std::string pNumber = data;
 	log("Client Called");
 	log("%s", data.c_str());
-	int number = atoi(data.c_str());
+	pNumber.erase(0, 1);
+	pNumber.pop_back();
+	int number = atoi(pNumber.c_str());
 	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number);
 	return;
 }
