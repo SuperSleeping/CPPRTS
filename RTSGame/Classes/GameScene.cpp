@@ -520,10 +520,12 @@ bool GameScene::init()
 	chatbox->setTag(111);
 	this->addChild(chatbox);
 
-	auto sendItem = MenuItemFont::create("send", CC_CALLBACK_1(GameScene::sendCallback, this));
+	auto sendMessage = EventListenerKeyboard::create();
+	sendMessage->onKeyPressed = CC_CALLBACK_2(GameScene::sendCallback,this);
+	/*auto sendItem = MenuItemFont::create("send", CC_CALLBACK_1(GameScene::sendCallback, this));
 	sendItem->setPosition(Vec2(origin.x, origin.y + visibleSize.height / 3));
 	Menu *mn = Menu::create(sendItem, NULL);
-	this->addChild(mn);
+	this->addChild(mn);*/
 
 	//sound
 	/*if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
@@ -542,16 +544,26 @@ bool GameScene::init()
 	return true;
 }
 
-void GameScene::sendCallback(Ref *pSender)
+void GameScene::sendCallback(EventKeyboard::KeyCode keyCode,Event *event)
 {
-	int playerNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
-	std::string message = std::to_string(playerNumber);
-	std::string playerName = UserDefault::getInstance()->getStringForKey(USER_NAME, "User");
 	auto editbox = reinterpret_cast<EditBox*>(this->getChildByTag(111));
-	std::string content = editbox->getText();
-	message = message + "c" + playerName + ":" + content;
-	editbox->setText(" ");
-	sioClient->send(message);
+	if (!editbox->isVisible)
+	{
+		editbox->setVisible(true);
+	}
+	else
+	{
+		int playerNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
+		std::string message = std::to_string(playerNumber);
+		std::string playerName = UserDefault::getInstance()->getStringForKey(USER_NAME, "User");
+		std::string content = editbox->getText();
+		if (content.length())
+		{
+			message = message + " p" + playerName + ":" + content;
+			editbox->setText("");
+			sioClient->send(message);
+		}
+	}
 	return;
 }
 
@@ -573,7 +585,11 @@ void GameScene::onMessage(cocos2d::network::SIOClient *client, const std::string
 	//const char *cData = data.c_str();
 	/*从服务端接受指令并根据指令执行相应的函数*/
 	//log("get");
-	if (data[3] == 'c') {
+	if (data[3] == 'p')
+	{
+		chatResponse(data);
+	}
+	else if (data[3] == 'c') {
 		//log("1");
 		//chatResponse(data);
 		createRespone(data);
@@ -608,16 +624,35 @@ void GameScene::onError(cocos2d::network::SIOClient *client, const std::string& 
 
 void GameScene::chatResponse(const std::string& data)
 {
+	static int i = 0;
 	/*根据data[0]决定添加富文本的颜色暂时懒得实现*/
 	auto content = reinterpret_cast<RichText*>(this->getChildByTag(112));
+	int mSide = data[1];
+	int mySide = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
 	//提取聊天内容
 	std::string message = data;
-	message.erase(0, 3);
+	message.erase(0, 4);
+	message.pop_back();
 	log("%s", message.c_str());
-	auto re1 = RichElementNewLine::create(0, Color3B::WHITE, 255);
-	auto re2 = RichElementText::create(1, Color3B::WHITE, 255, message, "Arial", 20);
-	content->pushBackElement(re1);
-	content->pushBackElement(re2);
+	if (mSide % 2 == mySide % 2)
+	{
+		auto re1 = RichElementNewLine::create(-1, Color3B::WHITE, 255);
+		auto re2 = RichElementText::create(i, Color3B::WHITE, 255, message, "Arial", 20);
+		content->pushBackElement(re1);
+		content->pushBackElement(re2);
+	}
+	else
+	{
+		auto re1 = RichElementNewLine::create(-1, Color3B::RED, 255);
+		auto re2 = RichElementText::create(i, Color3B::RED, 255, message, "Arial", 20);
+		content->pushBackElement(re1);
+		content->pushBackElement(re2);
+	}
+	i++;
+	if (i > 4)
+	{
+		content->removeElement(i - 5);
+	}
 	return;
 }
 
