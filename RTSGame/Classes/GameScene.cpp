@@ -168,8 +168,8 @@ bool GameScene::init()
 	static bool swallow = 0;
 
 	//MyNumber = 0;
-	MyNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER) ;
-	log("MyNumber: %d", MyNumber);
+	//MyNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER) ;
+	
 
 	PlayMap = TMXTiledMap::create("newmap.tmx");
 	addChild(PlayMap);
@@ -352,8 +352,8 @@ bool GameScene::init()
 											if (myso->Selected()) {
 												//myso->SetTarget(enemy);
 												//Êä³ö¡°%MyNumber a %myso->getTag() %enemy->getTag()¡± 
-												//destroyRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
-												sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												//destroyRespone(SpawnDatastring(MyNumber, 'd', myso->getTag(), enemy->getTag()));
+												sioClient->send(SpawnDatastring(MyNumber, 'd', myso->getTag(), enemy->getTag()));
 											}
 										}
 
@@ -572,6 +572,22 @@ void GameScene::numberClientEvent(cocos2d::network::SIOClient *client, const std
 	pNumber.erase(0, 1);
 	pNumber.pop_back();
 	int number = atoi(pNumber.c_str());
+	MyNumber = number;
+	log("MyNumber: %d", MyNumber);
+	switch (MyNumber) {
+	case 0:
+		break;
+	case 2:
+
+		PlayMap->setPosition(Vec2(0, -3100));
+		break;
+	case 1:
+		PlayMap->setPosition(Vec2(-2400, 0));
+		break;
+	case 3:
+		PlayMap->setPosition(Vec2(-2400, -3100));
+		break;
+	}
 	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number);
 	return;
 }
