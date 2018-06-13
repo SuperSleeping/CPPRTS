@@ -3,7 +3,9 @@
 */
 
 #include "UDP.h"
+#include "cocos2d.h";
 
+USING_NS_CC;
 bool getHostIp(char *ip)
 {
 	//Æô¶¯Ì×½Ó×Ö
@@ -124,6 +126,7 @@ bool clientOperation(char *hostIp)
 	}
 	while (true)
 	{
+		log("1");
 		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
 			if (strcmp(command, "begin") == 0)
