@@ -193,10 +193,7 @@ bool GameScene::init()
 					sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y));
 					//输出字符串“ %MyNumber b  %target.x  %target.y”
 
-					auto b = Sprite::create("tem/br.png");
-					b->setPosition(target*3/40);
-					this->addChild(b, 400);
-					MiniBuildingList[0].push_back(b);
+					
 				}
 				else {
 					for (auto sp_obj : SoldierList[MyNumber]) {									//遍历soldierlist容器元素，将第一个被鼠标点中的soldier变为被选中状态
@@ -568,6 +565,11 @@ void GameScene::buildRespone(const std::string &data) {
 	log("Player: %d", Player);
 	log("MyNumber: %d", Player);
 	log("size:  %d", SoldierList[Player].size());
+
+	auto b = Sprite::create("tem/br.png");
+	b->setPosition(Vec2(x*3/40,y*3/40));
+	this->addChild(b, 400);
+	MiniBuildingList[0].push_back(b);
 }
 
 void GameScene::createRespone(const std::string &data) {
