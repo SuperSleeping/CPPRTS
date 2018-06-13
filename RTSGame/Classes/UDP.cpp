@@ -80,15 +80,13 @@ bool serverOperation(int players)
 		}
 		Sleep(100);
 	}
-	for (int i = 0; i < 5; i++)
-	{
-		sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
-	}
+	sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
 	return true;
 }
 
 bool clientOperation(char *hostIp)
 {
+	bool flag = 0;
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData))
 	{
@@ -133,8 +131,9 @@ bool clientOperation(char *hostIp)
 			{
 				break;
 			}
-			else if (strlen(command))
+			else if (strlen(command)&&flag==0)
 			{
+				flag = 1;
 				strcpy(hostIp, command);
 				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
 			}
