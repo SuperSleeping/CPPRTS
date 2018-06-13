@@ -17,5 +17,6 @@ GameElement* GameElement::create(const char* filename, Vec2 position)
 		return gameelement;
 	}
 	CC_SAFE_DELETE(gameelement);
+	return nullptr;
 }
 

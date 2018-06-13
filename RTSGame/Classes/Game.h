@@ -4,7 +4,6 @@
 
 #include "cocos2d.h"
 #include <vector>
-
 #include "GameElement/GameElement.h"
 
 USING_NS_CC;
@@ -19,8 +18,6 @@ public:
 	virtual bool init();
 
 	//地图
-	Vec2 visibleSize;
-
 	TMXTiledMap* map;
 	TMXLayer* _grass;
 	TMXLayer* _grasswet;
@@ -28,22 +25,56 @@ public:
 	TMXLayer* _sea;
 	TMXLayer* _meta;
 
-	//元地图
+	//元地图属性
 	//@empty 0 @full 1
 	bool readBlock(Point position);
-	//
-	void setBlock(Point position);
+	void addBlock(Point position);
+	void removeBlock(Point position);
 
 	//坐标转换
-	Point convertToTiledMap(Point position);
+	//@visibleSize  窗口可见大小
+	//@mapSize      地图大小
+	//@tmSize       地图瓦片大小
+	//@viewPoint    当前视野的左下角在世界坐标系上的位置
+	Point visibleSize;
+	Point mapSize;
+	Point tmSize;
+	Point viewPoint;
 
+	//@屏幕坐标转换成层坐标（世界坐标系）
+	Point convertToMapLayer(Point position)
+	{
+		position.x += viewPoint.x;
+		position.y += viewPoint.y;
+		return position;
+	}
+	//@世界坐标转换成瓦片地图坐标
+	Point convertToTiledMap(Point position)
+	{
+		Point tmPoint;
+		tmPoint.x = position.x / tmSize.x;
+		tmPoint.y = (mapSize.y - position.y) / tmSize.y;
+		return tmPoint;
+	}
 
 	//事件
-	virtual void mouseDown(cocos2d::Event* event);
+	//@游戏状态 - 0-off 1-on 2-building 
+	int buildState;
+
+	//@onMouseMove:
+	//@移动界面
+	void onMouseMove(cocos2d::Event* event);
+
+	//@菜单事件
+	//@创建建筑/人物
+	//@BUILDING - 描述建筑状态和建筑信息
+	int BUILDING;
+	void buttonBasement(Ref* pSender);
+	void buttonBasementx(Ref* pSender);
 
 
 
-	//a auto-inherited schedual update function
+	//Update周期函数
 	virtual void update(float dt);
 
 	//场景切换

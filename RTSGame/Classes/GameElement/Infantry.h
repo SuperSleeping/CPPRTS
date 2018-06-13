@@ -9,8 +9,6 @@ public:
 	//Create Character
 	static Infantry* create(const char* filename, Vec2 position);
 
-	//״̬
-	int blood;
 
 };
 

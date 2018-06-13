@@ -15,7 +15,11 @@ public:
 	// Ù–‘
 	bool selected;
 	int team;
+	int prize;
+	int blood;
+
 	Vec2 positionCurrent;
+
 
 };
 

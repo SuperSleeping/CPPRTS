@@ -14,6 +14,7 @@ Character* Character::create(const char* filename, Vec2 position)
 		return character;
 	}
 	CC_SAFE_DELETE(character);
+	return nullptr;
 }
 
 void Character::move()
@@ -28,15 +29,4 @@ void Character::move()
 	
 	auto moveToAction = MoveTo::create(time, positionGoal);
 	this->runAction(moveToAction);
-}
-
-float Character::distance(Vec2 a, Vec2 b)
-{
-	float _distance = sqrt(
-		abs(
-		(a.x - b.x)*(a.x - b.x) +
-			(a.y - b.y)*(a.y - b.y)
-		)
-	);
-	return _distance;
 }

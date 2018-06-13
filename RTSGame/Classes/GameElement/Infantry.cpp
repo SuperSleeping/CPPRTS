@@ -9,10 +9,11 @@ Infantry* Infantry::create(const char* filename, Vec2 position)
 		infantry->setPosition(position);
 		//属性设置
 		infantry->positionCurrent = position;
-
+		infantry->velocity = 10;
 		//自动释放
 		infantry->autorelease();
 		return infantry;
 	}
 	CC_SAFE_DELETE(infantry);
+	return nullptr;
 }
