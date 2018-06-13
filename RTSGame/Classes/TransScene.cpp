@@ -78,7 +78,7 @@ void TransScene::newCallback(Ref* pSender)
 	strcat(hostIp, ":3000");
 	log("%s", hostIp);
 	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
-	int number = 4;								//加入游戏的玩家人数。允许玩家设置为2或4
+	int number = 2;								//加入游戏的玩家人数。允许玩家设置为2或4
 	serverOperation(number);
 	auto sc = GameScene::createScene();
 	Director::getInstance()->replaceScene(sc);
