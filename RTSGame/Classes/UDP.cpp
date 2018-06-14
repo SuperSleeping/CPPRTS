@@ -77,7 +77,11 @@ bool serverOperation(int players)
 		}
 		Sleep(100);
 	}
-	sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
+	for (int i = 0; i < 3; i++)
+	{
+		Sleep(100);
+		sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
+	}
 	return true;
 }
 
