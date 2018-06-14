@@ -563,6 +563,7 @@ void GameScene::sendCallback(EventKeyboard::KeyCode keyCode,Event *event)
 				editbox->setText("");
 				sioClient->send(message);
 			}
+			editbox->setVisible(false);
 		}
 	}
 	return;

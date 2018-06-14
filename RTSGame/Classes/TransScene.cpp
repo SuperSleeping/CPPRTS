@@ -52,9 +52,9 @@ bool TransScene::init()
 	newitem->setScale(0.5);
 	joinitem->setScale(0.5);
 	returnitem->setScale(0.5);
-	Menu *mn = Menu::create(newitem,joinitem,returnitem,nullptr);
+	Menu *mn = Menu::create(newitem, joinitem, returnitem, nullptr);
 	mn->alignItemsVerticallyWithPadding(25);
-	mn->setPosition(Vec2(origin.x + visibleSize.width*2/3, origin.y + visibleSize.height / 2));
+	mn->setPosition(Vec2(origin.x + visibleSize.width * 2 / 3, origin.y + visibleSize.height / 2));
 	this->addChild(mn);
 
 	//music
