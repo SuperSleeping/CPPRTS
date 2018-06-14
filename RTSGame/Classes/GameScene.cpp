@@ -36,6 +36,7 @@ Sprite* dianchang_g;
 Sprite* kuangchang_g;
 Sprite* bingying_g;
 Sprite* chechang_g;
+Sprite* em;
 
 Scene* GameScene::createScene()
 {
@@ -178,6 +179,10 @@ bool GameScene::init()
 	auto minimap = Sprite::create("tem/minimap.png");
 	minimap->setPosition(Vec2(150, 150));
 	this->addChild(minimap, 300);
+	em = Sprite::create("tem/em.png");
+	em->setPosition(Vec2(em->getContentSize().width / 2, em->getContentSize().height / 2));
+	em->setAnchorPoint(Vec2(0.5, 0.5));
+	this->addChild(em, 300);
 	for (int i = 0; i < 100; ++i)
 	{
 		auto s = Sprite::create("tem/sb.png");
@@ -320,7 +325,13 @@ bool GameScene::init()
 
 				}
 			}
-
+			//实验功能
+			if (ContainRect(position, Vec2(0, 300), Vec2(300, 0))) {
+				if (!(PlayMap->numberOfRunningActions())) {				//这一句是为了地图视角移动更加流畅
+					auto map_move = MoveTo::create(1.0f, Vec2(-position.x * 40 / 3 + 800, -position.y * 40 / 3 + 450));
+					PlayMap->runAction(map_move);
+				}
+			}
 			else {
 				if (building) {															//建造状态
 					if (!virtual_factory.empty()) {										//虚建筑容器非空，即跟随鼠标移动的透明建筑存在
@@ -519,6 +530,8 @@ bool GameScene::init()
 			}
 
 		}
+		auto t = target - position;
+		em->setPosition(Vec2(t.x * 3 / 40 + em->getContentSize().width / 2, t.y * 3 / 40 + em->getContentSize().height / 2));
 	};
 	auto dispatcher = Director::getInstance()->getEventDispatcher();					//添加鼠标事件监听器
 	dispatcher->addEventListenerWithSceneGraphPriority(MouseReply, this);
