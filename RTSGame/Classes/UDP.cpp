@@ -77,10 +77,17 @@ bool serverOperation(int players)
 		}
 		Sleep(100);
 	}
-	for (int i = 0; i < 3; i++)
+	number = players - 1;
+	while (number)
 	{
-		Sleep(100);
-		sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
+		if (SOCKET_ERROR != recvfrom(sClient, buf, 256, 0, reinterpret_cast<struct sockaddr FAR*>(&clientAddr),reinterpret_cast<int FAR*>(&addrLen)))
+		{
+			if (strcmp(buf, "request") == 0)
+			{
+				sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
+				number--;
+			}
+		}
 	}
 	return true;
 }
@@ -132,6 +139,7 @@ bool clientOperation(char *hostIp)
 	}
 	while (true)
 	{
+		sendto(connectSocket, "request", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
 		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
 			if (strcmp(command, "begin") == 0)
