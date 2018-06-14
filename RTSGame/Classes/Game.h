@@ -55,15 +55,10 @@ public:
 	//@世界坐标转换成瓦片地图坐标
 	Point convertToTiledMap(Point position)
 	{
-		position.y = mapSize.y - position.y;
-
-		Point tmPoint;
-		int addx = 0, addy = 0;
-		if ((int)position.x % (int)tmSize.x > tmSize.x / 2) addx++;
-		if ((int)position.y % (int)tmSize.y > tmSize.y / 2) addy++;
-		tmPoint.x = (int)(position.x / tmSize.x) + addx;
-		tmPoint.y = (int)(position.y / tmSize.y) - addy;
-		return tmPoint;
+		int x, y;
+		x = position.x / tmSize.x;
+		y = (mapSize.y - position.y) / tmSize.y;
+		return Vec2(x, y);
 	}
 	//@瓦片转换成世界坐标
 	Point convertFromTMToWorld(Point position)
@@ -73,7 +68,21 @@ public:
 		position.y = mapSize.y - position.y;
 		return position;
 	}
+	//@世界坐标换成相邻的瓦片坐标
+	Point convertToneightborTiledMap(Point position)
+	{
+		Point tmPoint;
+		tmPoint = convertToTiledMap(position);
+		int addx = 0, addy = 0;
+		float _y = mapSize.y - position.y;
 
+		if (((int)position.x % (int)tmSize.x) >= tmSize.x / 2)addx++;
+		if (((int)_y % (int)tmSize.y) >= tmSize.y / 2)addy++;
+
+		tmPoint += Vec2(addx, addy);
+
+		return tmPoint;
+	}
 
 	//事件
 	//@基本信息

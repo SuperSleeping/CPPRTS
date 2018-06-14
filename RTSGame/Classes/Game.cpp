@@ -283,7 +283,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 
 		//在瓦片地图上定位 探测可能安放的位置
-		Point possiblePosition = convertFromTMToWorld(convertToTiledMap(target));
+		Point possiblePosition = convertFromTMToWorld(convertToneightborTiledMap(target));
 		BuildingPictureWithMouse->setPosition(possiblePosition);
 		BuildingPictureWithMouse->setOpacity(60);
 		map->addChild(BuildingPictureWithMouse, 100);
