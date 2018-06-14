@@ -167,7 +167,7 @@ bool GameScene::init()
 
 	static bool swallow = 0;
 
-	//MyNumber = 0;
+	MyNumber = 0;
 	//MyNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER) ;
 	
 
@@ -231,57 +231,57 @@ bool GameScene::init()
 				if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 200))) {
 					for (Building* factory : BuildingList[MyNumber]) {
 
-						if (factory->Type() == 4 && !factory->Destroyed() && Gold[MyNumber] >= 500) {
+						//if (factory->Type() == 4 && !factory->Destroyed() && Gold[MyNumber] >= 500) {
 
-							sioClient->send(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
-							//createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
+							//sioClient->send(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
+							createRespone(SpawnDatastring(MyNumber, 'c', (factory->getPosition() - Vec2(0, 75)).x, (factory->getPosition() - Vec2(0, 75)).y));
 							for (auto sp_obj : SoldierList[MyNumber]) {										//遍历soldierlist容器元素，全部设成未选中状态
 								sp_obj->Select(0);
 								sp_obj->SelectedReply();
 							}
-						}
+						//}
 					}
 				}
 				else if (ContainRect(position, Vec2(1100, 200), Vec2(1600, 100))) {				//点击范围包含在右下方上面那个框，标志进入建造状态
 					if (ContainRect(position, Vec2(1100, 200), Vec2(1200, 100))) {
-						if (!ConstructionYard[MyNumber]) {												//基地
+						//if (!ConstructionYard[MyNumber]) {												//基地
 							building = 1;
-						}
-						else {
+					//	}
+						//else {
 							//反馈：已有基地
-						}
+						//}
 					}
 					else  if (ContainRect(position, Vec2(1200, 200), Vec2(1300, 100))) {		//电厂
-						if (ConstructionYard[MyNumber] && Gold[MyNumber] >= 1000) {
+						//if (ConstructionYard[MyNumber] && Gold[MyNumber] >= 1000) {
 							building = 2;
-						}
-						else {
+						//}
+						//else {
 							//反馈：前置条件不足-需要基地
-						}
+						//}
 					}
 					else if (ContainRect(position, Vec2(1300, 200), Vec2(1400, 100))) {			//矿厂
-						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50 && Gold[MyNumber]>=2000) {
+						//if (PowerPlant[MyNumber] && Power[MyNumber] >= 50 && Gold[MyNumber]>=2000) {
 							building = 3;
-						}
-						else {
+						//}
+						//else {
 							//反馈：前置条件不足-缺少电厂或足够电力
-						}
+						//}
 					}
 					else if (ContainRect(position, Vec2(1400, 200), Vec2(1500, 100))) {			//兵营
-						if (PowerPlant[MyNumber] && Power[MyNumber] >= 50 && Gold[MyNumber]>=1000) {
+						//if (PowerPlant[MyNumber] && Power[MyNumber] >= 50 && Gold[MyNumber]>=1000) {
 							building = 4;
-						}
-						else {
+						//}
+						//else {
 							//反馈：前置条件不足-缺少电厂或足够电力
-						}
+						//}
 					}
 					else if (ContainRect(position, Vec2(1500, 200), Vec2(1600, 100))) {
-						if (PowerPlant[MyNumber] && OreRefinery[MyNumber] && Power[MyNumber] >= 100 &&Gold[MyNumber]>=2000) {
+						//if (PowerPlant[MyNumber] && OreRefinery[MyNumber] && Power[MyNumber] >= 100 &&Gold[MyNumber]>=2000) {
 							building = 5;
-						}
-						else {
+						//}
+						//else {
 							//反馈：前置条件不足-缺少电厂/矿厂或足够电力
-						}
+						//}
 					}
 
 
@@ -299,8 +299,8 @@ bool GameScene::init()
 
 
 
-					//buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y, building));
-					sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y,building));
+					buildRespone(SpawnDatastring(MyNumber, 'b', target.x, target.y, building));
+					//sioClient->send(SpawnDatastring(MyNumber, 'b', target.x, target.y,building));
 					//输出字符串“ %MyNumber b  %target.x  %target.y”
 					building = 0;
 				}
@@ -327,8 +327,8 @@ bool GameScene::init()
 											if (myso->Selected()) {
 												//myso->SetTarget(enemy);
 												//输出“%MyNumber a %myso->getTag() %enemy->getTag()” 
-												//attackRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
-												sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												attackRespone(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
+												//sioClient->send(SpawnDatastring(MyNumber, 'a', myso->getTag(), enemy->getTag()));
 											}
 										}
 
@@ -352,8 +352,8 @@ bool GameScene::init()
 											if (myso->Selected()) {
 												//myso->SetTarget(enemy);
 												//输出“%MyNumber a %myso->getTag() %enemy->getTag()” 
-												//destroyRespone(SpawnDatastring(MyNumber, 'd', myso->getTag(), enemy->getTag()));
-												sioClient->send(SpawnDatastring(MyNumber, 'd', myso->getTag(), enemy->getTag()));
+												destroyRespone(SpawnDatastring(MyNumber, 'd', myso->getTag(), enemy->getTag()));
+												//sioClient->send(SpawnDatastring(MyNumber, 'd', myso->getTag(), enemy->getTag()));
 											}
 										}
 
@@ -373,14 +373,14 @@ bool GameScene::init()
 						for (auto sp_obj : SoldierList[MyNumber]) {
 							if (sp_obj->Selected()) {
 
-								sioClient->send(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
-								sioClient->send(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
-								sioClient->send(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
+								//sioClient->send(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
+								//sioClient->send(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
+								//sioClient->send(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
 
-								//attackRespone(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
-								//destroyRespone(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
+								attackRespone(SpawnDatastring(MyNumber, 'a', sp_obj->getTag(), 0));
+								destroyRespone(SpawnDatastring(MyNumber, 'd', sp_obj->getTag(), 0));
 
-								//moveRespone(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
+								moveRespone(SpawnDatastring(MyNumber, 'm', sp_obj->getTag(), target.x, target.y));
 
 							}
 						}
@@ -704,7 +704,7 @@ void GameScene::chatResponse(const std::string& data)
 }*/
 
 void GameScene::attackRespone(const std::string &data) {
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char atk[5];
 	char tgt[5];
@@ -753,7 +753,7 @@ void GameScene::attackRespone(const std::string &data) {
 }
 
 void GameScene::destroyRespone(const std::string &data) {
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char atk[5];
 	char tgt[5];
@@ -803,7 +803,7 @@ void GameScene::destroyRespone(const std::string &data) {
 
 void GameScene::buildRespone(const std::string &data) {
 	//log("create");
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char x_c[4];
 	char y_c[4];
@@ -909,7 +909,7 @@ void GameScene::buildRespone(const std::string &data) {
 }
 
 void GameScene::createRespone(const std::string &data) {
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char x_c[4];
 	char y_c[4];
@@ -952,7 +952,7 @@ void GameScene::createRespone(const std::string &data) {
 }
 
 void GameScene::moveRespone(const std::string &data) {
-	int index = 1;
+	int index = 0;
 	int Player = data[index] - 48;
 	char tag_c[5];
 	char x_c[4];
