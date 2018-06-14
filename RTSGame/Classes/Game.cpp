@@ -78,11 +78,11 @@ bool Game::init()
 	minefieldx_button = MenuItemImage::create("Game/button/minefield_button2.png", "Game/button/minefield_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 	warfactory_button = MenuItemImage::create("Game/button/warfactory_button1.png", "Game/button/warfactory_button3.png", CC_CALLBACK_1(Game::buttonWarfactory, this));
 	warfactoryx_button = MenuItemImage::create("Game/button/warfactory_button2.png", "Game/button/warfactory_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	infantry_button = MenuItemImage::create("Game/button/infantry_button1.png", "Game/button/infantry_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+	infantry_button = MenuItemImage::create("Game/button/infantry_button1.png", "Game/button/infantry_button3.png", CC_CALLBACK_1(Game::buttonInfantry, this));
 	infantryx_button = MenuItemImage::create("Game/button/infantry_button2.png", "Game/button/infantry_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	dog_button = MenuItemImage::create("Game/button/dog_button1.png", "Game/button/dog_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+	dog_button = MenuItemImage::create("Game/button/dog_button1.png", "Game/button/dog_button3.png", CC_CALLBACK_1(Game::buttonDog, this));
 	dogx_button = MenuItemImage::create("Game/button/dog_button2.png", "Game/button/dog_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	tank_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+	tank_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonTank, this));
 	tankx_button = MenuItemImage::create("Game/button/tank_button2.png", "Game/button/tank_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 
 	//锚点坐标设置
@@ -371,6 +371,21 @@ void Game::buttonWarfactory(Ref* pSender)
 	buildState = Building::BuildingType::WARFACTORY;
 }
 
+void Game::buttonInfantry(Ref* pSender)
+{
+	buildState = Character::CharacterType::INFANTRY;
+}
+
+void Game::buttonDog(Ref* pSender)
+{
+	buildState = Character::CharacterType::DOG;
+}
+
+void Game::buttonTank(Ref* pSender)
+{
+	buildState = Character::CharacterType::TANK;
+}
+
 void Game::buttonx(Ref* pSender)
 {
 	log("Not enough resources or a wrong routine");
@@ -379,10 +394,10 @@ void Game::buttonx(Ref* pSender)
 /***************/
 //瓦片地图API
 /***************/
-bool Game::readBlock(Point position)
+bool Game::readBlock(Point tmPoint)
 {
-	position = convertToMapLayer(position);
-	Point tmPoint = convertToTiledMap(position);
+//	position = convertToMapLayer(position);
+//	Point tmPoint = convertToTiledMap(position);
 	int GID = _meta->getTileGIDAt(tmPoint);
 	if (tmPoint!=NULL)
 	{
@@ -396,10 +411,10 @@ bool Game::readBlock(Point position)
 	return 0;
 }
 
-void Game::addBlock(Point position)
+void Game::addBlock(Point tmPoint)
 {
-	position = convertToMapLayer(position);
-	Point tmPoint = convertToTiledMap(position);
+//	position = convertToMapLayer(position);
+//	Point tmPoint = convertToTiledMap(position);
 	int GID = _meta->getTileGIDAt(tmPoint);
 	if (tmPoint != NULL)
 	{

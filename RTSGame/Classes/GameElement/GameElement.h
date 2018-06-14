@@ -19,7 +19,7 @@ public:
 	int blood;
 
 	Vec2 positionCurrent;
-
+	Vec2 positionCurrentTM;
 
 };
 

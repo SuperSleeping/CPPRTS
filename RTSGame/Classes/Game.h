@@ -132,6 +132,9 @@ public:
 	void buttonPowerplant(Ref* pSender);
 	void buttonMinefield(Ref* pSender);
 	void buttonWarfactory(Ref* pSender);
+	void buttonInfantry(Ref* pSender);
+	void buttonDog(Ref* pSender);
+	void buttonTank(Ref* pSender);
 
 
 	void buttonx(Ref* pSender);
