@@ -531,6 +531,8 @@ bool GameScene::init()
 			}
 
 		}
+		auto t = target - position;
+		em->setPosition(Vec2(t.x * 3 / 40 + em->getContentSize().width / 2, t.y * 3 / 40 + em->getContentSize().height / 2));
 	};
 	auto dispatcher = Director::getInstance()->getEventDispatcher();					//添加鼠标事件监听器
 	dispatcher->addEventListenerWithSceneGraphPriority(MouseReply, this);
