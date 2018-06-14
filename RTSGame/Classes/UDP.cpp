@@ -53,6 +53,7 @@ bool serverOperation(int players)
 	char buf[256] = { 0 };			//储存接收到的命令
 	char ipaddr[30] = { 0 };		//储存本机ip
 	getHostIp(ipaddr);
+	int num = 0;
 	while (number)
 	{
 		if (SOCKET_ERROR != recvfrom(sClient, buf, 256, 0, reinterpret_cast<struct sockaddr FAR*>(&clientAddr), reinterpret_cast<int FAR*>(&addrLen)))
@@ -127,15 +128,19 @@ bool clientOperation(char *hostIp)
 	{
 		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
-			if (strcmp(command, "begin") == 0)
+			/*if (strcmp(command, "begin") == 0)
 			{
 				break;
-			}
-			else if (strlen(command)&&flag==0)
+			}*/
+			if (strlen(command))
 			{
-				flag = 1;
 				strcpy(hostIp, command);
 				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
+				break;
+			}
+			else if (strcmp(command, "begin") == 0)
+			{
+				break;
 			}
 		}
 	}
