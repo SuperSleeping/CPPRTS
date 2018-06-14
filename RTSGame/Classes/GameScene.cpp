@@ -37,6 +37,7 @@ Sprite* kuangchang_g;
 Sprite* bingying_g;
 Sprite* chechang_g;
 Sprite* em;
+Vec2 clickinit;
 
 Scene* GameScene::createScene()
 {
@@ -186,9 +187,13 @@ bool GameScene::init()
 	for (int i = 0; i < 100; ++i)
 	{
 		auto s = Sprite::create("tem/sb.png");
-		s->setPosition(Vec2(xView*2,yView*2));
+		s->setPosition(Vec2(xView * 2, yView * 2));
 		this->addChild(s, 400);
 		MiniSoldierList[0].push_back(s);
+		auto b = Sprite::create("tem/bb.png");
+		b->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(b, 400);
+		MiniBuildingList[0].push_back(b);
 	}
 	for (int i = 0; i < 100; ++i)
 	{
@@ -196,6 +201,10 @@ bool GameScene::init()
 		s->setPosition(Vec2(xView * 2, yView * 2));
 		this->addChild(s, 400);
 		MiniSoldierList[1].push_back(s);
+		auto b = Sprite::create("tem/bp.png");
+		b->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
 	}
 	for (int i = 0; i < 100; ++i)
 	{
@@ -203,6 +212,10 @@ bool GameScene::init()
 		s->setPosition(Vec2(xView * 2, yView * 2));
 		this->addChild(s, 400);
 		MiniSoldierList[2].push_back(s);
+		auto b = Sprite::create("tem/br.png");
+		b->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(b, 400);
+		MiniBuildingList[2].push_back(b);
 	}
 	for (int i = 0; i < 100; ++i)
 	{
@@ -210,6 +223,10 @@ bool GameScene::init()
 		s->setPosition(Vec2(xView * 2, yView * 2));
 		this->addChild(s, 400);
 		MiniSoldierList[3].push_back(s);
+		auto b = Sprite::create("tem/by.png");
+		b->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(b, 400);
+		MiniBuildingList[3].push_back(b);
 	}
 	switch (MyNumber) {
 	case 0:
@@ -255,6 +272,14 @@ bool GameScene::init()
 	buildRespone(SpawnDatastring(1, 'b', 300, 300, 1));*/
 
 	static auto MouseReply = EventListenerMouse::create();
+
+	MouseReply->onMouseDown = [=](Event *event) {
+		EventMouse* e = (EventMouse*)event;
+		Vec2 position = e->getLocationInView();
+		Vec2 target = position - PlayMap->getPosition();
+		clickinit = position;
+	};
+
 	MouseReply->onMouseUp = [=](Event *event) {					//监听鼠标弹起事件
 		//string str = "11";
 		//sioClient->send(str);
@@ -262,10 +287,34 @@ bool GameScene::init()
 		EventMouse* e = (EventMouse*)event;
 		Vec2 position = e->getLocationInView();					//鼠标事件的屏幕坐标系位置
 		Vec2 target = position - PlayMap->getPosition();			//鼠标事件的地图坐标系位置
+		auto k = (position.x - clickinit.x)*(position.x - clickinit.x) + (position.y - clickinit.y)*(position.y - clickinit.y);
 																	//target = target * 0.78125;							
 																	//log("%f %f", e->getLocationInView().x, e->getLocationInView().y);
 		if (!bool(e->getMouseButton())) {					//left button 左键
-			if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 0))) {		//点击范围包含在右下框
+			if (k >= 5)
+			{
+				for (auto soldier : SoldierList[MyNumber])
+				{
+					auto m = soldier->getPosition();
+					if (ContainRect(m, clickinit, position))
+					{
+						soldier->Select(1);
+						soldier->SelectedReply();
+					}
+					else
+					{
+						soldier->Select(0);
+						soldier->SelectedReply();
+					}
+				}
+			}
+			else if (ContainRect(position, Vec2(0, 300), Vec2(300, 0))) {           //点击范围包含在小地图
+				if (!(PlayMap->numberOfRunningActions())) {				
+					auto map_move = MoveTo::create(1.0f, Vec2(-position.x * 40 / 3 + 800, -position.y * 40 / 3 + 450));
+					PlayMap->runAction(map_move);
+				}
+			}
+			else if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 0))) {		//点击范围包含在右下框
 				if (ContainRect(position, Vec2(1100, 300), Vec2(1600, 200))) {
 					for (Building* factory : BuildingList[MyNumber]) {
 
@@ -323,13 +372,6 @@ bool GameScene::init()
 					}
 
 
-				}
-			}
-			//实验功能
-			if (ContainRect(position, Vec2(0, 300), Vec2(300, 0))) {
-				if (!(PlayMap->numberOfRunningActions())) {				//这一句是为了地图视角移动更加流畅
-					auto map_move = MoveTo::create(1.0f, Vec2(-position.x * 40 / 3 + 800, -position.y * 40 / 3 + 450));
-					PlayMap->runAction(map_move);
 				}
 			}
 			else {
@@ -533,6 +575,7 @@ bool GameScene::init()
 		auto t = target - position;
 		em->setPosition(Vec2(t.x * 3 / 40 + em->getContentSize().width / 2, t.y * 3 / 40 + em->getContentSize().height / 2));
 	};
+
 	auto dispatcher = Director::getInstance()->getEventDispatcher();					//添加鼠标事件监听器
 	dispatcher->addEventListenerWithSceneGraphPriority(MouseReply, this);
 
@@ -944,36 +987,6 @@ void GameScene::buildRespone(const std::string &data) {
 		break; }
 	}
 
-	if (Player == 0)
-	{
-		auto b = Sprite::create("tem/bb.png");
-		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
-		this->addChild(b, 400);
-		MiniBuildingList[1].push_back(b);
-	}
-	else if (Player == 1)
-	{
-		auto b = Sprite::create("tem/bp.png");
-		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
-		this->addChild(b, 400);
-		MiniBuildingList[1].push_back(b);
-	}
-	else if (Player == 2)
-	{
-		auto b = Sprite::create("tem/br.png");
-		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
-		this->addChild(b, 400);
-		MiniBuildingList[1].push_back(b);
-	}
-	else if (Player == 3)
-	{
-		auto b = Sprite::create("tem/by.png");
-		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
-		this->addChild(b, 400);
-		MiniBuildingList[1].push_back(b);
-	}
-
-
 	//log("%f %f", fac->getPosition().x, fac->getPosition().y);
 	/*log("Player: %d", Player);
 	log("MyNumber: %d", Player);
@@ -1197,4 +1210,14 @@ void GameScene::updateMini(float di)
 		}
 	}
 	//building
+	for (int i = 0; i < 4; ++i)
+	{
+		int j = 0;
+		for (auto building : BuildingList[i])
+		{
+			auto p = building->getPosition();
+			MiniBuildingList[i][j]->setPosition(Vec2(p.x * 3 / 40, p.y * 3 / 40));
+			j += 1;
+		}
+	}
 }
