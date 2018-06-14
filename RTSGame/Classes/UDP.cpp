@@ -78,11 +78,12 @@ bool serverOperation(int players)
 		Sleep(100);
 	}
 	number = players - 1;
+	char begin[8];
 	while (number)
 	{
-		if (SOCKET_ERROR != recvfrom(sClient, buf, 256, 0, reinterpret_cast<struct sockaddr FAR*>(&clientAddr),reinterpret_cast<int FAR*>(&addrLen)))
+		if (SOCKET_ERROR != recvfrom(sClient, begin, 8, 0, reinterpret_cast<struct sockaddr FAR*>(&clientAddr),reinterpret_cast<int FAR*>(&addrLen)))
 		{
-			if (strcmp(buf, "request") == 0)
+			if (strcmp(begin, "request") == 0)
 			{
 				sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
 				number--;
@@ -137,12 +138,13 @@ bool clientOperation(char *hostIp)
 			}
 		}
 	}
+	char begin[6];
 	while (true)
 	{
 		sendto(connectSocket, "request", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
-		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
+		if (SOCKET_ERROR != recvfrom(connectSocket, begin, 6, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
-			if (strcmp(command, "begin") == 0)
+			if (strcmp(begin, "begin") == 0)
 			{
 				break;
 			}
