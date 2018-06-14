@@ -45,7 +45,7 @@ bool Game::init()
 	this->addChild(mouseLayer,2);
 
 	//ÖÃÈëµØÍ¼
-	map = TMXTiledMap::create("map/map1.tmx");
+	map = TMXTiledMap::create("map/maptest.tmx");
 	map->addChild(game, 100);
 	this->addChild(map,0);
 
@@ -154,7 +154,10 @@ bool Game::init()
 	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
 
-
+	auto u = Sprite::create("map/test1.png");
+	u->setAnchorPoint(Vec2(0, 0));
+	u->setPosition(Vec2(48, 24));
+	map->addChild(u,100);
 
 
 
