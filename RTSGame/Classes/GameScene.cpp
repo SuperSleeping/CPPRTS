@@ -547,7 +547,7 @@ bool GameScene::init()
 void GameScene::sendCallback(EventKeyboard::KeyCode keyCode,Event *event)
 {
 	auto editbox = reinterpret_cast<EditBox*>(this->getChildByTag(111));
-	if (!editbox->isVisible)
+	if (!editbox->isVisible())
 	{
 		editbox->setVisible(true);
 	}
