@@ -7,7 +7,7 @@ class Infantry : public Character
 {
 public:
 	//Create Character
-	static Infantry* create(const char* filename, Vec2 position);
+	static Infantry* create(Vec2 position);
 
 
 };

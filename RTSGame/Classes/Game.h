@@ -16,8 +16,15 @@ public:
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
-
+	
+	//层
+	Layer* mouseLayer;
+	Layer* game;
+	
 	//地图
+	//@map层级：
+	//@  10   建筑人物等
+	//@	 100  鼠标
 	TMXTiledMap* map;
 	TMXLayer* _grass;
 	TMXLayer* _grasswet;
@@ -35,42 +42,79 @@ public:
 	//@visibleSize  窗口可见大小
 	//@mapSize      地图大小
 	//@tmSize       地图瓦片大小
-	//@viewPoint    当前视野的左下角在世界坐标系上的位置
 	Point visibleSize;
 	Point mapSize;
 	Point tmSize;
-	Point viewPoint;
 
 	//@屏幕坐标转换成层坐标（世界坐标系）
 	Point convertToMapLayer(Point position)
 	{
-		position.x += viewPoint.x;
-		position.y += viewPoint.y;
+		position = position - map->getPosition();
 		return position;
 	}
 	//@世界坐标转换成瓦片地图坐标
 	Point convertToTiledMap(Point position)
 	{
+		position.y = mapSize.y - position.y;
+
 		Point tmPoint;
-		tmPoint.x = position.x / tmSize.x;
-		tmPoint.y = (mapSize.y - position.y) / tmSize.y;
+		int addx = 0, addy = 0;
+		if ((int)position.x % (int)tmSize.x > tmSize.x / 2) addx++;
+		if ((int)position.y % (int)tmSize.y > tmSize.y / 2) addy++;
+		tmPoint.x = (int)(position.x / tmSize.x) + addx;
+		tmPoint.y = (int)(position.y / tmSize.y) - addy;
 		return tmPoint;
 	}
+	//@瓦片转换成世界坐标
+	Point convertFromTMToWorld(Point position)
+	{
+		position.x *= tmSize.x;
+		position.y *= tmSize.y;
+		position.y = mapSize.y - position.y;
+		return position;
+	}
+
 
 	//事件
-	//@游戏状态 - 0-off 1-on 2-building 
+	//@基本信息
+	int myTeam;
+	int resourceMoney;
+	int resourcePower;
+	//@游戏状态 - 0-off 1-on 2-building
 	int buildState;
+	
+	//某些操作功能
+	//@范围判断 - 注意保证坐标系一致
+	bool rectContain(Rect rect,Point position)
+	{
+		if (position.x >= rect.getMinX() && position.x <= rect.getMaxX() && position.y >= rect.getMinY() &&position.y <= rect.getMaxY())
+			return true;
+		else
+			return false;
+	}
 
 	//@onMouseMove:
 	//@移动界面
 	void onMouseMove(cocos2d::Event* event);
+	void onMouseDown(cocos2d::Event* event);
+	
+	//@建筑状态
+	Sprite* BuildingPictureWithMouse;
 
 	//@菜单事件
+	Rect menuRect;
 	//@创建建筑/人物
 	//@BUILDING - 描述建筑状态和建筑信息
 	int BUILDING;
+
 	void buttonBasement(Ref* pSender);
-	void buttonBasementx(Ref* pSender);
+	void buttonBarrack(Ref* pSender);
+	void buttonPowerplant(Ref* pSender);
+	void buttonMinefield(Ref* pSender);
+	void buttonWarfactory(Ref* pSender);
+
+
+	void buttonx(Ref* pSender);
 
 
 

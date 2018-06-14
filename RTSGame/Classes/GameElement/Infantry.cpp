@@ -1,14 +1,17 @@
 #include "Infantry.h"
 
-Infantry* Infantry::create(const char* filename, Vec2 position)
+Infantry* Infantry::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分
 	Infantry* infantry = new (std::nothrow)Infantry;
-	if (infantry && infantry->initWithFile(filename))
+	if (infantry && infantry->initWithFile("Game/character/infantry.png"))
 	{
+		infantry->setAnchorPoint(Vec2(0.5, 0));
 		infantry->setPosition(position);
-		//属性设置
 		infantry->positionCurrent = position;
+		//属性设置
+		infantry->blood = 125;
+		infantry->prize = 120;
 		infantry->velocity = 10;
 		//自动释放
 		infantry->autorelease();

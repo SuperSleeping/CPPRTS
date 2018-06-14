@@ -13,6 +13,12 @@
     <Filter Include="src\GameElement">
       <UniqueIdentifier>{979d8d12-1556-4162-9512-2cbf7e75835f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\GameElement\Character">
+      <UniqueIdentifier>{eb97572f-fbfa-41e6-bae3-0a54b2280175}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameElement\Building">
+      <UniqueIdentifier>{158034a5-e131-4702-bfb2-451d36f58cea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,14 +45,34 @@
     <ClCompile Include="..\Classes\GameElement\Character.cpp">
       <Filter>src\GameElement</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameElement\Infantry.cpp">
-      <Filter>src\GameElement</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameElement\Basement.cpp">
-      <Filter>src\GameElement</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\GameElement\Building.cpp">
       <Filter>src\GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="Dog.cpp" />
+    <ClCompile Include="Tank.cpp" />
+    <ClCompile Include="..\Classes\GameElement\Barrack.cpp">
+      <Filter>src\GameElement\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Basement.cpp">
+      <Filter>src\GameElement\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Infantry.cpp">
+      <Filter>src\GameElement\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Minefield.cpp">
+      <Filter>src\GameElement\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Powerplant.cpp">
+      <Filter>src\GameElement\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Warfactory.cpp">
+      <Filter>src\GameElement\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Tank.cpp">
+      <Filter>src\GameElement\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Dog.cpp">
+      <Filter>src\GameElement\Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,14 +100,34 @@
     <ClInclude Include="..\Classes\GameElement\Character.h">
       <Filter>src\GameElement</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameElement\Infantry.h">
-      <Filter>src\GameElement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameElement\Basement.h">
-      <Filter>src\GameElement</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameElement\Building.h">
       <Filter>src\GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="Dog.h" />
+    <ClInclude Include="Tank.h" />
+    <ClInclude Include="..\Classes\GameElement\Barrack.h">
+      <Filter>src\GameElement\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Basement.h">
+      <Filter>src\GameElement\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Infantry.h">
+      <Filter>src\GameElement\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Minefield.h">
+      <Filter>src\GameElement\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Powerplant.h">
+      <Filter>src\GameElement\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Warfactory.h">
+      <Filter>src\GameElement\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Tank.h">
+      <Filter>src\GameElement\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Dog.h">
+      <Filter>src\GameElement\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

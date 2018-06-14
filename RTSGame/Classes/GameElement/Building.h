@@ -8,12 +8,13 @@ class Building : public GameElement
 public:
 	enum BuildingType
 	{
-		BASEMENT=1,
+		BASEMENT = 1,
 		POWERPLANT,
 		MINEFIELD,
 		BARRACK,
 		WARFACTORY
 	};
+	int electricity;
 };
 
 #endif
