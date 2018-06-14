@@ -519,6 +519,7 @@ bool GameScene::init()
 
 	auto sendMessage = EventListenerKeyboard::create();
 	sendMessage->onKeyPressed = CC_CALLBACK_2(GameScene::sendCallback,this);
+	_eventDispatcher->addEventListenerWithFixedPriority(sendMessage, 1);
 	/*auto sendItem = MenuItemFont::create("send", CC_CALLBACK_1(GameScene::sendCallback, this));
 	sendItem->setPosition(Vec2(origin.x, origin.y + visibleSize.height / 3));
 	Menu *mn = Menu::create(sendItem, NULL);
@@ -544,21 +545,25 @@ bool GameScene::init()
 void GameScene::sendCallback(EventKeyboard::KeyCode keyCode,Event *event)
 {
 	auto editbox = reinterpret_cast<EditBox*>(this->getChildByTag(111));
-	if (!editbox->isVisible())
+	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER)
 	{
-		editbox->setVisible(true);
-	}
-	else
-	{
-		int playerNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
-		std::string message = std::to_string(playerNumber);
-		std::string playerName = UserDefault::getInstance()->getStringForKey(USER_NAME, "User");
-		std::string content = editbox->getText();
-		if (content.length())
+		if (!editbox->isVisible())
 		{
-			message = message + " p" + playerName + ":" + content;
-			editbox->setText("");
-			sioClient->send(message);
+			editbox->setVisible(true);
+		}
+		else
+		{
+			int playerNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
+			std::string message = std::to_string(playerNumber);
+			std::string playerName = UserDefault::getInstance()->getStringForKey(USER_NAME, "User");
+			std::string content = editbox->getText();
+			if (content.length())
+			{
+				message = message + " p" + playerName + ":" + content;
+				editbox->setText("");
+				sioClient->send(message);
+			}
+			editbox->setVisible(false);
 		}
 	}
 	return;
