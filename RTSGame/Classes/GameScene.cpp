@@ -18,6 +18,8 @@ string SpawnDatastring(int Player, char type, int n, int m);
 string SpawnDatastring(int Player, char type, int n, int m, int t);
 static Vector<Soldier*> SoldierList[4];
 static Vector<Building*> BuildingList[4];
+std::vector <Sprite*>MiniSoldierList[4];
+std::vector<Sprite*> MiniBuildingList[4];
 //static int SoldierTag = 0;
 static int MyNumber;
 static TMXTiledMap *PlayMap;
@@ -173,6 +175,9 @@ bool GameScene::init()
 
 	PlayMap = TMXTiledMap::create("newmap.tmx");
 	addChild(PlayMap);
+	auto minimap = Sprite::create("tem/minimap.png");
+	minimap->setPosition(Vec2(150, 150));
+	this->addChild(minimap, 300);
 	switch (MyNumber) {
 	case 0:
 		break;
@@ -896,6 +901,11 @@ void GameScene::buildRespone(const std::string &data) {
 		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
 		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
 
+		auto b = Sprite::create("tem/br.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[0].push_back(b);
+
 		break; }
 	}
 
@@ -949,6 +959,11 @@ void GameScene::createRespone(const std::string &data) {
 	//log("Player: %d", Player);
 	//log("MyNumber: %d", Player);
 	//log("size:  %d", SoldierList[Player].size());
+
+	auto s = Sprite::create("tem/sr.png");
+	s->setPosition(Vec2(x*3/40,y*3/40));
+	this->addChild(s, 400);
+	MiniSoldierList[1].push_back(s);
 }
 
 void GameScene::moveRespone(const std::string &data) {
@@ -1102,4 +1117,27 @@ void GameScene::updateGrayButton(float di) {
 	else {
 		jidi_g->setZOrder(-2);
 	}
+}
+void GameScene::updateMini(float di)
+{
+	//soldier
+	for (int i = 0; i < 4; ++i)
+	{
+		int j = 0;
+		for (auto soldier : SoldierList[i])
+		{
+			if (!soldier->Died())
+			{
+				auto p = soldier->getPosition();
+				MiniSoldierList[i][j]->setPosition(Vec2(p.x * 3 / 40, p.y * 3 / 40));
+			}
+			if (soldier->Died())
+			{
+				auto p = Director::getInstance()->getVisibleSize();
+				MiniSoldierList[i][j]->setPosition(Vec2(p.width * 2, p.height * 2));
+			}
+			j += 1;
+		}
+	}
+	//building
 }
