@@ -53,7 +53,7 @@ bool serverOperation(int players)
 	char buf[256] = { 0 };			//储存接收到的命令
 	char ipaddr[30] = { 0 };		//储存本机ip
 	getHostIp(ipaddr);
-	int num = 0;
+	//int num = 0;
 	while (number)
 	{
 		if (SOCKET_ERROR != recvfrom(sClient, buf, 256, 0, reinterpret_cast<struct sockaddr FAR*>(&clientAddr), reinterpret_cast<int FAR*>(&addrLen)))
@@ -77,19 +77,7 @@ bool serverOperation(int players)
 		}
 		Sleep(100);
 	}
-	number = players - 1;
-	char begin[8];
-	while (number)
-	{
-		if (SOCKET_ERROR != recvfrom(sClient, begin, 8, 0, reinterpret_cast<struct sockaddr FAR*>(&clientAddr),reinterpret_cast<int FAR*>(&addrLen)))
-		{
-			if (strcmp(begin, "request") == 0)
-			{
-				sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
-				number--;
-			}
-		}
-	}
+	sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&bindAddr), addrLen);
 	return true;
 }
 
@@ -130,23 +118,15 @@ bool clientOperation(char *hostIp)
 	{
 		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
-			if (strlen(command))
+			if (strcmp(command, "begin") == 0)
+			{
+				break;
+			}
+			else if (strlen(command))
 			{
 				strcpy(hostIp, command);
 				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
-				break;
-			}
-		}
-	}
-	char begin[6];
-	while (true)
-	{
-		sendto(connectSocket, "request", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
-		if (SOCKET_ERROR != recvfrom(connectSocket, begin, 6, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
-		{
-			if (strcmp(begin, "begin") == 0)
-			{
-				break;
+				//break;
 			}
 		}
 	}
