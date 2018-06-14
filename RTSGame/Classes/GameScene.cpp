@@ -582,7 +582,7 @@ bool GameScene::init()
 	}*/
 
 	//return
-	this->schedule(schedule_selector(GameScene::updateMini), 0.005f, kRepeatForever, 0);
+	this->schedule(schedule_selector(GameScene::updateMini), 0.05f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateTime), 1.0f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateResources), 1.0f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateGrayButton), 0.5f, kRepeatForever, 0);
