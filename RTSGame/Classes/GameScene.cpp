@@ -18,6 +18,8 @@ string SpawnDatastring(int Player, char type, int n, int m);
 string SpawnDatastring(int Player, char type, int n, int m, int t);
 static Vector<Soldier*> SoldierList[4];
 static Vector<Building*> BuildingList[4];
+std::vector <Sprite*>MiniSoldierList[4];
+std::vector<Sprite*> MiniBuildingList[4];
 //static int SoldierTag = 0;
 static int MyNumber;
 static TMXTiledMap *PlayMap;
@@ -34,6 +36,7 @@ Sprite* dianchang_g;
 Sprite* kuangchang_g;
 Sprite* bingying_g;
 Sprite* chechang_g;
+Sprite* em;
 
 Scene* GameScene::createScene()
 {
@@ -173,6 +176,41 @@ bool GameScene::init()
 
 	PlayMap = TMXTiledMap::create("newmap.tmx");
 	addChild(PlayMap);
+	auto minimap = Sprite::create("tem/minimap.png");
+	minimap->setPosition(Vec2(150, 150));
+	this->addChild(minimap, 300);
+	em = Sprite::create("tem/em.png");
+	em->setPosition(Vec2(em->getContentSize().width / 2, em->getContentSize().height / 2));
+	em->setAnchorPoint(Vec2(0.5, 0.5));
+	this->addChild(em, 300);
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sb.png");
+		s->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(s, 400);
+		MiniSoldierList[0].push_back(s);
+	}
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sp.png");
+		s->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(s, 400);
+		MiniSoldierList[1].push_back(s);
+	}
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sr.png");
+		s->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(s, 400);
+		MiniSoldierList[2].push_back(s);
+	}
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sy.png");
+		s->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(s, 400);
+		MiniSoldierList[3].push_back(s);
+	}
 	switch (MyNumber) {
 	case 0:
 		break;
@@ -287,7 +325,13 @@ bool GameScene::init()
 
 				}
 			}
-
+			//实验功能
+			if (ContainRect(position, Vec2(0, 300), Vec2(300, 0))) {
+				if (!(PlayMap->numberOfRunningActions())) {				//这一句是为了地图视角移动更加流畅
+					auto map_move = MoveTo::create(1.0f, Vec2(-position.x * 40 / 3 + 800, -position.y * 40 / 3 + 450));
+					PlayMap->runAction(map_move);
+				}
+			}
 			else {
 				if (building) {															//建造状态
 					if (!virtual_factory.empty()) {										//虚建筑容器非空，即跟随鼠标移动的透明建筑存在
@@ -304,6 +348,7 @@ bool GameScene::init()
 					//输出字符串“ %MyNumber b  %target.x  %target.y”
 					building = 0;
 				}
+				
 				else {
 					for (auto sp_obj : SoldierList[MyNumber]) {									//遍历soldierlist容器元素，将第一个被鼠标点中的soldier变为被选中状态
 						if (ContainSprite(sp_obj, target, 20) && !sp_obj->Died()) {
@@ -535,7 +580,7 @@ bool GameScene::init()
 	}*/
 
 	//return
-
+	this->schedule(schedule_selector(GameScene::updateMini), 0.5f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateTime), 1.0f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateResources), 1.0f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateGrayButton), 0.5f, kRepeatForever, 0);
@@ -899,7 +944,34 @@ void GameScene::buildRespone(const std::string &data) {
 		break; }
 	}
 
-
+	if (Player == 0)
+	{
+		auto b = Sprite::create("tem/bb.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
+	else if (Player == 1)
+	{
+		auto b = Sprite::create("tem/bp.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
+	else if (Player == 2)
+	{
+		auto b = Sprite::create("tem/br.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
+	else if (Player == 3)
+	{
+		auto b = Sprite::create("tem/by.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
 
 
 	//log("%f %f", fac->getPosition().x, fac->getPosition().y);
@@ -1102,4 +1174,27 @@ void GameScene::updateGrayButton(float di) {
 	else {
 		jidi_g->setZOrder(-2);
 	}
+}
+void GameScene::updateMini(float di)
+{
+	//soldier
+	for (int i = 0; i < 4; ++i)
+	{
+		int j = 0;
+		for (auto soldier : SoldierList[i])
+		{
+			if (!soldier->Died())
+			{
+				auto p = soldier->getPosition();
+				MiniSoldierList[i][j]->setPosition(Vec2(p.x * 3 / 40, p.y * 3 / 40));
+			}
+			if (soldier->Died())
+			{
+				auto p = Director::getInstance()->getVisibleSize();
+				MiniSoldierList[i][j]->setPosition(Vec2(p.width * 2, p.height * 2));
+			}
+			j += 1;
+		}
+	}
+	//building
 }

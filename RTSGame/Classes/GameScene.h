@@ -24,6 +24,7 @@ public:
 	void destroyRespone(const std::string &data);
 	void updateErase(float di);
 	void updateTime(float di);
+	void updateMini(float di);
 	void updateResources(float di);
 	void updateGrayButton(float di);
 
