@@ -7,6 +7,8 @@ class Barrack : public Building
 {
 public:
 	static Barrack* create(Vec2 position);
+
+	Barrack();
 };
 
 #endif

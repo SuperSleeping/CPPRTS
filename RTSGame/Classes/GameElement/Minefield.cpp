@@ -1,4 +1,9 @@
 #include "Minefield.h"
+Minefield::Minefield()
+	:Building(MINEFIELD)
+{
+
+}
 
 Minefield* Minefield::create(Vec2 position)
 {

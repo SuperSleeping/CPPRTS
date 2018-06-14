@@ -5,6 +5,8 @@
 class Minefield : public Building
 {
 public:
+	
+	Minefield();
 	static Minefield* create(Vec2 position);
 
 };

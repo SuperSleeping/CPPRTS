@@ -65,25 +65,25 @@ bool Game::init()
 
 
 	//菜单栏
-	auto menu = Menu::create();
+	menu = Menu::create();
 	//按钮的z坐标决定图像和触发函数 z坐标较大的图像显示在上层 但是先调用的是z坐标较小的函数
 	//解决方法很粗暴 是改变了按钮的图案
-	auto basement_button = MenuItemImage::create("Game/button/basement_button2.png", "Game/button/basement_button2.png", CC_CALLBACK_1(Game::buttonBasement, this));
-	auto basementx_button = MenuItemImage::create("Game/button/basement_button1.png", "Game/button/basement_button3.png", CC_CALLBACK_1(Game::buttonx, this));
-	auto barrack_button = MenuItemImage::create("Game/button/barrack_button2.png", "Game/button/barrack_button2.png", CC_CALLBACK_1(Game::buttonBarrack, this));
-	auto barrackx_button = MenuItemImage::create("Game/button/barrack_button1.png", "Game/button/barrack_button3.png", CC_CALLBACK_1(Game::buttonx, this));
-	auto powerplant_button = MenuItemImage::create("Game/button/powerplant_button2.png", "Game/button/powerplant_button2.png", CC_CALLBACK_1(Game::buttonPowerplant, this));
-	auto powerplantx_button = MenuItemImage::create("Game/button/powerplant_button1.png", "Game/button/powerplant_button3.png", CC_CALLBACK_1(Game::buttonx, this));
-	auto minefield_button = MenuItemImage::create("Game/button/minefield_button2.png", "Game/button/minefield_button2.png", CC_CALLBACK_1(Game::buttonMinefield, this));
-	auto minefieldx_button = MenuItemImage::create("Game/button/minefield_button1.png", "Game/button/minefield_button3.png", CC_CALLBACK_1(Game::buttonx, this));
-	auto warfactory_button = MenuItemImage::create("Game/button/warfactory_button2.png", "Game/button/warfactory_button2.png", CC_CALLBACK_1(Game::buttonWarfactory, this));
-	auto warfactoryx_button = MenuItemImage::create("Game/button/warfactory_button1.png", "Game/button/warfactory_button3.png", CC_CALLBACK_1(Game::buttonx, this));
-	auto infantry_button = MenuItemImage::create("Game/button/infantry_button2.png", "Game/button/infantry_button2.png", CC_CALLBACK_1(Game::buttonBasement, this));
-	auto infantryx_button = MenuItemImage::create("Game/button/infantry_button1.png", "Game/button/infantry_button3.png", CC_CALLBACK_1(Game::buttonx, this));
-	auto dog_button = MenuItemImage::create("Game/button/dog_button2.png", "Game/button/dog_button2.png", CC_CALLBACK_1(Game::buttonBasement, this));
-	auto dogx_button = MenuItemImage::create("Game/button/dog_button1.png", "Game/button/dog_button3.png", CC_CALLBACK_1(Game::buttonx, this));
-	auto tank_button = MenuItemImage::create("Game/button/tank_button2.png", "Game/button/tank_button2.png", CC_CALLBACK_1(Game::buttonBasement, this));
-	auto tankx_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonx, this));
+	basement_button = MenuItemImage::create("Game/button/basement_button1.png", "Game/button/basement_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+	basementx_button = MenuItemImage::create("Game/button/basement_button2.png", "Game/button/basement_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+	barrack_button = MenuItemImage::create("Game/button/barrack_button1.png", "Game/button/barrack_button3.png", CC_CALLBACK_1(Game::buttonBarrack, this));
+	barrackx_button = MenuItemImage::create("Game/button/barrack_button2.png", "Game/button/barrack_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+	powerplant_button = MenuItemImage::create("Game/button/powerplant_button1.png", "Game/button/powerplant_button3.png", CC_CALLBACK_1(Game::buttonPowerplant, this));
+	powerplantx_button = MenuItemImage::create("Game/button/powerplant_button2.png", "Game/button/powerplant_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+	minefield_button = MenuItemImage::create("Game/button/minefield_button1.png", "Game/button/minefield_button3.png", CC_CALLBACK_1(Game::buttonMinefield, this));
+	minefieldx_button = MenuItemImage::create("Game/button/minefield_button2.png", "Game/button/minefield_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+	warfactory_button = MenuItemImage::create("Game/button/warfactory_button1.png", "Game/button/warfactory_button3.png", CC_CALLBACK_1(Game::buttonWarfactory, this));
+	warfactoryx_button = MenuItemImage::create("Game/button/warfactory_button2.png", "Game/button/warfactory_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+	infantry_button = MenuItemImage::create("Game/button/infantry_button1.png", "Game/button/infantry_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+	infantryx_button = MenuItemImage::create("Game/button/infantry_button2.png", "Game/button/infantry_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+	dog_button = MenuItemImage::create("Game/button/dog_button1.png", "Game/button/dog_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+	dogx_button = MenuItemImage::create("Game/button/dog_button2.png", "Game/button/dog_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+	tank_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+	tankx_button = MenuItemImage::create("Game/button/tank_button2.png", "Game/button/tank_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 
 	//锚点坐标设置
 	basement_button->setAnchorPoint(Vec2(0, 0));
@@ -103,6 +103,8 @@ bool Game::init()
 	tank_button->setAnchorPoint(Vec2(0, 0));
 	tankx_button->setAnchorPoint(Vec2(0, 0));
 	//坐标设置
+	basement_button->setPosition(Vec2(0, 0));
+	basementx_button->setPosition(Vec2(0, 0));
 	barrack_button->setPosition(Vec2(100, 0));
 	barrackx_button->setPosition(Vec2(100, 0));
 	powerplant_button->setPosition(Vec2(200, 0));
@@ -143,8 +145,6 @@ bool Game::init()
 	menuLayer->addChild(menu);
 	
 
-
-
 	//触发事件
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
 	//@鼠标移动到边界的时候屏幕移动
@@ -173,9 +173,23 @@ bool Game::init()
 	return true;
 }
 
+//更新函数
 void Game::update(float dt)
 {
+	
+}
 
+void Game::menuUpdate()
+{
+	//检测是否为某建筑的选中状态，再根据相应功能检测资源改变菜单
+	if (selectedState == NULL)
+	{
+
+	}
+	else if (selectedState == Building::BuildingType::BASEMENT)
+	{
+		
+	}
 }
 
 /***************/
@@ -324,6 +338,8 @@ void Game::onMouseDown(cocos2d::Event* event)
 		buildState = NULL;
 		map->removeChild(BuildingPictureWithMouse);
 	}
+
+
 }
 
 /***************/

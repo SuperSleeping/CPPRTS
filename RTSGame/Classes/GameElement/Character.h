@@ -9,6 +9,14 @@ public:
 	//Create Character
 	static Character* create(const char* filename,Vec2 position);
 
+	//人物类型
+	enum CharacterType
+	{
+		INFANTRY = 6,
+		DOG,
+		TANK
+	};
+
 	//运动相关
 	Vec2 positionGoal;
 	float velocity;

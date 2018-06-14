@@ -1,5 +1,11 @@
 #include "Basement.h"
 
+Basement::Basement()
+	:Building(BASEMENT)
+{
+
+}
+
 Basement* Basement::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分
@@ -10,7 +16,6 @@ Basement* Basement::create(Vec2 position)
 		basement->setAnchorPoint(Vec2(0.5, 0.3));
 		basement->setPosition(position);
 		//属性设置
-		basement->positionCurrent = position;
 		basement->blood = 200;
 		//自动释放
 		basement->autorelease();

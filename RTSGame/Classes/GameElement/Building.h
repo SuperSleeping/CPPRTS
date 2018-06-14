@@ -14,7 +14,15 @@ public:
 		BARRACK,
 		WARFACTORY
 	};
+	int buildingType;
 	int electricity;
+	Point spawnPoint;
+
+	//Construction:
+	Building();
+	Building(int type);
+
+	virtual void setPosition(const Vec2& pos);
 };
 
 #endif

@@ -5,7 +5,7 @@
 class Warfactory : public Building
 {
 public:
-
+	Warfactory();
 	static Warfactory* create(Vec2 position);
 
 };

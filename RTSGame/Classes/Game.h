@@ -81,6 +81,7 @@ public:
 	int resourceMoney;
 	int resourcePower;
 	//@游戏状态 - 0-off 1-on 2-building
+	int selectedState;
 	int buildState;
 	
 	//某些操作功能
@@ -102,7 +103,26 @@ public:
 	Sprite* BuildingPictureWithMouse;
 
 	//@菜单事件
+	Menu* menu;
 	Rect menuRect;
+
+	MenuItemImage* basement_button;
+	MenuItemImage* basementx_button;
+	MenuItemImage* barrack_button;
+	MenuItemImage* barrackx_button;
+	MenuItemImage* powerplant_button;
+	MenuItemImage* powerplantx_button;
+	MenuItemImage* minefield_button;
+	MenuItemImage* minefieldx_button;
+	MenuItemImage* warfactory_button;
+	MenuItemImage* warfactoryx_button;
+	MenuItemImage* infantry_button;
+	MenuItemImage* infantryx_button;
+	MenuItemImage* dog_button;
+	MenuItemImage* dogx_button;
+	MenuItemImage* tank_button;
+	MenuItemImage* tankx_button;
+
 	//@创建建筑/人物
 	//@BUILDING - 描述建筑状态和建筑信息
 	int BUILDING;
@@ -120,6 +140,7 @@ public:
 
 	//Update周期函数
 	virtual void update(float dt);
+	void menuUpdate();
 
 	//场景切换
 	void menuReturn(cocos2d::Ref* pSender);

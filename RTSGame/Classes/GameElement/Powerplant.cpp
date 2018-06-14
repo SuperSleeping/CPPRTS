@@ -1,5 +1,11 @@
 #include "Powerplant.h"
 
+Powerplant::Powerplant()
+	:Building(POWERPLANT)
+{
+
+}
+
 Powerplant* Powerplant::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分

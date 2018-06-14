@@ -48,8 +48,6 @@
     <ClCompile Include="..\Classes\GameElement\Building.cpp">
       <Filter>src\GameElement</Filter>
     </ClCompile>
-    <ClCompile Include="Dog.cpp" />
-    <ClCompile Include="Tank.cpp" />
     <ClCompile Include="..\Classes\GameElement\Barrack.cpp">
       <Filter>src\GameElement\Building</Filter>
     </ClCompile>
@@ -68,10 +66,10 @@
     <ClCompile Include="..\Classes\GameElement\Warfactory.cpp">
       <Filter>src\GameElement\Building</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameElement\Tank.cpp">
+    <ClCompile Include="..\Classes\GameElement\Dog.cpp">
       <Filter>src\GameElement\Character</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameElement\Dog.cpp">
+    <ClCompile Include="..\Classes\GameElement\Tank.cpp">
       <Filter>src\GameElement\Character</Filter>
     </ClCompile>
   </ItemGroup>
@@ -103,8 +101,6 @@
     <ClInclude Include="..\Classes\GameElement\Building.h">
       <Filter>src\GameElement</Filter>
     </ClInclude>
-    <ClInclude Include="Dog.h" />
-    <ClInclude Include="Tank.h" />
     <ClInclude Include="..\Classes\GameElement\Barrack.h">
       <Filter>src\GameElement\Building</Filter>
     </ClInclude>
@@ -123,10 +119,10 @@
     <ClInclude Include="..\Classes\GameElement\Warfactory.h">
       <Filter>src\GameElement\Building</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameElement\Tank.h">
+    <ClInclude Include="..\Classes\GameElement\Dog.h">
       <Filter>src\GameElement\Character</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameElement\Dog.h">
+    <ClInclude Include="..\Classes\GameElement\Tank.h">
       <Filter>src\GameElement\Character</Filter>
     </ClInclude>
   </ItemGroup>

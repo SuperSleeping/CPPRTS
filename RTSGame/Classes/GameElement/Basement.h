@@ -6,6 +6,7 @@
 class Basement : public Building
 {
 public:
+	Basement();
 	static Basement* create(Vec2 position);
 
 };

@@ -1,5 +1,11 @@
 #include "Warfactory.h"
 
+Warfactory::Warfactory()
+	:Building(WARFACTORY)
+{
+
+}
+
 Warfactory* Warfactory::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分

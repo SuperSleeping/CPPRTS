@@ -1,18 +1,25 @@
 #include "Barrack.h"
 
+Barrack::Barrack()
+	:Building(BARRACK)
+{
+	this->initWithFile("Game/building/barrack.png");
+	this->setAnchorPoint(Vec2(0.5, 0.5));
+	this->blood = 200;
+
+
+	
+
+
+}
 
 Barrack* Barrack::create(Vec2 position)
 {
-	//创建GameElement中类似Sprite的部分
 	Barrack* barrack = new (std::nothrow)Barrack;
-	if (barrack && barrack->initWithFile("Game/building/barrack.png"))
+	if (barrack)
 	{
-		//锚点坐标设置
-		barrack->setAnchorPoint(Vec2(0.5, 0.5));
 		barrack->setPosition(position);
-		//属性设置
 		barrack->positionCurrent = position;
-		barrack->blood = 200;
 		//自动释放
 		barrack->autorelease();
 		return barrack;

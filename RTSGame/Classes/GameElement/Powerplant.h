@@ -5,6 +5,7 @@
 class Powerplant : public Building
 {
 public:
+	Powerplant();
 
 	static Powerplant* create(Vec2 position);
 
