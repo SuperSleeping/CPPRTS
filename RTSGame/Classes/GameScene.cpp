@@ -178,6 +178,34 @@ bool GameScene::init()
 	auto minimap = Sprite::create("tem/minimap.png");
 	minimap->setPosition(Vec2(150, 150));
 	this->addChild(minimap, 300);
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sb.png");
+		s->setPosition(Vec2(xView*2,yView*2));
+		this->addChild(s, 400);
+		MiniSoldierList[0].push_back(s);
+	}
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sp.png");
+		s->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(s, 400);
+		MiniSoldierList[1].push_back(s);
+	}
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sr.png");
+		s->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(s, 400);
+		MiniSoldierList[2].push_back(s);
+	}
+	for (int i = 0; i < 100; ++i)
+	{
+		auto s = Sprite::create("tem/sy.png");
+		s->setPosition(Vec2(xView * 2, yView * 2));
+		this->addChild(s, 400);
+		MiniSoldierList[3].push_back(s);
+	}
 	switch (MyNumber) {
 	case 0:
 		break;
@@ -540,7 +568,7 @@ bool GameScene::init()
 	}*/
 
 	//return
-
+	this->schedule(schedule_selector(GameScene::updateMini), 0.5f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateTime), 1.0f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateResources), 1.0f, kRepeatForever, 0);
 	this->schedule(schedule_selector(GameScene::updateGrayButton), 0.5f, kRepeatForever, 0);
@@ -900,16 +928,37 @@ void GameScene::buildRespone(const std::string &data) {
 		//fac->scheduleUpdate();
 		fac->schedule(schedule_selector(Building::updateBuild), 0.1f, 100, 0);
 		fac->scheduleOnce(schedule_selector(Building::updateBegin), 0);
-
-		auto b = Sprite::create("tem/br.png");
-		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
-		this->addChild(b, 400);
-		MiniBuildingList[0].push_back(b);
-
 		break; }
 	}
 
-
+	if (Player == 0)
+	{
+		auto b = Sprite::create("tem/bb.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
+	else if (Player == 1)
+	{
+		auto b = Sprite::create("tem/bp.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
+	else if (Player == 2)
+	{
+		auto b = Sprite::create("tem/br.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
+	else if (Player == 3)
+	{
+		auto b = Sprite::create("tem/by.png");
+		b->setPosition(Vec2(x * 3 / 40, y * 3 / 40));
+		this->addChild(b, 400);
+		MiniBuildingList[1].push_back(b);
+	}
 
 
 	//log("%f %f", fac->getPosition().x, fac->getPosition().y);
@@ -959,11 +1008,6 @@ void GameScene::createRespone(const std::string &data) {
 	//log("Player: %d", Player);
 	//log("MyNumber: %d", Player);
 	//log("size:  %d", SoldierList[Player].size());
-
-	auto s = Sprite::create("tem/sr.png");
-	s->setPosition(Vec2(x*3/40,y*3/40));
-	this->addChild(s, 400);
-	MiniSoldierList[1].push_back(s);
 }
 
 void GameScene::moveRespone(const std::string &data) {
