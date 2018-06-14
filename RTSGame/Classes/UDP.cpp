@@ -111,18 +111,24 @@ bool clientOperation(char *hostIp)
 	bool optval = true;
 	setsockopt(connectSocket, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*>(&optval), sizeof(optval));
 	
-	if (SOCKET_ERROR == bind(connectSocket, reinterpret_cast<SOCKADDR*>(&sin), sizeof(SOCKADDR)))
-	{
-		return false;
-	}
+	bind(connectSocket, reinterpret_cast<SOCKADDR*>(&sin), sizeof(SOCKADDR));
 
 	int addrLen = sizeof(SOCKADDR);
 	char order[] = "GET_HOST_IP";
 	char command[30];
 
-	if (SOCKET_ERROR == sendto(connectSocket, order, strlen(order), 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom)))
+	sendto(connectSocket, order, strlen(order), 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
+	while (true)
 	{
-		return false;
+		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
+		{
+			if (strlen(command))
+			{
+				strcpy(hostIp, command);
+				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
+				break;
+			}
+		}
 	}
 	while (true)
 	{
@@ -131,11 +137,6 @@ bool clientOperation(char *hostIp)
 			if (strcmp(command, "begin") == 0)
 			{
 				break;
-			}
-			else	if (strlen(command))
-			{
-				strcpy(hostIp, command);
-				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
 			}
 		}
 	}
