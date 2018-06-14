@@ -60,11 +60,7 @@ bool serverOperation(int players)
 		{
 			if (strcmp(buf, "GET_HOST_IP") == 0)
 			{
-				//∑¢ÀÕipµÿ÷∑
-				if (SOCKET_ERROR == sendto(sClient, ipaddr, 30, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen))
-				{
-					return false;
-				}
+				sendto(sClient, ipaddr, 30, 0, reinterpret_cast<SOCKADDR*>(&clientAddr), addrLen);
 			}
 			else if (strcmp(buf, "success") == 0)
 			{
@@ -128,19 +124,14 @@ bool clientOperation(char *hostIp)
 	{
 		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
-			/*if (strcmp(command, "begin") == 0)
+			if (strcmp(command, "begin") == 0)
 			{
 				break;
-			}*/
-			if (strlen(command))
+			}
+			else	if (strlen(command))
 			{
 				strcpy(hostIp, command);
 				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
-				break;
-			}
-			else if (strcmp(command, "begin") == 0)
-			{
-				break;
 			}
 		}
 	}
