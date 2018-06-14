@@ -35,19 +35,19 @@ bool Game::init()
 		return false;
 	}
 	visibleSize = Director::getInstance()->getVisibleSize();
-	
+
 	//添加层(?)
 	//////#############################################################################!!!!!!!!解决一下回调函数监听器什么的捆绑在哪个node上的问题
 	auto menuLayer = Layer::create();
 	mouseLayer = Layer::create();
 	game = Layer::create();
-	this->addChild(menuLayer,1);
-	this->addChild(mouseLayer,2);
+	this->addChild(menuLayer, 1);
+	this->addChild(mouseLayer, 2);
 
 	//置入地图
-	map = TMXTiledMap::create("map/map1.tmx");
+	map = TMXTiledMap::create("map/maptest.tmx");
 	map->addChild(game, 100);
-	this->addChild(map,0);
+	this->addChild(map, 0);
 
 	_grass = map->getLayer("grass");
 	_grasswet = map->getLayer("grasswet");
@@ -62,9 +62,14 @@ bool Game::init()
 	tmSize.y = map->getTileSize().height;
 	mapSize.x = map->getMapSize().width * tmSize.x;
 	mapSize.y = map->getMapSize().height * tmSize.y;
+	tmNumber.x = mapSize.x / tmSize.x;
+	tmNumber.y = mapSize.y / tmSize.y;
+	OKtobuilt = 0;
+	occupiedCoordinateInitialize();
 
-
+	
 	//菜单栏
+	{
 	menu = Menu::create();
 	//按钮的z坐标决定图像和触发函数 z坐标较大的图像显示在上层 但是先调用的是z坐标较小的函数
 	//解决方法很粗暴 是改变了按钮的图案
@@ -140,10 +145,10 @@ bool Game::init()
 	//菜单范围
 	menuRect = Rect(visibleSize.x - 500, 0, 500, 200);
 
-	menu->setPosition(Vec2(visibleSize.x-500,0));
+	menu->setPosition(Vec2(visibleSize.x - 500, 0));
 
 	menuLayer->addChild(menu);
-	
+	}
 
 	//触发事件
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
@@ -253,34 +258,74 @@ void Game::onMouseMove(cocos2d::Event* event)
 			map->removeChild(BuildingPictureWithMouse);
 		}
 
+		//检测碰撞(OKtobuilt)
+		target = convertToTiledMap(target);
+		OKtobuilt = 1 - readOccupiedTile(target, buildState);
+
+		//创建随鼠标移动的图片精灵
 		if (buildState == Building::BuildingType::BASEMENT)
 		{
-			BuildingPictureWithMouse = Sprite::create("Game/building/basement.png");
+			if (OKtobuilt)
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/basement.png");
+			}
+			else
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/basement_block.png");
+			}
 			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.3));
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
-			BuildingPictureWithMouse = Sprite::create("Game/building/barrack.png");
+			if (OKtobuilt)
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/barrack.png");
+			}
+			else
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/barrack_block.png");
+			}
 			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.5));
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
-			BuildingPictureWithMouse = Sprite::create("Game/building/minefield.png");
+			if (OKtobuilt)
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/minefield.png");
+			}
+			else
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/minefield_block.png");
+			}
 			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.25));
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
-			BuildingPictureWithMouse = Sprite::create("Game/building/powerplant.png");
+			if (OKtobuilt)
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/powerplant.png");
+			}
+			else
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/powerplant_block.png");
+			}
 			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.3));
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
-			BuildingPictureWithMouse = Sprite::create("Game/building/warfactory.png");
+			if (OKtobuilt)
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/warfactory.png");
+			}
+			else
+			{
+				BuildingPictureWithMouse = Sprite::create("Game/building/warfactory_block.png");
+			}
 			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.45));
 		}
 
 		//在瓦片地图上定位 探测可能安放的位置
-		Point possiblePosition = convertFromTMToWorld(convertToTiledMap(target));
+		Point possiblePosition = convertFromTMToWorld(target);
 		BuildingPictureWithMouse->setPosition(possiblePosition);
 		BuildingPictureWithMouse->setOpacity(60);
 		map->addChild(BuildingPictureWithMouse, 100);
@@ -297,7 +342,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 	position[tiledmap] = convertFromTMToWorld(convertToTiledMap(position[world]));
 
 	//建筑状态
-	if(buildState)
+	if (buildState&&OKtobuilt)
 	{
 		//根据状态新建不同的GameElement并推入相应队伍的vector中
 		if (buildState == Building::BuildingType::BASEMENT)
@@ -398,14 +443,17 @@ bool Game::readBlock(Point tmPoint)
 {
 //	position = convertToMapLayer(position);
 //	Point tmPoint = convertToTiledMap(position);
-	int GID = _meta->getTileGIDAt(tmPoint);
-	if (tmPoint!=NULL)
+	if (0 <= tmPoint.x&&tmPoint.x <= tmNumber.x && 0 <= tmPoint.y&&tmPoint.y <= tmNumber.y)
 	{
-		auto properties = map->getPropertiesForGID(GID).asValueMap();
-		if (!properties.empty())
+		int GID = _meta->getTileGIDAt(tmPoint);
+		if (tmPoint != Vec2(0, 0))
 		{
-			auto block = properties["Block"].asString();
-			if (block == "True")return 1;
+			auto properties = map->getPropertiesForGID(GID).asValueMap();
+			if (!properties.empty())
+			{
+				auto block = properties["Block"].asString();
+				if (block == "true")return 1;
+			}
 		}
 	}
 	return 0;
@@ -415,31 +463,77 @@ void Game::addBlock(Point tmPoint)
 {
 //	position = convertToMapLayer(position);
 //	Point tmPoint = convertToTiledMap(position);
-	int GID = _meta->getTileGIDAt(tmPoint);
-	if (tmPoint != NULL)
+	if (0 <= tmPoint.x&&tmPoint.x <= tmNumber.x && 0 <= tmPoint.y&&tmPoint.y <= tmNumber.y)
 	{
-		auto properties = map->getPropertiesForGID(GID).asValueMap();
-		if (!properties.empty())
+		int GID = _meta->getTileGIDAt(tmPoint);
+		if (tmPoint != Vec2(0, 0))
 		{
-			auto block = properties["Block"].asString();
-			block = "True";
+			auto properties = map->getPropertiesForGID(GID).asValueMap();
+			if (!properties.empty())
+			{
+				auto block = properties["Block"].asString();
+				block = "True";
+			}
 		}
 	}
+
 }
 
 void Game::removeBlock(Point position)
 {
 	position = convertToMapLayer(position);
 	Point tmPoint = convertToTiledMap(position);
-	int GID = _meta->getTileGIDAt(tmPoint);
-	if (tmPoint != NULL)
+	if (0 <= tmPoint.x&&tmPoint.x <= tmNumber.x && 0 <= tmPoint.y&&tmPoint.y <= tmNumber.y)
 	{
-		auto properties = map->getPropertiesForGID(GID).asValueMap();
-		if (!properties.empty())
+		int GID = _meta->getTileGIDAt(tmPoint);
+		if (tmPoint != Vec2(0, 0))
 		{
-			auto block = properties["Block"].asString();
-			block = "False";
+			auto properties = map->getPropertiesForGID(GID).asValueMap();
+			if (!properties.empty())
+			{
+				auto block = properties["Block"].asString();
+				block = "False";
+			}
 		}
+	}
+}
+
+//基于瓦片地图API的碰撞检测
+
+bool Game::readOccupiedTile(Point tmPoint, int buildingType)
+{
+	int x = buildingTypeJudge(buildingType);
+	Point middle = tmPoint;
+
+	iter = occupiedCoordinate[x].begin();
+	for (iter; iter != occupiedCoordinate[x].end(); iter++)
+	{
+		Point temp;
+		temp.x = middle.x + (*iter).x;
+		temp.y = middle.y + (*iter).y;
+		//判断所在瓦片格子的Block属性
+		//读到1说明格子Block属性为1 则不可建造
+		if (readBlock(temp))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void Game::changeOccupiedTile(Point tmPoint, int buildingType)
+{
+	int x = buildingTypeJudge(buildingType);
+	Point middle = tmPoint;
+
+	iter = occupiedCoordinate[x].begin();
+	for (iter; iter != occupiedCoordinate[x].end(); iter++)
+	{
+		Point temp;
+		temp.x = middle.x + (*iter).x;
+		temp.y = middle.y + (*iter).y;
+		//改变所在瓦片格子的Block属性
+		addBlock(temp);
 	}
 }
 

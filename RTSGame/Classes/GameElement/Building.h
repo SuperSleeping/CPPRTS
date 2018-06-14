@@ -23,14 +23,6 @@ public:
 	//属性
 	int electricity;
 
-	//碰撞体积
-	//临近瓦片的相对位置
-	vector<Vec2> occupiedCoordinate;
-	vector<Vec2>::iterator iter;
-	//瓦片相对位置的属性（函数指针）
-	bool readOccupiedTile(bool(*readblock)(Point));		//读所占空间是否已被占有，判断是否能新建	//占有-1 未占有-0
-	void changeOccupiedTile(void(*addblock)(Point));	//新建后改变地图属性
-
 	//Construction:
 	Building();
 	Building(int type);
