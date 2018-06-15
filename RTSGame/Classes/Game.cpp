@@ -259,7 +259,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 
 		//检测碰撞(OKtobuilt)
-		target = convertToTiledMap(target);
+		target = convertToNeightborTiledMap(target);
 		OKtobuilt = 1 - readOccupiedTile(target, buildState);
 
 		//创建随鼠标移动的图片精灵
@@ -327,7 +327,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		//在瓦片地图上定位 探测可能安放的位置
 		Point possiblePosition = convertFromTMToWorld(target);
 		BuildingPictureWithMouse->setPosition(possiblePosition);
-		BuildingPictureWithMouse->setOpacity(60);
+		BuildingPictureWithMouse->setOpacity(150);
 		map->addChild(BuildingPictureWithMouse, 100);
 	}
 }
@@ -335,11 +335,15 @@ void Game::onMouseMove(cocos2d::Event* event)
 void Game::onMouseDown(cocos2d::Event* event)
 {
 	EventMouse* e = (EventMouse*)event;
-	enum {screen,world,tiledmap};
-	Point position[3];
+	enum {screen,world,tiledmapTM, tiledmapW};
+	Point position[4];
 	position[screen] = e->getLocationInView();
 	position[world] = convertToMapLayer(position[screen]);
-	position[tiledmap] = convertFromTMToWorld(convertToTiledMap(position[world]));
+	position[tiledmapTM] = convertToNeightborTiledMap(position[world]);
+	position[tiledmapW] = convertFromTMToWorld(position[tiledmapTM]);
+
+	//排除菜单范围
+	if (rectContain(menuRect, position[screen]))return;
 
 	//建筑状态
 	if (buildState&&OKtobuilt)
@@ -347,38 +351,42 @@ void Game::onMouseDown(cocos2d::Event* event)
 		//根据状态新建不同的GameElement并推入相应队伍的vector中
 		if (buildState == Building::BuildingType::BASEMENT)
 		{
-			auto building = Basement::create(position[tiledmap]);
+			auto building = Basement::create(position[tiledmapW]);
 			basementGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmap].y / tmSize.y));
+			game->addChild(building, -(position[tiledmapTM].y));
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
-			auto building = Barrack::create(position[tiledmap]);
+			auto building = Barrack::create(position[tiledmapW]);
 			barrackGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmap].y / tmSize.y));
+			game->addChild(building, -(position[tiledmapTM].y));
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
-			auto building = Minefield::create(position[tiledmap]);
+			auto building = Minefield::create(position[tiledmapW]);
 			minefieldGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmap].y / tmSize.y));
+			game->addChild(building, -(position[tiledmapTM].y));
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
-			auto building = Powerplant::create(position[tiledmap]);
+			auto building = Powerplant::create(position[tiledmapW]);
 			powerplantGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmap].y / tmSize.y));
+			game->addChild(building, -(position[tiledmapTM].y));
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
-			auto building = Warfactory::create(position[tiledmap]);
+			auto building = Warfactory::create(position[tiledmapW]);
 			warfactoryGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmap].y / tmSize.y));
+			game->addChild(building, -(position[tiledmapTM].y));
 		}
 		else
 		{
 			log("Wrong : buildState not found!");
 		}
+
+		//添加建筑占地 改变地图属性
+		changeOccupiedTile(position[tiledmapTM],buildState);
+
 		//退出建筑状态
 		buildState = NULL;
 		map->removeChild(BuildingPictureWithMouse);
@@ -441,12 +449,11 @@ void Game::buttonx(Ref* pSender)
 /***************/
 bool Game::readBlock(Point tmPoint)
 {
-//	position = convertToMapLayer(position);
-//	Point tmPoint = convertToTiledMap(position);
-	if (0 <= tmPoint.x&&tmPoint.x <= tmNumber.x && 0 <= tmPoint.y&&tmPoint.y <= tmNumber.y)
+	//判断瓦片是否在范围之内
+	if (!isTileOutOfRange(tmPoint))
 	{
 		int GID = _meta->getTileGIDAt(tmPoint);
-		if (tmPoint != Vec2(0, 0))
+		if (GID != 0)
 		{
 			auto properties = map->getPropertiesForGID(GID).asValueMap();
 			if (!properties.empty())
@@ -456,17 +463,20 @@ bool Game::readBlock(Point tmPoint)
 			}
 		}
 	}
+	else
+	{
+		log("Error: destination is out of the range of the tiledmap.\nError init!");
+		return 0;
+	}
 	return 0;
 }
 
 void Game::addBlock(Point tmPoint)
 {
-//	position = convertToMapLayer(position);
-//	Point tmPoint = convertToTiledMap(position);
-	if (0 <= tmPoint.x&&tmPoint.x <= tmNumber.x && 0 <= tmPoint.y&&tmPoint.y <= tmNumber.y)
+	if (!isTileOutOfRange(tmPoint))
 	{
 		int GID = _meta->getTileGIDAt(tmPoint);
-		if (tmPoint != Vec2(0, 0))
+		if (GID != 0)
 		{
 			auto properties = map->getPropertiesForGID(GID).asValueMap();
 			if (!properties.empty())
@@ -476,7 +486,6 @@ void Game::addBlock(Point tmPoint)
 			}
 		}
 	}
-
 }
 
 void Game::removeBlock(Point position)

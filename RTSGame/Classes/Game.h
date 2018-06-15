@@ -34,6 +34,17 @@ public:
 
 	//元地图属性
 	//@empty 0 @full 1
+	bool isTileOutOfRange(Point tmPoint)
+	{
+		if (0 <= tmPoint.x&&tmPoint.x < tmNumber.x && 0 <= tmPoint.y&&tmPoint.y < tmNumber.y)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
 	bool readBlock(Point position);
 	void addBlock(Point position);
 	void removeBlock(Point position);
@@ -56,15 +67,10 @@ public:
 	//@世界坐标转换成瓦片地图坐标
 	Point convertToTiledMap(Point position)
 	{
-		position.y = mapSize.y - position.y;
-
-		Point tmPoint;
-		int addx = 0, addy = 0;
-		if ((int)position.x % (int)tmSize.x > tmSize.x / 2) addx++;
-		if ((int)position.y % (int)tmSize.y > tmSize.y / 2) addy++;
-		tmPoint.x = (int)(position.x / tmSize.x) + addx;
-		tmPoint.y = (int)(position.y / tmSize.y) - addy;
-		return tmPoint;
+		int x, y;
+		x = position.x / tmSize.x;
+		y = (mapSize.y - position.y) / tmSize.y;
+		return Vec2(x, y);
 	}
 	//@瓦片转换成世界坐标
 	Point convertFromTMToWorld(Point position)
@@ -73,6 +79,21 @@ public:
 		position.y *= tmSize.y;
 		position.y = mapSize.y - position.y;
 		return position;
+	}
+	//@世界坐标换成相邻的瓦片坐标
+	Point convertToNeightborTiledMap(Point position)
+	{
+		Point tmPoint;
+		tmPoint = convertToTiledMap(position);
+		int addx = 0, addy = 0;
+		float _y = mapSize.y - position.y;
+
+		if (((int)position.x % (int)tmSize.x) >= tmSize.x / 2)addx++;
+		if (((int)_y % (int)tmSize.y) >= tmSize.y / 2)addy++;
+
+		tmPoint += Vec2(addx, addy);
+
+		return tmPoint;
 	}
 
 
@@ -100,12 +121,11 @@ public:
 	//@建造检测
 
 	//      *
-	//    * 0 *
+	//    * * *
 	//      *		occupiedCoordinate[0]
-
 	//      *
 	//    * * *
-	//  * * 0 * *
+	//  * * * * *
 	//    * * *
 	//      *		occupiedCoordinate[1]
 	vector<Vec2> occupiedCoordinate[2];
@@ -124,6 +144,7 @@ public:
 		occupiedCoordinate[1].push_back(Vec2(-1, 1));
 		occupiedCoordinate[1].push_back(Vec2(0, -2));
 		occupiedCoordinate[1].push_back(Vec2(0, -1));
+		occupiedCoordinate[1].push_back(Vec2(0, 0));
 		occupiedCoordinate[1].push_back(Vec2(0, 1));
 		occupiedCoordinate[1].push_back(Vec2(0, 2));
 		occupiedCoordinate[1].push_back(Vec2(1, -1));
