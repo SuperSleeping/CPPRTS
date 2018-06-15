@@ -54,6 +54,8 @@ bool Game::init()
 	_ground = map->getLayer("ground");
 	_meta = map->getLayer("meta");
 
+	_meta->setVisible(false);
+
 	//基本信息、尺寸、坐标信息初始化
 	myTeam = 0;
 	visibleSize.x = 1600;
