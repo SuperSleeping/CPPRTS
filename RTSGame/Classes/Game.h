@@ -34,6 +34,17 @@ public:
 
 	//元地图属性
 	//@empty 0 @full 1
+	bool isTileOutOfRange(Point tmPoint)
+	{
+		if (0 <= tmPoint.x&&tmPoint.x < tmNumber.x && 0 <= tmPoint.y&&tmPoint.y < tmNumber.y)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
 	bool readBlock(Point position);
 	void addBlock(Point position);
 	void removeBlock(Point position);
@@ -45,6 +56,7 @@ public:
 	Point visibleSize;
 	Point mapSize;
 	Point tmSize;
+	Point tmNumber;
 
 	//@屏幕坐标转换成层坐标（世界坐标系）
 	Point convertToMapLayer(Point position)
@@ -69,7 +81,7 @@ public:
 		return position;
 	}
 	//@世界坐标换成相邻的瓦片坐标
-	Point convertToneightborTiledMap(Point position)
+	Point convertToNeightborTiledMap(Point position)
 	{
 		Point tmPoint;
 		tmPoint = convertToTiledMap(position);
@@ -84,6 +96,7 @@ public:
 		return tmPoint;
 	}
 
+
 	//事件
 	//@基本信息
 	int myTeam;
@@ -92,7 +105,8 @@ public:
 	//@游戏状态 - 0-off 1-on 2-building
 	int selectedState;
 	int buildState;
-	
+	bool OKtobuilt;
+
 	//某些操作功能
 	//@范围判断 - 注意保证坐标系一致
 	bool rectContain(Rect rect,Point position)
@@ -102,6 +116,54 @@ public:
 		else
 			return false;
 	}
+
+	//@碰撞检测
+	//@建造检测
+
+	//      *
+	//    * * *
+	//      *		occupiedCoordinate[0]
+	//      *
+	//    * * *
+	//  * * * * *
+	//    * * *
+	//      *		occupiedCoordinate[1]
+	vector<Vec2> occupiedCoordinate[2];
+	vector<Vec2>::iterator iter;
+	void occupiedCoordinateInitialize()
+	{
+		occupiedCoordinate[0].push_back(Vec2(-1, 0));
+		occupiedCoordinate[0].push_back(Vec2(0, -1));
+		occupiedCoordinate[0].push_back(Vec2(0, 0));
+		occupiedCoordinate[0].push_back(Vec2(0, 1));
+		occupiedCoordinate[0].push_back(Vec2(0, 1));
+
+		occupiedCoordinate[1].push_back(Vec2(-2, 0));
+		occupiedCoordinate[1].push_back(Vec2(-1, -1));
+		occupiedCoordinate[1].push_back(Vec2(-1, 0));
+		occupiedCoordinate[1].push_back(Vec2(-1, 1));
+		occupiedCoordinate[1].push_back(Vec2(0, -2));
+		occupiedCoordinate[1].push_back(Vec2(0, -1));
+		occupiedCoordinate[1].push_back(Vec2(0, 0));
+		occupiedCoordinate[1].push_back(Vec2(0, 1));
+		occupiedCoordinate[1].push_back(Vec2(0, 2));
+		occupiedCoordinate[1].push_back(Vec2(1, -1));
+		occupiedCoordinate[1].push_back(Vec2(1, 0));
+		occupiedCoordinate[1].push_back(Vec2(1, 1));
+		occupiedCoordinate[1].push_back(Vec2(2, 2));
+	}
+
+	//@碰撞检测：建筑范围内瓦片的属性
+	bool buildingTypeJudge(int x)
+	{
+		if (x == 2)
+		{
+			return 0;
+		}
+		else return 1;
+	}
+	bool readOccupiedTile(Point tmPoint, int buildingType);		//读所占空间是否已被占有，判断是否能新建	//占有-1 未占有-0
+	void changeOccupiedTile(Point tmPoint, int buildingType);	//新建后改变地图属性
 
 	//@onMouseMove:
 	//@移动界面
@@ -141,6 +203,9 @@ public:
 	void buttonPowerplant(Ref* pSender);
 	void buttonMinefield(Ref* pSender);
 	void buttonWarfactory(Ref* pSender);
+	void buttonInfantry(Ref* pSender);
+	void buttonDog(Ref* pSender);
+	void buttonTank(Ref* pSender);
 
 
 	void buttonx(Ref* pSender);
