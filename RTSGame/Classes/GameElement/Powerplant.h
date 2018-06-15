@@ -9,6 +9,8 @@ public:
 
 	static Powerplant* create(Vec2 position);
 
+	virtual void setSelected(bool isSelected);
+
 };
 
 #endif

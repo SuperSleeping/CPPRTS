@@ -26,3 +26,18 @@ Powerplant* Powerplant::create(Vec2 position)
 	CC_SAFE_DELETE(powerplant);
 	return nullptr;
 }
+
+void Powerplant::setSelected(bool isSelected)
+{
+	selected = isSelected;
+	if (selected)
+	{
+		this->initWithFile("Game/building/powerplant_selected.png");
+		this->setAnchorPoint(Vec2(0.5, 0.2));
+	}
+	else
+	{
+		this->initWithFile("Game/building/powerplant.png");
+		this->setAnchorPoint(Vec2(0.5, 0.2));
+	}
+}

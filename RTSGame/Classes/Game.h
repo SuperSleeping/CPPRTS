@@ -105,9 +105,10 @@ public:
 	int resourceMoney;
 	int resourcePower;
 	//@游戏状态 - 0-off 1-on 2-building
-	int selectedState;
+	bool selectedState;			//0非选择状态/1选择状态
+	int selectedType;			//0无选择对象/选择的建筑类型（改变菜单）/选择人物状态
 	Point selectedSpawnPoint;
-	int buildState;
+	int buildState;				//0非建筑状态/预建设建筑类型
 	bool OKtobuilt;
 
 	//某些操作功能
@@ -200,6 +201,8 @@ public:
 	Point firstPress;
 	Point lastPress;
 	Rect selectRect;
+	void drawline(Point a, Point b);
+	Sprite* line[4];
 	
 	//@建筑状态
 	Sprite* BuildingPictureWithMouse;

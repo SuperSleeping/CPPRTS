@@ -9,10 +9,14 @@
 #include"GameElement/Powerplant.h"
 
 #include"GameElement/Infantry.h"
+#include"GameElement/Dog.h"
+#include"GameElement/Tank.h"
 
 //建立vector储存gameElement
 //4个数组分别存放四个国家的财产
 vector<Infantry*> infantryGroup[4];
+vector<Dog*> dogGroup[4];
+vector<Tank*> tankGroup[4];
 
 vector<Basement*> basementGroup[4];
 vector<Barrack*> barrackGroup[4];
@@ -192,11 +196,11 @@ void Game::update(float dt)
 void Game::menuUpdate()
 {
 	//检测是否为某建筑的选中状态，再根据相应功能检测资源改变菜单
-	if (selectedState == NULL)
+	if (selectedType == NULL)
 	{
 
 	}
-	else if (selectedState == Building::BuildingType::BASEMENT)
+	else if (selectedType == Building::BuildingType::BASEMENT)
 	{
 		
 	}
@@ -347,9 +351,6 @@ void Game::onMouseDown(cocos2d::Event* event)
 	position[tiledmapTM] = convertToNeightborTiledMap(position[world]);
 	position[tiledmapW] = convertFromTMToWorld(position[tiledmapTM]);
 
-	//firstPress信息载入
-	firstPress = position[world];
-
 	//排除菜单范围
 	if (rectContain(menuRect, position[screen]))return;
 
@@ -400,6 +401,15 @@ void Game::onMouseDown(cocos2d::Event* event)
 		map->removeChild(BuildingPictureWithMouse);
 	}
 
+	//选择状态（非建筑状态）
+	else
+	{
+		//加载选择状态
+		selectedState = true;
+		//firstPress信息载入
+		firstPress = position[world];
+	}
+
 }
 
 
@@ -415,62 +425,186 @@ void Game::onMouseUp(cocos2d::Event* event)
 	int x = position[tiledmapTM].x;
 	int y = position[tiledmapTM].y;
 
-	//lastPress信息载入
-	lastPress = position[world];
+	//建筑状态
+	if (buildState) return;
+
+	//选择状态
+	if (selectedState)
+	{
+		//lastPress信息载入
+		lastPress = position[world];
+
+		//开始置入当前次选择的情况
+		selectedType = NULL;
+		//判断是单选还是框选
+		//单选
+		//@判断标准：//目标范围包含鼠标点击点
+		if (firstPress.x - lastPress.x <= 64 && firstPress.x - lastPress.x >= -64 && firstPress.y - lastPress.y <= 36 && firstPress.y - lastPress.y >= -36)
+		{
+			//以目标锚点为中心开始判断的矩形状
+			//已经过数学变换
+			Point leftdown = Vec2(lastPress.x - 48, lastPress.y - 72);
+			Size size = Size(96, 96);
+			selectRect = Rect(leftdown, size);
+
+			//test
+			auto test = Sprite::create("selectedRect.png");
+			test->setAnchorPoint(Vec2(0, 0));
+			test->setPosition(leftdown);
+			game->addChild(test, 100);
+
+			//遍历建筑
+			//@清除原来的select痕迹，创建新的select标记
+			//Basement
+			{
+				vector<Basement*>::iterator iterBasement;
+				for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
+				{
+					if (rectContain(selectRect, (*iterBasement)->positionCurrent))
+					{
+						(*iterBasement)->setSelected(true);
+						///					selectedSpawnPoint = (*iterBasement)->spawnPoint;
+						selectedState = true;
+						selectedType = Building::BASEMENT;
+					}
+					else
+					{
+						(*iterBasement)->setSelected(false);
+					}
+				}
+			}
+			//Minefield
+			{
+				vector<Minefield*>::iterator iterMinefield;
+				for (iterMinefield = minefieldGroup[myTeam].begin(); iterMinefield != minefieldGroup[myTeam].end(); iterMinefield++)
+			{
+				if (rectContain(selectRect, (*iterMinefield)->positionCurrent))
+				{
+					(*iterMinefield)->setSelected(true);
+					selectedState = true;
+					selectedType = Building::MINEFIELD;
+				}
+				else
+				{
+					(*iterMinefield)->setSelected(false);
+				}
+			}
+			}
+			//Barrack
+			{
+				vector<Barrack*>::iterator iterBarrack;
+				for (iterBarrack = barrackGroup[myTeam].begin(); iterBarrack != barrackGroup[myTeam].end(); iterBarrack++)
+			{
+				if (rectContain(selectRect, (*iterBarrack)->positionCurrent))
+				{
+					(*iterBarrack)->setSelected(true);
+					selectedState = true;
+					selectedType = Building::BARRACK;
+				}
+				else
+				{
+					(*iterBarrack)->setSelected(false);
+				}
+			}
+			}
+			//Warfactory
+			{
+				vector<Warfactory*>::iterator iterWarfactory;
+				for (iterWarfactory = warfactoryGroup[myTeam].begin(); iterWarfactory != warfactoryGroup[myTeam].end(); iterWarfactory++)
+				{
+					if (rectContain(selectRect, (*iterWarfactory)->positionCurrent))
+					{
+						(*iterWarfactory)->setSelected(true);
+						selectedState = true;
+						selectedType = Building::WARFACTORY;
+					}
+					else
+					{
+						(*iterWarfactory)->setSelected(false);
+					}
+				}
+			}
+			//Powerplant
+			{
+				vector<Powerplant*>::iterator iterPowerplant;
+				//Powerplant尺寸比较小 重新判断
+				Point leftdown = Vec2(lastPress.x - 24, lastPress.y - 24);
+				Size size = Size(48,48);
+				selectRect = Rect(leftdown, size);
+				for (iterPowerplant = powerplantGroup[myTeam].begin(); iterPowerplant != powerplantGroup[myTeam].end(); iterPowerplant++)
+				{
+					if (rectContain(selectRect, (*iterPowerplant)->positionCurrent))
+					{
+						(*iterPowerplant)->setSelected(true);
+						selectedState = true;
+						selectedType = Building::POWERPLANT;
+					}
+					else
+					{
+						(*iterPowerplant)->setSelected(false);
+					}
+				}
+			}
+
+			//遍历人物
+
+		}
+
+		//框选
+		//@判断标准：框选范围内包括目标的瓦片地图位置
+		else
+		{
+			//test(firstPoint-lastPoint)
+			/*
+			auto point1 = Sprite::create("point.png");
+			point1->setPosition(firstPress);
+			game->addChild(point1,100);
+			auto point2 = Sprite::create("point.png");
+			point2->setPosition(lastPress);
+			game->addChild(point2, 100);
+			*/
+			drawline(firstPress, lastPress);
+
+			Size rectSize(lastPress - firstPress);
+			selectRect = Rect(firstPress, rectSize);
+
+			//遍历己方所有人
+			//Infantry
+			vector<Infantry*>::iterator iterInfantry;
+			for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
+			{
+				if (rectContain(selectRect, (*iterInfantry)->positionCurrent))
+				{
+					(*iterInfantry)->setSelected(true);
+					selectedType = Character::CharacterChosen;
+				}
+				else
+				{
+					(*iterInfantry)->setSelected(false);
+				}
+			}
+		}
+	}
 
 	//排除菜单范围
 	if (rectContain(menuRect, position[screen]))return;
 
-	//排除建筑状态
-	if (buildState)return;
+}
 
-	//选择
-	selectedState = NULL;
-	//判断是单选还是框选
-	//单选（临近瓦片坐标同一点）
-	//@判断标准：//目标范围包含鼠标点击点
-	if (convertToNeightborTiledMap(firstPress) == position[tiledmapTM])
+//框选的drawline
+void Game::drawline(Point a, Point b)
+{
+	if (line[1] != NULL)
 	{
-		selectRect = Rect(Vec2(lastPress.x - 30, lastPress.y - 10), Size(60, 20));
-
-		vector<Basement*>::iterator iterBasement;
-		for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
-		{
-			if (rectContain(selectRect, (*iterBasement)->positionCurrent))
-			{
-				(*iterBasement)->setSelected(true);
-				selectedSpawnPoint = (*iterBasement)->spawnPoint;
-				selectedState = Building::BASEMENT;
-			}
-			else
-			{
-				(*iterBasement)->setSelected(false);
-			}
-		}
+		map->removeChild(line[1]);
+		map->removeChild(line[2]);
+		map->removeChild(line[3]);
+		map->removeChild(line[4]);
 	}
-	//框选
-	//@判断标准：框选范围内包括目标的瓦片地图位置
-	else
-	{
-		Size rectSize(lastPress - firstPress);
-		selectRect = Rect(firstPress, rectSize);
+	line[1] = Sprite::create();
+//	line[1]->setContentSize(());
 
-		//遍历己方所有人
-		//Infantry
-		vector<Infantry*>::iterator iterInfantry;
-		for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
-		{
-			if (rectContain(selectRect, (*iterInfantry)->positionCurrent))
-			{
-				(*iterInfantry)->setSelected(true);
-				selectedState = Character::CharacterChosen;
-			}
-			else
-			{
-				(*iterInfantry)->setSelected(false);
-			}
-		}
-	}
+
 }
 
 /***************/
@@ -504,20 +638,26 @@ void Game::buttonWarfactory(Ref* pSender)
 
 void Game::buttonInfantry(Ref* pSender)
 {
-	auto infantry = Infantry::create(selectedSpawnPoint);
+	auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
-	game->addChild(infantry,z);
-	infantryGroup[myTeam].push_back(infantry);
+	game->addChild(character,z);
+	infantryGroup[myTeam].push_back(character);
 }
 
 void Game::buttonDog(Ref* pSender)
 {
-	buildState = Character::CharacterType::DOG;
+	auto character = Dog::create(selectedSpawnPoint);
+	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
+	game->addChild(character, z);
+	dogGroup[myTeam].push_back(character);
 }
 
 void Game::buttonTank(Ref* pSender)
 {
-	buildState = Character::CharacterType::TANK;
+	auto character = Tank::create(selectedSpawnPoint);
+	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
+	game->addChild(character, z);
+	tankGroup[myTeam].push_back(character);
 }
 
 void Game::buttonx(Ref* pSender)

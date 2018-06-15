@@ -9,6 +9,8 @@ public:
 	Minefield();
 	static Minefield* create(Vec2 position);
 
+	virtual void setSelected(bool isSelected);
+
 };
 
 #endif

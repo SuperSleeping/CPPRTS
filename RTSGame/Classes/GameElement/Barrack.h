@@ -9,6 +9,8 @@ public:
 	static Barrack* create(Vec2 position);
 
 	Barrack();
+
+	virtual void setSelected(bool isSelected);
 };
 
 #endif

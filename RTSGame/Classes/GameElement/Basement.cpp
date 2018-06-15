@@ -24,3 +24,18 @@ Basement* Basement::create(Vec2 position)
 	CC_SAFE_DELETE(basement);
 	return nullptr;
 }
+
+void Basement::setSelected(bool isSelected)
+{
+	selected = isSelected;
+	if (selected)
+	{
+		this->initWithFile("Game/building/basement_selected.png");
+		this->setAnchorPoint(Vec2(0.5, 0.3));
+	}
+	else
+	{
+		this->initWithFile("Game/building/basement.png");
+		this->setAnchorPoint(Vec2(0.5, 0.3));
+	}
+}

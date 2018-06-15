@@ -4,7 +4,7 @@ Tank* Tank::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分
 	Tank* tank = new (std::nothrow)Tank;
-	if (tank && tank->initWithFile("Game/character/dog.png"))
+	if (tank && tank->initWithFile("Game/character/tank/leftdown.png"))
 	{
 		//位置设置
 		tank->setAnchorPoint(Vec2(0.5, 0));

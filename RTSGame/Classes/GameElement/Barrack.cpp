@@ -27,3 +27,18 @@ Barrack* Barrack::create(Vec2 position)
 	CC_SAFE_DELETE(barrack);
 	return nullptr;
 }
+
+void Barrack::setSelected(bool isSelected)
+{
+	selected = isSelected;
+	if (selected)
+	{
+		this->initWithFile("Game/building/barrack_selected.png");
+		this->setAnchorPoint(Vec2(0.5, 0.4));
+	}
+	else
+	{
+		this->initWithFile("Game/building/barrack.png");
+		this->setAnchorPoint(Vec2(0.5, 0.4));
+	}
+}

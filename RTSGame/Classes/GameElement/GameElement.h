@@ -30,6 +30,19 @@ public:
 		selected = isSelected;
 	}
 
+	//÷ÿ‘ÿsetPosition
+	virtual void setPosition(const Vec2& pos);
+
+	Point convertToTM(Point position)
+	{
+		Point tmSize = Vec2(48,24);
+		Point mapSize = Vec2(5664, 3312);
+		int x, y;
+		x = position.x / tmSize.x;
+		y = (mapSize.y - position.y) / tmSize.y;
+		return Vec2(x, y);
+	}
+
 };
 
 #endif

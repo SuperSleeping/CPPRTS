@@ -24,3 +24,18 @@ Minefield* Minefield::create(Vec2 position)
 	CC_SAFE_DELETE(minefield);
 	return nullptr;
 }
+
+void Minefield::setSelected(bool isSelected)
+{
+	selected = isSelected;
+	if (selected)
+	{
+		this->initWithFile("Game/building/minefield_selected.png");
+		this->setAnchorPoint(Vec2(0.5, 0.25));
+	}
+	else
+	{
+		this->initWithFile("Game/building/minefield.png");
+		this->setAnchorPoint(Vec2(0.5, 0.25));
+	}
+}
