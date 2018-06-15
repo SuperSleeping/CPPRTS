@@ -12,6 +12,9 @@ public:
 	//创建GameElement的函数
 	static GameElement* create(const char* filename, Vec2 position);
 
+	//绑定touch监听器
+	EventListenerTouchOneByOne * touchListener;
+
 	//属性
 	bool selected;
 	int team;
@@ -20,6 +23,12 @@ public:
 
 	Vec2 positionCurrent;
 	Vec2 positionCurrentTM;
+
+	//选择设置
+	void setSelected(bool isSelected)
+	{
+		selected = isSelected;
+	}
 
 };
 

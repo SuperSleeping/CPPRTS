@@ -11,11 +11,8 @@ Building::Building(int type)
 	buildingType = type;
 	
 	//小兵等生成点
-	if (BuildingType::POWERPLANT)
-	{
-		spawnPoint = positionCurrent + Vec2(48, -24);
-	}
-	else spawnPoint = positionCurrent + 2 * Vec2(48, -24);
+	spawnPoint = positionCurrent + 2 * Vec2(48, -24);
+
 
 
 }

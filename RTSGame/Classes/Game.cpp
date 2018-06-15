@@ -73,7 +73,7 @@ bool Game::init()
 	{
 	menu = Menu::create();
 	//按钮的z坐标决定图像和触发函数 z坐标较大的图像显示在上层 但是先调用的是z坐标较小的函数
-	//解决方法很粗暴 是改变了按钮的图案
+	//解决办法是改变按钮是否可按的状态
 	basement_button = MenuItemImage::create("Game/button/basement_button1.png", "Game/button/basement_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
 	basementx_button = MenuItemImage::create("Game/button/basement_button2.png", "Game/button/basement_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 	barrack_button = MenuItemImage::create("Game/button/barrack_button1.png", "Game/button/barrack_button3.png", CC_CALLBACK_1(Game::buttonBarrack, this));
@@ -155,10 +155,13 @@ bool Game::init()
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
 	//@鼠标移动到边界的时候屏幕移动
 	auto mouseListener = EventListenerMouse::create();
+
+
 	mouseListener->onMouseMove = CC_CALLBACK_1(Game::onMouseMove, this);
 	mouseListener->onMouseDown = CC_CALLBACK_1(Game::onMouseDown, this);
-	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
+	mouseListener->onMouseUp = CC_CALLBACK_1(Game::onMouseUp, this);
 
+	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
 
 
@@ -175,6 +178,7 @@ bool Game::init()
 	*/
 
 	this->scheduleUpdate();
+	
 
 	return true;
 }
@@ -343,6 +347,9 @@ void Game::onMouseDown(cocos2d::Event* event)
 	position[tiledmapTM] = convertToNeightborTiledMap(position[world]);
 	position[tiledmapW] = convertFromTMToWorld(position[tiledmapTM]);
 
+	//firstPress信息载入
+	firstPress = position[world];
+
 	//排除菜单范围
 	if (rectContain(menuRect, position[screen]))return;
 
@@ -393,7 +400,77 @@ void Game::onMouseDown(cocos2d::Event* event)
 		map->removeChild(BuildingPictureWithMouse);
 	}
 
+}
 
+
+void Game::onMouseUp(cocos2d::Event* event)
+{
+	EventMouse* e = (EventMouse*)event;
+	enum { screen, world, tiledmapTM, tiledmapW };
+	Point position[4];
+	position[screen] = e->getLocationInView();
+	position[world] = convertToMapLayer(position[screen]);
+	position[tiledmapTM] = convertToNeightborTiledMap(position[world]);
+	position[tiledmapW] = convertFromTMToWorld(position[tiledmapTM]);
+	int x = position[tiledmapTM].x;
+	int y = position[tiledmapTM].y;
+
+	//lastPress信息载入
+	lastPress = position[world];
+
+	//排除菜单范围
+	if (rectContain(menuRect, position[screen]))return;
+
+	//排除建筑状态
+	if (buildState)return;
+
+	//选择
+	selectedState = NULL;
+	//判断是单选还是框选
+	//单选（临近瓦片坐标同一点）
+	//@判断标准：//目标范围包含鼠标点击点
+	if (convertToNeightborTiledMap(firstPress) == position[tiledmapTM])
+	{
+		selectRect = Rect(Vec2(lastPress.x - 30, lastPress.y - 10), Size(60, 20));
+
+		vector<Basement*>::iterator iterBasement;
+		for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
+		{
+			if (rectContain(selectRect, (*iterBasement)->positionCurrent))
+			{
+				(*iterBasement)->setSelected(true);
+				selectedSpawnPoint = (*iterBasement)->spawnPoint;
+				selectedState = Building::BASEMENT;
+			}
+			else
+			{
+				(*iterBasement)->setSelected(false);
+			}
+		}
+	}
+	//框选
+	//@判断标准：框选范围内包括目标的瓦片地图位置
+	else
+	{
+		Size rectSize(lastPress - firstPress);
+		selectRect = Rect(firstPress, rectSize);
+
+		//遍历己方所有人
+		//Infantry
+		vector<Infantry*>::iterator iterInfantry;
+		for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
+		{
+			if (rectContain(selectRect, (*iterInfantry)->positionCurrent))
+			{
+				(*iterInfantry)->setSelected(true);
+				selectedState = Character::CharacterChosen;
+			}
+			else
+			{
+				(*iterInfantry)->setSelected(false);
+			}
+		}
+	}
 }
 
 /***************/
@@ -427,7 +504,10 @@ void Game::buttonWarfactory(Ref* pSender)
 
 void Game::buttonInfantry(Ref* pSender)
 {
-	buildState = Character::CharacterType::INFANTRY;
+	auto infantry = Infantry::create(selectedSpawnPoint);
+	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
+	game->addChild(infantry,z);
+	infantryGroup[myTeam].push_back(infantry);
 }
 
 void Game::buttonDog(Ref* pSender)
