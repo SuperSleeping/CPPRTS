@@ -270,13 +270,15 @@ bool GameScene::init()
 	testenem->SetTarget(testmy);
 
 	buildRespone(SpawnDatastring(1, 'b', 300, 300, 1));*/
-
+	
 	static auto MouseReply = EventListenerMouse::create();
+	//DrawNode* drawNode = DrawNode::create();
+	//this->addChild(drawNode);
+	//auto color = Color4F(1, 0, 0, 1);
 
 	MouseReply->onMouseDown = [=](Event *event) {
 		EventMouse* e = (EventMouse*)event;
 		Vec2 position = e->getLocationInView();
-		Vec2 target = position - PlayMap->getPosition();
 		clickinit = position;
 	};
 
@@ -295,15 +297,15 @@ bool GameScene::init()
 			{
 				for (auto soldier : SoldierList[MyNumber])
 				{
+					soldier->Select(0);
+					soldier->SelectedReply();
+				}
+				for (auto soldier : SoldierList[MyNumber])
+				{
 					auto m = soldier->getPosition();
 					if (ContainRect(m, clickinit, position))
 					{
 						soldier->Select(1);
-						soldier->SelectedReply();
-					}
-					else
-					{
-						soldier->Select(0);
 						soldier->SelectedReply();
 					}
 				}
