@@ -12,6 +12,9 @@ public:
 	//创建GameElement的函数
 	static GameElement* create(const char* filename, Vec2 position);
 
+	//绑定touch监听器
+	EventListenerTouchOneByOne * touchListener;
+
 	//属性
 	bool selected;
 	int team;
@@ -21,20 +24,12 @@ public:
 	Vec2 positionCurrent;
 	Vec2 positionCurrentTM;
 
-	//重载setPosition()
-	void setPosition(const Vec2& pos);
-
-private:
-	Point convertToTM(Point position)
+	//选择设置
+	void setSelected(bool isSelected)
 	{
-		Point mapSize = Vec2(5664, 3312);
-		Point tmSize = Vec2(48, 24);
-
-		int x, y;
-		x = position.x / tmSize.x;
-		y = (mapSize.y - position.y) / tmSize.y;
-		return Vec2(x, y);
+		selected = isSelected;
 	}
+
 };
 
 #endif

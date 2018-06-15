@@ -14,7 +14,8 @@ public:
 	{
 		INFANTRY = 6,
 		DOG,
-		TANK
+		TANK,
+		CharacterChosen
 	};
 
 	//运动相关

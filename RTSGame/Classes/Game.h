@@ -29,7 +29,6 @@ public:
 	TMXLayer* _grass;
 	TMXLayer* _grasswet;
 	TMXLayer* _ground;
-	TMXLayer* _sea;
 	TMXLayer* _meta;
 
 	//元地图属性
@@ -48,7 +47,7 @@ public:
 	bool readBlock(Point tmPoint);
 	void addBlock(Point tmPoint);
 	void removeBlock(Point tmPoint);
-	//@元地图属性用isBlock数组保存 便于修改or读取
+	//@元地图Block属性用isBlock数组保存 便于修改
 	bool isBlock[118][138];
 	void isBlockInitialize();
 
@@ -107,16 +106,9 @@ public:
 	int resourcePower;
 	//@游戏状态 - 0-off 1-on 2-building
 	int selectedState;
-	long selectedTag;
+	Point selectedSpawnPoint;
 	int buildState;
 	bool OKtobuilt;
-	//@结构体存放已建建筑信息
-	struct
-	{
-		int type;
-		int tag;
-	}questionBuilding[118][138];
-//	void changeBuildingBlock(Point tmPoint, int buildingType);  //写在了addBlock()里面
 
 	//某些操作功能
 	//@范围判断 - 注意保证坐标系一致
@@ -186,10 +178,28 @@ public:
 	bool readOccupiedTile(Point tmPoint, int buildingType);		//读所占空间是否已被占有，判断是否能新建	//占有-1 未占有-0
 	void changeOccupiedTile(Point tmPoint, int buildingType);	//新建后改变地图属性
 
-	//@onMouseMove:
-	//@移动界面
+	//鼠标事件
+	//@三种状态
+	//@已包含功能：
+	//
+	//******Up:
+	//		*(单点选择某Building/Character)
+	//
+	//******Down：
+	//		*(框选Character)
+	//		建一个新建筑
+	//
+	//******Move:
+	//		视角切换
+	//		建筑状态下，选定的可建筑类型跟随鼠标移动
 	void onMouseMove(cocos2d::Event* event);
 	void onMouseDown(cocos2d::Event* event);
+	void onMouseUp(cocos2d::Event* event);
+
+	//@框选范围
+	Point firstPress;
+	Point lastPress;
+	Rect selectRect;
 	
 	//@建筑状态
 	Sprite* BuildingPictureWithMouse;
@@ -228,8 +238,9 @@ public:
 	void buttonDog(Ref* pSender);
 	void buttonTank(Ref* pSender);
 
-
 	void buttonx(Ref* pSender);
+
+	//
 
 
 

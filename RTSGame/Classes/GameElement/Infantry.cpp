@@ -4,7 +4,7 @@ Infantry* Infantry::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分
 	Infantry* infantry = new (std::nothrow)Infantry;
-	if (infantry && infantry->initWithFile("Game/character/infantry.png"))
+	if (infantry && infantry->initWithFile("Game/character/infantry/leftdown.png"))
 	{
 		infantry->setAnchorPoint(Vec2(0.5, 0));
 		infantry->setPosition(position);
