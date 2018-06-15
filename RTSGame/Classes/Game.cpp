@@ -65,7 +65,7 @@ bool Game::init()
 	tmNumber.x = mapSize.x / tmSize.x;
 	tmNumber.y = mapSize.y / tmSize.y;
 	OKtobuilt = 0;
-	occupiedCoordinateInitialize();
+	occupiedRelatedCoordinateInitialize();
 	isBlockInitialize();
 
 	
@@ -286,7 +286,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 			{
 				BuildingPictureWithMouse = Sprite::create("Game/building/barrack_block.png");
 			}
-			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.5));
+			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.4));
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
@@ -310,7 +310,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 			{
 				BuildingPictureWithMouse = Sprite::create("Game/building/powerplant_block.png");
 			}
-			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.3));
+			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.2));
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
@@ -322,7 +322,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 			{
 				BuildingPictureWithMouse = Sprite::create("Game/building/warfactory_block.png");
 			}
-			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.45));
+			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.4));
 		}
 
 		//在瓦片地图上定位 探测可能安放的位置
@@ -354,31 +354,31 @@ void Game::onMouseDown(cocos2d::Event* event)
 		{
 			auto building = Basement::create(position[tiledmapW]);
 			basementGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmapTM].y));
+			game->addChild(building, position[tiledmapTM].y);
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
 			auto building = Barrack::create(position[tiledmapW]);
 			barrackGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmapTM].y));
+			game->addChild(building, position[tiledmapTM].y);
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
 			auto building = Minefield::create(position[tiledmapW]);
 			minefieldGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmapTM].y));
+			game->addChild(building, position[tiledmapTM].y);
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
 			auto building = Powerplant::create(position[tiledmapW]);
 			powerplantGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmapTM].y));
+			game->addChild(building, position[tiledmapTM].y);
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
 			auto building = Warfactory::create(position[tiledmapW]);
 			warfactoryGroup[myTeam].push_back(building);
-			game->addChild(building, -(position[tiledmapTM].y));
+			game->addChild(building, position[tiledmapTM].y);
 		}
 		else
 		{
@@ -539,8 +539,8 @@ bool Game::readOccupiedTile(Point tmPoint, int buildingType)
 	int x = buildingTypeJudge(buildingType);
 	Point middle = tmPoint;
 
-	iter = occupiedCoordinate[x].begin();
-	for (iter; iter != occupiedCoordinate[x].end(); iter++)
+	iter = checkOccupiedCoordinate[x].begin();
+	for (iter; iter != checkOccupiedCoordinate[x].end(); iter++)
 	{
 		Point temp;
 		temp.x = middle.x + (*iter).x;
@@ -568,6 +568,11 @@ void Game::changeOccupiedTile(Point tmPoint, int buildingType)
 		temp.y = middle.y + (*iter).y;
 		//改变所在瓦片格子的Block属性
 		addBlock(temp);
+
+		//debug
+		auto point = Sprite::create("point.png");
+		point->setPosition(convertFromTMToWorld(temp));
+		game->addChild(point, 500);
 	}
 }
 

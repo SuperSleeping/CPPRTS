@@ -13,7 +13,7 @@ Warfactory* Warfactory::create(Vec2 position)
 	if (warfactory && warfactory->initWithFile("Game/building/warfactory.png"))
 	{
 		//锚点坐标设置
-		warfactory->setAnchorPoint(Vec2(0.5, 0.45));
+		warfactory->setAnchorPoint(Vec2(0.5, 0.4));
 		warfactory->setPosition(position);
 		//属性设置
 		warfactory->blood = 200;

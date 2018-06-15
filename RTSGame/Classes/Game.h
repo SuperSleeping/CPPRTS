@@ -132,14 +132,15 @@ public:
 	//    * * *
 	//      *		occupiedCoordinate[1]
 	vector<Vec2> occupiedCoordinate[2];
+	vector<Vec2> checkOccupiedCoordinate[2];
 	vector<Vec2>::iterator iter;
-	void occupiedCoordinateInitialize()
+	void occupiedRelatedCoordinateInitialize()
 	{
 		occupiedCoordinate[0].push_back(Vec2(-1, 0));
 		occupiedCoordinate[0].push_back(Vec2(0, -1));
 		occupiedCoordinate[0].push_back(Vec2(0, 0));
 		occupiedCoordinate[0].push_back(Vec2(0, 1));
-		occupiedCoordinate[0].push_back(Vec2(0, 1));
+		occupiedCoordinate[0].push_back(Vec2(1, 0));
 
 		occupiedCoordinate[1].push_back(Vec2(-2, 0));
 		occupiedCoordinate[1].push_back(Vec2(-1, -1));
@@ -153,7 +154,16 @@ public:
 		occupiedCoordinate[1].push_back(Vec2(1, -1));
 		occupiedCoordinate[1].push_back(Vec2(1, 0));
 		occupiedCoordinate[1].push_back(Vec2(1, 1));
-		occupiedCoordinate[1].push_back(Vec2(2, 2));
+		occupiedCoordinate[1].push_back(Vec2(2, 0));
+
+		checkOccupiedCoordinate[0].push_back(Vec2(0, 0));
+
+		checkOccupiedCoordinate[1].push_back(Vec2(-1, 0));
+		checkOccupiedCoordinate[1].push_back(Vec2(0, -1));
+		checkOccupiedCoordinate[1].push_back(Vec2(0, 0));
+		checkOccupiedCoordinate[1].push_back(Vec2(0, 1));
+		checkOccupiedCoordinate[1].push_back(Vec2(1, 0));
+
 	}
 
 	//@Åö×²¼ì²â£º½¨Öþ·¶Î§ÄÚÍßÆ¬µÄÊôÐÔ

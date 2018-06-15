@@ -4,7 +4,7 @@ Barrack::Barrack()
 	:Building(BARRACK)
 {
 	this->initWithFile("Game/building/barrack.png");
-	this->setAnchorPoint(Vec2(0.5, 0.5));
+	this->setAnchorPoint(Vec2(0.5, 0.4));
 	this->blood = 200;
 
 
