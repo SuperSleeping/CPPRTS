@@ -45,9 +45,12 @@ public:
 			return true;
 		}
 	}
-	bool readBlock(Point position);
-	void addBlock(Point position);
-	void removeBlock(Point position);
+	bool readBlock(Point tmPoint);
+	void addBlock(Point tmPoint);
+	void removeBlock(Point tmPoint);
+	//@元地图属性用isBlock数组保存 便于修改or读取
+	bool isBlock[118][138];
+	void isBlockInitialize();
 
 	//坐标转换
 	//@visibleSize  窗口可见大小

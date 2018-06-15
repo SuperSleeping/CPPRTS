@@ -66,6 +66,7 @@ bool Game::init()
 	tmNumber.y = mapSize.y / tmSize.y;
 	OKtobuilt = 0;
 	occupiedCoordinateInitialize();
+	isBlockInitialize();
 
 	
 	//²Ëµ¥À¸
@@ -447,63 +448,87 @@ void Game::buttonx(Ref* pSender)
 /***************/
 //ÍßÆ¬µØÍ¼API
 /***************/
-bool Game::readBlock(Point tmPoint)
+
+void Game::isBlockInitialize()
 {
-	//ÅÐ¶ÏÍßÆ¬ÊÇ·ñÔÚ·¶Î§Ö®ÄÚ
-	if (!isTileOutOfRange(tmPoint))
+	Point tmPoint;
+	for (int x = 0; x < tmNumber.x; x++)
 	{
-		int GID = _meta->getTileGIDAt(tmPoint);
-		if (GID != 0)
+		for (int y = 0; y < tmNumber.y; y++)
 		{
-			auto properties = map->getPropertiesForGID(GID).asValueMap();
-			if (!properties.empty())
+			tmPoint = Vec2(x, y);
+
+			//ÅÐ¶ÏÍßÆ¬ÊÇ·ñÔÚ·¶Î§Ö®ÄÚ
+			if (!isTileOutOfRange(tmPoint))
 			{
-				auto block = properties["Block"].asString();
-				if (block == "true")return 1;
+				int GID = _meta->getTileGIDAt(tmPoint);
+				if (GID != 0)
+				{
+					auto properties = map->getPropertiesForGID(GID).asValueMap();
+					if (!properties.empty())
+					{
+						auto block = properties["Block"].asString();
+						if (block == "true")
+						{
+							isBlock[x][y] = true;
+						}
+						else
+						{
+							isBlock[x][y] = false;
+						}
+					}
+				}
 			}
 		}
 	}
+}
+
+bool Game::readBlock(Point tmPoint)
+{
+	int x = tmPoint.x;
+	int y = tmPoint.y;
+
+	//ÅÐ¶ÏÍßÆ¬ÊÇ·ñÔÚ·¶Î§Ö®ÄÚ
+	if (0 <= x && x < tmNumber.x && 0 <= y && tmNumber.y)
+	{
+		return isBlock[x][y];
+	}
 	else
 	{
-		log("Error: destination is out of the range of the tiledmap.\nError init!");
+		log("Error:Point out of range!");
 		return 0;
 	}
-	return 0;
 }
 
 void Game::addBlock(Point tmPoint)
 {
-	if (!isTileOutOfRange(tmPoint))
+	int x = tmPoint.x;
+	int y = tmPoint.y;
+
+	//ÅÐ¶ÏÍßÆ¬ÊÇ·ñÔÚ·¶Î§Ö®ÄÚ
+	if (0 <= x && x < tmNumber.x && 0 <= y && tmNumber.y)
 	{
-		int GID = _meta->getTileGIDAt(tmPoint);
-		if (GID != 0)
-		{
-			auto properties = map->getPropertiesForGID(GID).asValueMap();
-			if (!properties.empty())
-			{
-				auto block = properties["Block"].asString();
-				block = "True";
-			}
-		}
+		isBlock[x][y] = true;
+	}
+	else
+	{
+		log("Error:Point out of range!");
 	}
 }
 
-void Game::removeBlock(Point position)
+void Game::removeBlock(Point tmPoint)
 {
-	position = convertToMapLayer(position);
-	Point tmPoint = convertToTiledMap(position);
-	if (0 <= tmPoint.x&&tmPoint.x <= tmNumber.x && 0 <= tmPoint.y&&tmPoint.y <= tmNumber.y)
+	int x = tmPoint.x;
+	int y = tmPoint.y;
+
+	//ÅÐ¶ÏÍßÆ¬ÊÇ·ñÔÚ·¶Î§Ö®ÄÚ
+	if (0 <= x && x < tmNumber.x && 0 <= y && tmNumber.y)
 	{
-		int GID = _meta->getTileGIDAt(tmPoint);
-		if (tmPoint != Vec2(0, 0))
-		{
-			auto properties = map->getPropertiesForGID(GID).asValueMap();
-			if (!properties.empty())
-			{
-				auto block = properties["Block"].asString();
-				block = "False";
-			}
-		}
+		isBlock[x][y] = false;
+	}
+	else
+	{
+		log("Error:Point out of range!");
 	}
 }
 
