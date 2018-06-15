@@ -347,52 +347,72 @@ void Game::onMouseDown(cocos2d::Event* event)
 	if (rectContain(menuRect, position[screen]))return;
 
 	//建筑状态
-	if (buildState&&OKtobuilt)
+	if (buildState)
 	{
-		//根据状态新建不同的GameElement并推入相应队伍的vector中
-		if (buildState == Building::BuildingType::BASEMENT)
+		//能够建造
+		if (OKtobuilt)
 		{
-			auto building = Basement::create(position[tiledmapW]);
-			basementGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-		}
-		else if (buildState == Building::BuildingType::BARRACK)
-		{
-			auto building = Barrack::create(position[tiledmapW]);
-			barrackGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-		}
-		else if (buildState == Building::BuildingType::MINEFIELD)
-		{
-			auto building = Minefield::create(position[tiledmapW]);
-			minefieldGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-		}
-		else if (buildState == Building::BuildingType::POWERPLANT)
-		{
-			auto building = Powerplant::create(position[tiledmapW]);
-			powerplantGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-		}
-		else if (buildState == Building::BuildingType::WARFACTORY)
-		{
-			auto building = Warfactory::create(position[tiledmapW]);
-			warfactoryGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-		}
-		else
-		{
-			log("Wrong : buildState not found!");
-		}
+			//根据状态新建不同的GameElement并推入相应队伍的vector中
+			if (buildState == Building::BuildingType::BASEMENT)
+			{
+				auto building = Basement::create(position[tiledmapW]);
+				basementGroup[myTeam].push_back(building);
+				game->addChild(building, position[tiledmapTM].y);
+			}
+			else if (buildState == Building::BuildingType::BARRACK)
+			{
+				auto building = Barrack::create(position[tiledmapW]);
+				barrackGroup[myTeam].push_back(building);
+				game->addChild(building, position[tiledmapTM].y);
+			}
+			else if (buildState == Building::BuildingType::MINEFIELD)
+			{
+				auto building = Minefield::create(position[tiledmapW]);
+				minefieldGroup[myTeam].push_back(building);
+				game->addChild(building, position[tiledmapTM].y);
+			}
+			else if (buildState == Building::BuildingType::POWERPLANT)
+			{
+				auto building = Powerplant::create(position[tiledmapW]);
+				powerplantGroup[myTeam].push_back(building);
+				game->addChild(building, position[tiledmapTM].y);
+			}
+			else if (buildState == Building::BuildingType::WARFACTORY)
+			{
+				auto building = Warfactory::create(position[tiledmapW]);
+				warfactoryGroup[myTeam].push_back(building);
+				game->addChild(building, position[tiledmapTM].y);
+			}
+			else
+			{
+				log("Wrong : buildState not found!");
+			}
 
-		//添加建筑占地 改变地图属性
-		changeOccupiedTile(position[tiledmapTM],buildState);
+			//添加建筑占地 改变地图属性
+			changeOccupiedTile(position[tiledmapTM], buildState);
 
-		//退出建筑状态
-		buildState = NULL;
-		map->removeChild(BuildingPictureWithMouse);
+			//退出建筑状态
+			buildState = NULL;
+			map->removeChild(BuildingPictureWithMouse);
+		}
+		
+		//右键取消状态
+
 	}
 
+	//非建筑状态
+	else
+	{
+		//若点击位置被占，点击选择该目标建筑
+		int x, y;
+		x = position[tiledmapTM].x;
+		y = position[tiledmapTM].y;
+		if (isBlock[x][y])
+		{
+			selectedState = questionBuilding[x][y].type;
+			selectedTag = questionBuilding[x][y].tag;
+		}
+	}
 
 }
 
@@ -568,6 +588,8 @@ void Game::changeOccupiedTile(Point tmPoint, int buildingType)
 		temp.y = middle.y + (*iter).y;
 		//改变所在瓦片格子的Block属性
 		addBlock(temp);
+		//改变所在瓦片格子的questionBuilding属性
+		questionBuilding[(int)temp.x][(int)temp.y].type = buildingType;
 
 		//debug
 		auto point = Sprite::create("point.png");
@@ -580,3 +602,7 @@ void Game::menuReturn(cocos2d::Ref* pSender)
 {
 	
 }
+
+/***************/
+//玩家数据
+/***************/

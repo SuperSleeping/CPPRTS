@@ -21,6 +21,20 @@ public:
 	Vec2 positionCurrent;
 	Vec2 positionCurrentTM;
 
+	//÷ÿ‘ÿsetPosition()
+	void setPosition(const Vec2& pos);
+
+private:
+	Point convertToTM(Point position)
+	{
+		Point mapSize = Vec2(5664, 3312);
+		Point tmSize = Vec2(48, 24);
+
+		int x, y;
+		x = position.x / tmSize.x;
+		y = (mapSize.y - position.y) / tmSize.y;
+		return Vec2(x, y);
+	}
 };
 
 #endif

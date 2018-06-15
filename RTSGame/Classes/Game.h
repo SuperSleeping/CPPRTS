@@ -107,8 +107,16 @@ public:
 	int resourcePower;
 	//@游戏状态 - 0-off 1-on 2-building
 	int selectedState;
+	long selectedTag;
 	int buildState;
 	bool OKtobuilt;
+	//@结构体存放已建建筑信息
+	struct
+	{
+		int type;
+		int tag;
+	}questionBuilding[118][138];
+//	void changeBuildingBlock(Point tmPoint, int buildingType);  //写在了addBlock()里面
 
 	//某些操作功能
 	//@范围判断 - 注意保证坐标系一致

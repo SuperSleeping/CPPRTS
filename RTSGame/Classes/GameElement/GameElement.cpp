@@ -20,3 +20,10 @@ GameElement* GameElement::create(const char* filename, Vec2 position)
 	return nullptr;
 }
 
+//÷ÿ‘ÿsetPosition()
+void GameElement::setPosition(const Vec2& pos)
+{
+	Sprite::setPosition(pos);
+	positionCurrent = pos;
+	positionCurrentTM = convertToTM(pos);
+}
