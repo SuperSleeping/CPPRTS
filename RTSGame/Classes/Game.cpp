@@ -173,9 +173,15 @@ bool Game::init()
 
 
 
-
-
-
+	Infantry* in1 = Infantry::create(convertFromTMToWorld(Vec2(10, 10)));
+	infantryGroup->push_back(in1);
+	map->addChild(in1, 10);
+	Infantry* in2 = Infantry::create(convertFromTMToWorld(Vec2(10, 11)));
+	infantryGroup->push_back(in2);
+	map->addChild(in2, 10);
+	Infantry* in3 = Infantry::create(convertFromTMToWorld(Vec2(11, 10)));
+	infantryGroup->push_back(in3);
+	map->addChild(in3, 10);
 
 	/*
 	//GameScene上的鼠标监听、事件分配
@@ -407,9 +413,12 @@ void Game::onMouseDown(cocos2d::Event* event)
 		//添加建筑占地 改变地图属性
 		changeOccupiedTile(position[tiledmapTM],buildState);
 
+
 		//退出建筑状态
 		buildState = NULL;
 		map->removeChild(BuildingPictureWithMouse);
+
+
 	}
 
 	//选择状态（非建筑状态）
