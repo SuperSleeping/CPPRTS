@@ -201,8 +201,8 @@ public:
 	Point firstPress;
 	Point lastPress;
 	Rect selectRect;
-	void drawline(Point a, Point b);
-	Sprite* line[4];
+	DrawNode* rectangle;
+	void drawline();
 	
 	//@½¨Öþ×´Ì¬
 	Sprite* BuildingPictureWithMouse;

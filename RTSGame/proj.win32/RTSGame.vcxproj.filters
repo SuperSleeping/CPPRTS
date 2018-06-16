@@ -72,7 +72,7 @@
     <ClCompile Include="..\Classes\GameElement\Tank.cpp">
       <Filter>src\GameElement\Character</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="Outline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -126,7 +126,7 @@
     <ClInclude Include="..\Classes\GameElement\Tank.h">
       <Filter>src\GameElement\Character</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h" />
+    <ClInclude Include="Outline.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

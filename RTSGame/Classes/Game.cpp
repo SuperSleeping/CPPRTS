@@ -58,6 +58,9 @@ bool Game::init()
 	_ground = map->getLayer("ground");
 	_meta = map->getLayer("meta");
 
+	rectangle = DrawNode::create();
+	map->addChild(rectangle, 100);
+
 	//基本信息、尺寸、坐标信息初始化
 	myTeam = 0;
 	visibleSize.x = 1600;
@@ -214,7 +217,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 {
 	EventMouse* e = (EventMouse*)event;
 	Vec2 position = e->getLocationInView();
-	Vec2 target = convertToMapLayer(position);
+	Vec2 positionWorld = convertToMapLayer(position);
 
 	//视野移动
 	if (!rectContain(menuRect, position))
@@ -268,8 +271,8 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 
 		//检测碰撞(OKtobuilt)
-		target = convertToNeightborTiledMap(target);
-		OKtobuilt = 1 - readOccupiedTile(target, buildState);
+		positionWorld = convertToNeightborTiledMap(positionWorld);
+		OKtobuilt = 1 - readOccupiedTile(positionWorld, buildState);
 
 		//创建随鼠标移动的图片精灵
 		if (buildState == Building::BuildingType::BASEMENT)
@@ -334,10 +337,18 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 
 		//在瓦片地图上定位 探测可能安放的位置
-		Point possiblePosition = convertFromTMToWorld(target);
+		Point possiblePosition = convertFromTMToWorld(positionWorld);
 		BuildingPictureWithMouse->setPosition(possiblePosition);
 		BuildingPictureWithMouse->setOpacity(150);
 		map->addChild(BuildingPictureWithMouse, 100);
+	}
+
+	//选择状态
+	else if (selectedState)
+	{
+		//lastPress载入
+		lastPress = positionWorld;
+		drawline();
 	}
 }
 
@@ -433,6 +444,8 @@ void Game::onMouseUp(cocos2d::Event* event)
 	{
 		//lastPress信息载入
 		lastPress = position[world];
+		//清除框选
+		rectangle->clear();
 
 		//开始置入当前次选择的情况
 		selectedType = NULL;
@@ -554,17 +567,6 @@ void Game::onMouseUp(cocos2d::Event* event)
 		//@判断标准：框选范围内包括目标的瓦片地图位置
 		else
 		{
-			//test(firstPoint-lastPoint)
-			/*
-			auto point1 = Sprite::create("point.png");
-			point1->setPosition(firstPress);
-			game->addChild(point1,100);
-			auto point2 = Sprite::create("point.png");
-			point2->setPosition(lastPress);
-			game->addChild(point2, 100);
-			*/
-			drawline(firstPress, lastPress);
-
 			Size rectSize(lastPress - firstPress);
 			selectRect = Rect(firstPress, rectSize);
 
@@ -584,6 +586,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 				}
 			}
 		}
+
+		//退出选择状态
+		selectedState = false;
 	}
 
 	//排除菜单范围
@@ -592,19 +597,17 @@ void Game::onMouseUp(cocos2d::Event* event)
 }
 
 //框选的drawline
-void Game::drawline(Point a, Point b)
+void Game::drawline()
 {
-	if (line[1] != NULL)
+	rectangle->clear();
+	Vec2 point[4] =
 	{
-		map->removeChild(line[1]);
-		map->removeChild(line[2]);
-		map->removeChild(line[3]);
-		map->removeChild(line[4]);
-	}
-	line[1] = Sprite::create();
-//	line[1]->setContentSize(());
-
-
+		firstPress,
+		Vec2(firstPress.x,lastPress.y),
+		lastPress,
+		Vec2(lastPress.x,firstPress.y)
+	};
+	rectangle->drawPolygon(point, 4, Color4F(0, 0, 0, 0), 0.5, Color4F(1, 1, 1, 0.8));
 }
 
 /***************/
