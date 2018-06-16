@@ -513,6 +513,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 					(*iterBarrack)->setSelected(true);
 					selectedState = true;
 					selectedType = Building::BARRACK;
+					selectedSpawnPoint = (*iterBarrack)->spawnPoint;
 				}
 				else
 				{
@@ -530,6 +531,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 						(*iterWarfactory)->setSelected(true);
 						selectedState = true;
 						selectedType = Building::WARFACTORY;
+						selectedSpawnPoint = (*iterWarfactory)->spawnPoint;
 					}
 					else
 					{
@@ -567,18 +569,48 @@ void Game::onMouseUp(cocos2d::Event* event)
 		//@判断标准：框选范围内包括目标的瓦片地图位置
 		else
 		{
-			Size rectSize(lastPress - firstPress);
-			selectRect = Rect(firstPress, rectSize);
+			//创建对应于框选的选择矩形
+			if (lastPress.x < firstPress.x&&lastPress.y < firstPress.y)
+			{
+				//左下角
+				Size _size = Size(firstPress.x - lastPress.x, firstPress.y - lastPress.y);
+				selectRect = Rect(lastPress,_size);
+			}
+			else if (lastPress.x<firstPress.x&&lastPress.y>firstPress.y)
+			{
+				//左上角
+				Size _size = Size(firstPress.x - lastPress.x, lastPress.y - firstPress.y);
+				Point _start = Vec2(lastPress.x, firstPress.y);
+				selectRect = Rect(_start, _size);
+			}
+			else if (lastPress.x > firstPress.x&&lastPress.y > firstPress.y)
+			{
+				//右上角
+				Size _size = Size(lastPress.x - firstPress.x, lastPress.y - firstPress.y);
+				selectRect = Rect(firstPress, _size);
+			}
+			else if (lastPress.x > firstPress.x&&lastPress.y < firstPress.y)
+			{
+				//右下角
+				Size _size = Size(lastPress.x - firstPress.x, firstPress.y - lastPress.y);
+				Point _start = Vec2(firstPress.x, lastPress.y);
+				selectRect = Rect(_start, _size);
+			}
 
 			//遍历己方所有人
 			//Infantry
 			vector<Infantry*>::iterator iterInfantry;
 			for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
 			{
-				if (rectContain(selectRect, (*iterInfantry)->positionCurrent))
+				if (rectContain(selectRect, (*iterInfantry)->getPosition()))
 				{
 					(*iterInfantry)->setSelected(true);
 					selectedType = Character::CharacterChosen;
+
+					//test
+					auto a = Sprite::create("point.png");
+					a->setPosition((*iterInfantry)->getPosition());
+					map->addChild(a,100);
 				}
 				else
 				{
