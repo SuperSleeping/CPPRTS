@@ -32,8 +32,8 @@ bool getHostIp(char *ip)
 bool serverOperation(int players)
 {
 	int number = players - 1;
-	SOCKET sClient;
-	sockaddr_in clientAddr, bindAddr;
+	SOCKET sClient, clients;
+	sockaddr_in clientAddr, bindAddr, broadcastAddr;
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 0), &wsaData))
 	{
@@ -41,13 +41,20 @@ bool serverOperation(int players)
 	}
 	//UDP套接字
 	sClient = socket(AF_INET, SOCK_DGRAM, 0);
+	clients = socket(AF_INET, SOCK_DGRAM, 0);
 	//设置为广播类型
 	bool optval = true;
+	int opt = -1;
 	bindAddr.sin_family = AF_INET;
 	bindAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	bindAddr.sin_port = htons(SERVER_PORT);
 	setsockopt(sClient, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char FAR*>(&optval), sizeof(optval));
 	bind(sClient, reinterpret_cast<sockaddr*>(&bindAddr), sizeof(sockaddr_in));
+
+	broadcastAddr.sin_family = AF_INET;
+	broadcastAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+	broadcastAddr.sin_port = htons(SERVER_PORT);
+	setsockopt(clients, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char FAR*>(&opt), sizeof(opt));
 
 	int addrLen = sizeof(SOCKADDR);
 	char buf[256] = { 0 };			//储存接收到的命令
@@ -77,7 +84,6 @@ bool serverOperation(int players)
 		}
 		Sleep(100);
 	}
-	sendto(sClient, "begin", 6, 0, reinterpret_cast<SOCKADDR*>(&bindAddr), addrLen);
 	return true;
 }
 
@@ -118,15 +124,15 @@ bool clientOperation(char *hostIp)
 	{
 		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
 		{
-			if (strcmp(command, "begin") == 0)
+			/*if (strcmp(command, "begin") == 0)
 			{
 				break;
 			}
-			else if (strlen(command))
+			else*/ if (strlen(command))
 			{
 				strcpy(hostIp, command);
 				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
-				//break;
+				break;
 			}
 		}
 	}
