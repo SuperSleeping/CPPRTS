@@ -13,8 +13,14 @@ Building::Building(int type)
 	//小兵等生成点
 	spawnPoint = positionCurrent + 2 * Vec2(48, -24);
 
-
-
+	//载入血条
+	bloodFrame = Sprite::create("Game/building/bloodFrame.png");
+	bloodPicture = Sprite::create("Game/building/blood.png");
+	bloodPicture->setAnchorPoint(Vec2(0, 0));
+	bloodPicture->setPosition(Vec2(1, 1));
+	bloodFrame->addChild(bloodPicture);
+	bloodFrame->setPositionNormalized(Vec2(0.5, 1.01));
+	this->addChild(bloodFrame, 1);
 }
 
 //重载setPosition

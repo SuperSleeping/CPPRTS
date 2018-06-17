@@ -21,6 +21,10 @@ public:
 	int prize;
 	int blood;
 
+	//ÑªÌõ
+	Sprite* bloodFrame;
+	Sprite* bloodPicture;
+
 	Vec2 positionCurrent;
 	Vec2 positionCurrentTM;
 

@@ -13,7 +13,7 @@
 #include"GameElement/Tank.h"
 
 //建立vector储存gameElement
-//4个数组分别存放四个国家的财产
+//4个数组分别存放四个国家的兵力和建筑
 vector<Infantry*> infantryGroup[4];
 vector<Dog*> dogGroup[4];
 vector<Tank*> tankGroup[4];
@@ -23,6 +23,10 @@ vector<Barrack*> barrackGroup[4];
 vector<Warfactory*> warfactoryGroup[4];
 vector<Minefield*> minefieldGroup[4];
 vector<Powerplant*> powerplantGroup[4];
+
+//当前玩家的资源数据
+int money;
+int electricity;
 
 
 Scene* Game::createScene()
@@ -193,7 +197,7 @@ bool Game::init()
 //更新函数
 void Game::update(float dt)
 {
-	
+	menuUpdate();
 }
 
 void Game::menuUpdate()
@@ -203,9 +207,17 @@ void Game::menuUpdate()
 	{
 
 	}
-	else if (selectedType == Building::BuildingType::BASEMENT)
+	else if (selectedType == Building::BuildingType::BARRACK)
 	{
 		
+	}
+	else if (selectedType == Building::BuildingType::WARFACTORY)
+	{
+
+	}
+	else
+	{
+
 	}
 }
 
@@ -423,7 +435,6 @@ void Game::onMouseDown(cocos2d::Event* event)
 
 }
 
-
 void Game::onMouseUp(cocos2d::Event* event)
 {
 	EventMouse* e = (EventMouse*)event;
@@ -446,9 +457,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 		lastPress = position[world];
 		//清除框选
 		rectangle->clear();
-
 		//开始置入当前次选择的情况
 		selectedType = NULL;
+
 		//判断是单选还是框选
 		//单选
 		//@判断标准：//目标范围包含鼠标点击点
