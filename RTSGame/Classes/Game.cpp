@@ -468,100 +468,158 @@ void Game::onMouseUp(cocos2d::Event* event)
 
 			//遍历建筑
 			//@清除原来的select痕迹，创建新的select标记
-			//Basement
 			{
-				vector<Basement*>::iterator iterBasement;
-				for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
+				//Basement
 				{
-					if (rectContain(selectRect, (*iterBasement)->positionCurrent))
+					vector<Basement*>::iterator iterBasement;
+					for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
 					{
-						(*iterBasement)->setSelected(true);
-						///					selectedSpawnPoint = (*iterBasement)->spawnPoint;
-						selectedState = true;
-						selectedType = Building::BASEMENT;
-					}
-					else
-					{
-						(*iterBasement)->setSelected(false);
-					}
-				}
-			}
-			//Minefield
-			{
-				vector<Minefield*>::iterator iterMinefield;
-				for (iterMinefield = minefieldGroup[myTeam].begin(); iterMinefield != minefieldGroup[myTeam].end(); iterMinefield++)
-			{
-				if (rectContain(selectRect, (*iterMinefield)->positionCurrent))
-				{
-					(*iterMinefield)->setSelected(true);
-					selectedState = true;
-					selectedType = Building::MINEFIELD;
-				}
-				else
-				{
-					(*iterMinefield)->setSelected(false);
-				}
-			}
-			}
-			//Barrack
-			{
-				vector<Barrack*>::iterator iterBarrack;
-				for (iterBarrack = barrackGroup[myTeam].begin(); iterBarrack != barrackGroup[myTeam].end(); iterBarrack++)
-			{
-				if (rectContain(selectRect, (*iterBarrack)->positionCurrent))
-				{
-					(*iterBarrack)->setSelected(true);
-					selectedState = true;
-					selectedType = Building::BARRACK;
-					selectedSpawnPoint = (*iterBarrack)->spawnPoint;
-				}
-				else
-				{
-					(*iterBarrack)->setSelected(false);
-				}
-			}
-			}
-			//Warfactory
-			{
-				vector<Warfactory*>::iterator iterWarfactory;
-				for (iterWarfactory = warfactoryGroup[myTeam].begin(); iterWarfactory != warfactoryGroup[myTeam].end(); iterWarfactory++)
-				{
-					if (rectContain(selectRect, (*iterWarfactory)->positionCurrent))
-					{
-						(*iterWarfactory)->setSelected(true);
-						selectedState = true;
-						selectedType = Building::WARFACTORY;
-						selectedSpawnPoint = (*iterWarfactory)->spawnPoint;
-					}
-					else
-					{
-						(*iterWarfactory)->setSelected(false);
+						if (rectContain(selectRect, (*iterBasement)->positionCurrent))
+						{
+							(*iterBasement)->setSelected(true);
+							///					selectedSpawnPoint = (*iterBasement)->spawnPoint;
+							selectedState = true;
+							selectedType = Building::BASEMENT;
+						}
+						else
+						{
+							(*iterBasement)->setSelected(false);
+						}
 					}
 				}
-			}
-			//Powerplant
-			{
-				vector<Powerplant*>::iterator iterPowerplant;
-				//Powerplant尺寸比较小 重新判断
-				Point leftdown = Vec2(lastPress.x - 24, lastPress.y - 24);
-				Size size = Size(48,48);
-				selectRect = Rect(leftdown, size);
-				for (iterPowerplant = powerplantGroup[myTeam].begin(); iterPowerplant != powerplantGroup[myTeam].end(); iterPowerplant++)
+				//Minefield
 				{
-					if (rectContain(selectRect, (*iterPowerplant)->positionCurrent))
+					vector<Minefield*>::iterator iterMinefield;
+					for (iterMinefield = minefieldGroup[myTeam].begin(); iterMinefield != minefieldGroup[myTeam].end(); iterMinefield++)
 					{
-						(*iterPowerplant)->setSelected(true);
-						selectedState = true;
-						selectedType = Building::POWERPLANT;
+						if (rectContain(selectRect, (*iterMinefield)->positionCurrent))
+						{
+							(*iterMinefield)->setSelected(true);
+							selectedState = true;
+							selectedType = Building::MINEFIELD;
+						}
+						else
+						{
+							(*iterMinefield)->setSelected(false);
+						}
 					}
-					else
+				}
+				//Barrack
+				{
+					vector<Barrack*>::iterator iterBarrack;
+					for (iterBarrack = barrackGroup[myTeam].begin(); iterBarrack != barrackGroup[myTeam].end(); iterBarrack++)
 					{
-						(*iterPowerplant)->setSelected(false);
+						if (rectContain(selectRect, (*iterBarrack)->positionCurrent))
+						{
+							(*iterBarrack)->setSelected(true);
+							selectedState = true;
+							selectedType = Building::BARRACK;
+							selectedSpawnPoint = (*iterBarrack)->spawnPoint;
+						}
+						else
+						{
+							(*iterBarrack)->setSelected(false);
+						}
+					}
+				}
+				//Warfactory
+				{
+					vector<Warfactory*>::iterator iterWarfactory;
+					for (iterWarfactory = warfactoryGroup[myTeam].begin(); iterWarfactory != warfactoryGroup[myTeam].end(); iterWarfactory++)
+					{
+						if (rectContain(selectRect, (*iterWarfactory)->positionCurrent))
+						{
+							(*iterWarfactory)->setSelected(true);
+							selectedState = true;
+							selectedType = Building::WARFACTORY;
+							selectedSpawnPoint = (*iterWarfactory)->spawnPoint;
+						}
+						else
+						{
+							(*iterWarfactory)->setSelected(false);
+						}
+					}
+				}
+				//Powerplant
+				{
+					vector<Powerplant*>::iterator iterPowerplant;
+					//Powerplant尺寸比较小 重新判断
+					Point leftdown = Vec2(lastPress.x - 24, lastPress.y - 24);
+					Size size = Size(48, 48);
+					selectRect = Rect(leftdown, size);
+					for (iterPowerplant = powerplantGroup[myTeam].begin(); iterPowerplant != powerplantGroup[myTeam].end(); iterPowerplant++)
+					{
+						if (rectContain(selectRect, (*iterPowerplant)->positionCurrent))
+						{
+							(*iterPowerplant)->setSelected(true);
+							selectedState = true;
+							selectedType = Building::POWERPLANT;
+						}
+						else
+						{
+							(*iterPowerplant)->setSelected(false);
+						}
 					}
 				}
 			}
 
 			//遍历人物
+			{
+				//由于人物比较小，所以改变selectedRect的大小
+				Point leftdown = Vec2(lastPress.x - 10, lastPress.y - 30);
+				Size size = Size(20, 40);
+				selectRect = Rect(leftdown, size);
+
+				//Infantry
+				vector<Infantry*>::iterator iterInfantry;
+				for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
+				{
+					if (rectContain(selectRect, (*iterInfantry)->getPosition()))
+					{
+						(*iterInfantry)->setSelected(true);
+						selectedType = Character::CharacterChosen;
+						(*iterInfantry)->shadow->setVisible(true);	//显示选中的标志
+					}
+					else
+					{
+						(*iterInfantry)->setSelected(false);
+						(*iterInfantry)->shadow->setVisible(false);	//隐藏选中的标志
+					}
+				}
+				//dog
+				vector<Dog*>::iterator iterDog;
+				for (iterDog = dogGroup[myTeam].begin(); iterDog != dogGroup[myTeam].end(); iterDog++)
+				{
+					if (rectContain(selectRect, (*iterDog)->getPosition()))
+					{
+						(*iterDog)->setSelected(true);
+						selectedType = Character::CharacterChosen;
+						(*iterDog)->shadow->setVisible(true);	//显示选中的标志
+					}
+					else
+					{
+						(*iterDog)->setSelected(false);
+						(*iterDog)->shadow->setVisible(false);	//隐藏选中的标志
+					}
+				}
+				//tank
+				vector<Tank*>::iterator iterTank;
+				for (iterTank = tankGroup[myTeam].begin(); iterTank != tankGroup[myTeam].end(); iterTank++)
+				{
+					if (rectContain(selectRect, (*iterTank)->getPosition()))
+					{
+						(*iterTank)->setSelected(true);
+						selectedType = Character::CharacterChosen;
+						(*iterTank)->shadow->setVisible(true);	//显示选中的标志
+					}
+					else
+					{
+						(*iterTank)->setSelected(false);
+						(*iterTank)->shadow->setVisible(false);	//隐藏选中的标志
+					}
+				}
+			}
+			
 
 		}
 
@@ -574,7 +632,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 			{
 				//左下角
 				Size _size = Size(firstPress.x - lastPress.x, firstPress.y - lastPress.y);
-				selectRect = Rect(lastPress,_size);
+				selectRect = Rect(lastPress, _size);
 			}
 			else if (lastPress.x<firstPress.x&&lastPress.y>firstPress.y)
 			{
@@ -597,24 +655,111 @@ void Game::onMouseUp(cocos2d::Event* event)
 				selectRect = Rect(_start, _size);
 			}
 
-			//遍历己方所有人
-			//Infantry
-			vector<Infantry*>::iterator iterInfantry;
-			for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
+			//遍历建筑
 			{
-				if (rectContain(selectRect, (*iterInfantry)->getPosition()))
+				//Basement
 				{
-					(*iterInfantry)->setSelected(true);
-					selectedType = Character::CharacterChosen;
-
-					//test
-					auto a = Sprite::create("point.png");
-					a->setPosition((*iterInfantry)->getPosition());
-					map->addChild(a,100);
+					vector<Basement*>::iterator iterBasement;
+					for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
+					{
+						if (rectContain(selectRect, (*iterBasement)->positionCurrent))
+						{
+							(*iterBasement)->setSelected(false);
+						}
+					}
 				}
-				else
+				//Minefield
 				{
-					(*iterInfantry)->setSelected(false);
+					vector<Minefield*>::iterator iterMinefield;
+					for (iterMinefield = minefieldGroup[myTeam].begin(); iterMinefield != minefieldGroup[myTeam].end(); iterMinefield++)
+					{
+						if (rectContain(selectRect, (*iterMinefield)->positionCurrent))
+						{
+							(*iterMinefield)->setSelected(false);
+						}
+					}
+				}
+				//Barrack
+				{
+					vector<Barrack*>::iterator iterBarrack;
+					for (iterBarrack = barrackGroup[myTeam].begin(); iterBarrack != barrackGroup[myTeam].end(); iterBarrack++)
+					{
+						if (rectContain(selectRect, (*iterBarrack)->positionCurrent))
+						{
+							(*iterBarrack)->setSelected(false);
+						}
+					}
+				}
+				//Warfactory
+				{
+					vector<Warfactory*>::iterator iterWarfactory;
+					for (iterWarfactory = warfactoryGroup[myTeam].begin(); iterWarfactory != warfactoryGroup[myTeam].end(); iterWarfactory++)
+					{
+						if (rectContain(selectRect, (*iterWarfactory)->positionCurrent))
+						{
+							(*iterWarfactory)->setSelected(false);
+						}
+					}
+				}
+				//Powerplant
+				{
+					vector<Powerplant*>::iterator iterPowerplant;
+					for (iterPowerplant = powerplantGroup[myTeam].begin(); iterPowerplant != powerplantGroup[myTeam].end(); iterPowerplant++)
+					{
+						(*iterPowerplant)->setSelected(false);
+					}
+				}
+			}
+
+			//遍历人物
+			{
+				//Infantry
+				vector<Infantry*>::iterator iterInfantry;
+				for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
+				{
+					if (rectContain(selectRect, (*iterInfantry)->getPosition()))
+					{
+						(*iterInfantry)->setSelected(true);
+						selectedType = Character::CharacterChosen;
+						(*iterInfantry)->shadow->setVisible(true);	//显示选中的标志
+					}
+					else
+					{
+						(*iterInfantry)->setSelected(false);
+						(*iterInfantry)->shadow->setVisible(false);	//隐藏选中的标志
+					}
+				}
+				//dog
+				vector<Dog*>::iterator iterDog;
+				for (iterDog = dogGroup[myTeam].begin(); iterDog != dogGroup[myTeam].end(); iterDog++)
+				{
+					if (rectContain(selectRect, (*iterDog)->getPosition()))
+					{
+						(*iterDog)->setSelected(true);
+						selectedType = Character::CharacterChosen;
+						(*iterDog)->shadow->setVisible(true);	//显示选中的标志
+					}
+					else
+					{
+						(*iterDog)->setSelected(false);
+						(*iterDog)->shadow->setVisible(false);	//隐藏选中的标志
+					}
+				}
+				//tank
+				vector<Tank*>::iterator iterTank;
+				for (iterTank = tankGroup[myTeam].begin(); iterTank != tankGroup[myTeam].end(); iterTank++)
+				{
+					if (rectContain(selectRect, (*iterTank)->getPosition()))
+					{
+						(*iterTank)->setSelected(true);
+						selectedType = Character::CharacterChosen;
+						(*iterTank)->shadow->setVisible(true);	//显示选中的标志
+					}
+					else
+					{
+						(*iterTank)->setSelected(false);
+						(*iterTank)->shadow->setVisible(false);	//隐藏选中的标志
+					}
 				}
 			}
 		}
