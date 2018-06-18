@@ -73,6 +73,9 @@
       <Filter>src\GameElement\Character</Filter>
     </ClCompile>
     <ClCompile Include="Outline.cpp" />
+    <ClCompile Include="MapInformation.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">

@@ -247,6 +247,8 @@ public:
 
 
 
+
+
 	//UpdateÖÜÆÚº¯Êý
 	virtual void update(float dt);
 	void menuUpdate();
@@ -258,5 +260,6 @@ public:
 	CREATE_FUNC(Game);
 
 };
+
 
 #endif // __GAME_H__
