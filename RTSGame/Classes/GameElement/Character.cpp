@@ -1,5 +1,13 @@
 #include "Character.h"
 
+Character::Character()
+{
+	shadow = Sprite::create("Game/rhombus.png");
+	shadow->setPositionNormalized(Vec2(0.5, 0.1));
+	shadow->setVisible(false);
+	this->addChild(shadow, -1);
+}
+
 Character* Character::create(const char* filename, Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分

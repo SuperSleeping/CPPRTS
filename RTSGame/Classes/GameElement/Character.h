@@ -6,6 +6,8 @@
 class Character : public GameElement
 {
 public:
+	Character();
+
 	//Create Character
 	static Character* create(const char* filename,Vec2 position);
 
@@ -17,6 +19,9 @@ public:
 		TANK,
 		CharacterChosen
 	};
+
+	//选中标记
+	Sprite* shadow;
 
 	//运动相关
 	Vec2 positionGoal;
