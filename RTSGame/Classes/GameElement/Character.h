@@ -1,8 +1,9 @@
+#pragma once
 #ifndef _CHARACTER_H_
 #define _CHARACTER_H_
 
 #include "GameElement.h"
-
+#include"Game.h"
 class Character : public GameElement
 {
 public:
@@ -19,6 +20,9 @@ public:
 		TANK,
 		CharacterChosen
 	};
+
+	//移动调度器
+	void updateMove(float di);
 
 	//选中标记
 	Sprite* shadow;
@@ -41,6 +45,7 @@ private:
 		return _distance;
 	}
 };
+
 
 
 #endif

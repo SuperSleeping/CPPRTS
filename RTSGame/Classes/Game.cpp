@@ -448,6 +448,17 @@ void Game::onMouseUp(cocos2d::Event* event)
 	int x = position[tiledmapTM].x;
 	int y = position[tiledmapTM].y;
 
+	
+	for (Infantry* infa : infantryGroup[myTeam]) {
+		if (infa->selected) {
+			infa->positionGoal = position[tiledmapTM];
+			log("Goal: %f %f", infa->positionGoal.x, infa->positionGoal.y);
+		}
+
+	}
+	log("Position: %f %f", position[tiledmapTM].x, position[tiledmapTM].y);
+	
+	
 	//建筑状态
 	if (buildState) return;
 
@@ -473,10 +484,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 			selectRect = Rect(leftdown, size);
 
 			//test
-			auto test = Sprite::create("selectedRect.png");
+			/*auto test = Sprite::create("selectedRect.png");
 			test->setAnchorPoint(Vec2(0, 0));
 			test->setPosition(leftdown);
-			game->addChild(test, 100);
+			game->addChild(test, 100);*/
 
 			//遍历建筑
 			//@清除原来的select痕迹，创建新的select标记
@@ -784,7 +795,6 @@ void Game::onMouseUp(cocos2d::Event* event)
 	if (rectContain(menuRect, position[screen]))return;
 
 
-
 }
 
 //框选的drawline
@@ -1060,3 +1070,11 @@ void BuildBlock(int x, int y, int size)
 
 	}
 }
+
+void Character::updateMove(float di) {
+	if (!this->numberOfRunningActions) {
+		Point position;
+		position=convertToNeightborTiledMap(this->getPosition());
+	}
+}
+
