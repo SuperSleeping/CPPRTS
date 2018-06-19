@@ -20,16 +20,7 @@ public:
 	//层
 	Layer* mouseLayer;
 	Layer* game;
-	
-	//地图
-	//@map层级：
-	//@  10   建筑人物等
-	//@	 100  鼠标
-	TMXTiledMap* map;
-	TMXLayer* _grass;
-	TMXLayer* _grasswet;
-	TMXLayer* _ground;
-	TMXLayer* _meta;
+
 
 	//元地图属性
 	//@empty 0 @full 1
@@ -51,52 +42,7 @@ public:
 	bool isBlock[118][138];
 	void isBlockInitialize();
 
-	//坐标转换
-	//@visibleSize  窗口可见大小
-	//@mapSize      地图大小
-	//@tmSize       地图瓦片大小
-	Point visibleSize;
-	Point mapSize;
-	Point tmSize;
-	Point tmNumber;
 
-	//@屏幕坐标转换成层坐标（世界坐标系）
-	Point convertToMapLayer(Point position)
-	{
-		position = position - map->getPosition();
-		return position;
-	}
-	//@世界坐标转换成瓦片地图坐标
-	Point convertToTiledMap(Point position)
-	{
-		int x, y;
-		x = position.x / tmSize.x;
-		y = (mapSize.y - position.y) / tmSize.y;
-		return Vec2(x, y);
-	}
-	//@瓦片转换成世界坐标
-	Point convertFromTMToWorld(Point position)
-	{
-		position.x *= tmSize.x;
-		position.y *= tmSize.y;
-		position.y = mapSize.y - position.y;
-		return position;
-	}
-	//@世界坐标换成相邻的瓦片坐标
-	Point convertToNeightborTiledMap(Point position)
-	{
-		Point tmPoint;
-		tmPoint = convertToTiledMap(position);
-		int addx = 0, addy = 0;
-		float _y = mapSize.y - position.y;
-
-		if (((int)position.x % (int)tmSize.x) >= tmSize.x / 2)addx++;
-		if (((int)_y % (int)tmSize.y) >= tmSize.y / 2)addy++;
-
-		tmPoint += Vec2(addx, addy);
-
-		return tmPoint;
-	}
 
 
 	//事件
