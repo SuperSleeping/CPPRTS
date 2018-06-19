@@ -24,17 +24,6 @@ public:
 
 	//ÔªµØÍ¼ÊôĞÔ
 	//@empty 0 @full 1
-	bool isTileOutOfRange(Point tmPoint)
-	{
-		if (0 <= tmPoint.x&&tmPoint.x < tmNumber.x && 0 <= tmPoint.y&&tmPoint.y < tmNumber.y)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
 	bool readBlock(Point tmPoint);
 	void addBlock(Point tmPoint);
 	void removeBlock(Point tmPoint);

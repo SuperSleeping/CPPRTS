@@ -86,6 +86,18 @@ Point convertToNeightborTiledMap(Point position)
 
 	return tmPoint;
 }
+//判断目标是否超出瓦片地图的范围
+bool isTileOutOfRange(Point tmPoint)
+{
+	if (0 <= tmPoint.x&&tmPoint.x < tmNumber.x && 0 <= tmPoint.y&&tmPoint.y < tmNumber.y)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
 
 Scene* Game::createScene()
 {
@@ -124,6 +136,15 @@ bool Game::init()
 	map->addChild(rectangle, 100);
 
 	//基本信息、尺寸、坐标信息初始化
+	myTeam = 0;
+	visibleSize.x = 1600;
+	visibleSize.y = 900;
+	tmSize.x = map->getTileSize().width;
+	tmSize.y = map->getTileSize().height;
+	mapSize.x = map->getMapSize().width * tmSize.x;
+	mapSize.y = map->getMapSize().height * tmSize.y;
+	tmNumber.x = mapSize.x / tmSize.x;
+	tmNumber.y = mapSize.y / tmSize.y;
 	OKtobuilt = 0;
 	occupiedRelatedCoordinateInitialize();
 	isBlockInitialize();
@@ -277,6 +298,11 @@ void Game::menuUpdate()
 void Game::onMouseMove(cocos2d::Event* event)
 {
 	EventMouse* e = (EventMouse*)event;
+
+	//右键监控
+	//@排除右键操控
+	if (e->getMouseButton() == EventMouse::MouseButton::BUTTON_RIGHT)return;
+
 	Vec2 position = e->getLocationInView();
 	Vec2 positionWorld = convertToMapLayer(position);
 
@@ -416,6 +442,86 @@ void Game::onMouseMove(cocos2d::Event* event)
 void Game::onMouseDown(cocos2d::Event* event)
 {
 	EventMouse* e = (EventMouse*)event;
+
+	//右键监控
+	//@直接恢复初始状态
+	if (e->getMouseButton() == EventMouse::MouseButton::BUTTON_RIGHT)
+	{
+		buildState = false;
+		map->removeChild(BuildingPictureWithMouse);
+		selectedState = false;
+		selectedType = NULL;
+		rectangle->clear();
+	
+		//清除所有选择标志
+		//遍历建筑
+		{
+			//Basement
+			{
+				vector<Basement*>::iterator iterBasement;
+				for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
+				{
+					(*iterBasement)->setSelected(false);
+				}
+			}
+			//Minefield
+			{
+				vector<Minefield*>::iterator iterMinefield;
+				for (iterMinefield = minefieldGroup[myTeam].begin(); iterMinefield != minefieldGroup[myTeam].end(); iterMinefield++)
+				{
+					(*iterMinefield)->setSelected(false);
+				}
+			}
+			//Barrack
+			{
+				vector<Barrack*>::iterator iterBarrack;
+				for (iterBarrack = barrackGroup[myTeam].begin(); iterBarrack != barrackGroup[myTeam].end(); iterBarrack++)
+				{
+					(*iterBarrack)->setSelected(false);
+				}
+			}
+			//Warfactory
+			{
+				vector<Warfactory*>::iterator iterWarfactory;
+				for (iterWarfactory = warfactoryGroup[myTeam].begin(); iterWarfactory != warfactoryGroup[myTeam].end(); iterWarfactory++)
+				{
+					(*iterWarfactory)->setSelected(false);
+				}
+			}
+			//Powerplant
+			{
+				vector<Powerplant*>::iterator iterPowerplant;
+				for (iterPowerplant = powerplantGroup[myTeam].begin(); iterPowerplant != powerplantGroup[myTeam].end(); iterPowerplant++)
+				{
+					(*iterPowerplant)->setSelected(false);
+				}
+			}
+		}
+		//遍历人物
+		{
+			//Infantry
+			vector<Infantry*>::iterator iterInfantry;
+			for (iterInfantry = infantryGroup[myTeam].begin(); iterInfantry != infantryGroup[myTeam].end(); iterInfantry++)
+			{
+				(*iterInfantry)->setSelected(false);
+			}
+			//dog
+			vector<Dog*>::iterator iterDog;
+			for (iterDog = dogGroup[myTeam].begin(); iterDog != dogGroup[myTeam].end(); iterDog++)
+			{
+				(*iterDog)->setSelected(false);
+			}
+			//tank
+			vector<Tank*>::iterator iterTank;
+			for (iterTank = tankGroup[myTeam].begin(); iterTank != tankGroup[myTeam].end(); iterTank++)
+			{
+				(*iterTank)->setSelected(false);
+			}
+		}
+		return;
+	}
+
+
 	enum {screen,world,tiledmapTM, tiledmapW};
 	Point position[4];
 	position[screen] = e->getLocationInView();
@@ -487,6 +593,11 @@ void Game::onMouseDown(cocos2d::Event* event)
 void Game::onMouseUp(cocos2d::Event* event)
 {
 	EventMouse* e = (EventMouse*)event;
+
+	//右键监控
+	//@排除右键操控
+	if (e->getMouseButton() == EventMouse::MouseButton::BUTTON_RIGHT)return;
+
 	enum { screen, world, tiledmapTM, tiledmapW };
 	Point position[4];
 	position[screen] = e->getLocationInView();
@@ -520,12 +631,6 @@ void Game::onMouseUp(cocos2d::Event* event)
 			Size size = Size(96, 96);
 			selectRect = Rect(leftdown, size);
 
-			//test
-			auto test = Sprite::create("selectedRect.png");
-			test->setAnchorPoint(Vec2(0, 0));
-			test->setPosition(leftdown);
-			game->addChild(test, 100);
-
 			//遍历建筑
 			//@清除原来的select痕迹，创建新的select标记
 			{
@@ -537,7 +642,6 @@ void Game::onMouseUp(cocos2d::Event* event)
 						if (rectContain(selectRect, (*iterBasement)->positionCurrent))
 						{
 							(*iterBasement)->setSelected(true);
-							///					selectedSpawnPoint = (*iterBasement)->spawnPoint;
 							selectedState = true;
 							selectedType = Building::BASEMENT;
 						}
@@ -638,12 +742,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						(*iterInfantry)->setSelected(true);
 						selectedType = Character::CharacterChosen;
-						(*iterInfantry)->shadow->setVisible(true);	//显示选中的标志
 					}
 					else
 					{
 						(*iterInfantry)->setSelected(false);
-						(*iterInfantry)->shadow->setVisible(false);	//隐藏选中的标志
 					}
 				}
 				//dog
@@ -654,12 +756,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						(*iterDog)->setSelected(true);
 						selectedType = Character::CharacterChosen;
-						(*iterDog)->shadow->setVisible(true);	//显示选中的标志
 					}
 					else
 					{
 						(*iterDog)->setSelected(false);
-						(*iterDog)->shadow->setVisible(false);	//隐藏选中的标志
 					}
 				}
 				//tank
@@ -670,12 +770,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						(*iterTank)->setSelected(true);
 						selectedType = Character::CharacterChosen;
-						(*iterTank)->shadow->setVisible(true);	//显示选中的标志
 					}
 					else
 					{
 						(*iterTank)->setSelected(false);
-						(*iterTank)->shadow->setVisible(false);	//隐藏选中的标志
 					}
 				}
 			}
@@ -688,31 +786,33 @@ void Game::onMouseUp(cocos2d::Event* event)
 		else
 		{
 			//创建对应于框选的选择矩形
-			if (lastPress.x < firstPress.x&&lastPress.y < firstPress.y)
 			{
-				//左下角
-				Size _size = Size(firstPress.x - lastPress.x, firstPress.y - lastPress.y);
-				selectRect = Rect(lastPress, _size);
-			}
-			else if (lastPress.x<firstPress.x&&lastPress.y>firstPress.y)
-			{
-				//左上角
-				Size _size = Size(firstPress.x - lastPress.x, lastPress.y - firstPress.y);
-				Point _start = Vec2(lastPress.x, firstPress.y);
-				selectRect = Rect(_start, _size);
-			}
-			else if (lastPress.x > firstPress.x&&lastPress.y > firstPress.y)
-			{
-				//右上角
-				Size _size = Size(lastPress.x - firstPress.x, lastPress.y - firstPress.y);
-				selectRect = Rect(firstPress, _size);
-			}
-			else if (lastPress.x > firstPress.x&&lastPress.y < firstPress.y)
-			{
-				//右下角
-				Size _size = Size(lastPress.x - firstPress.x, firstPress.y - lastPress.y);
-				Point _start = Vec2(firstPress.x, lastPress.y);
-				selectRect = Rect(_start, _size);
+				if (lastPress.x < firstPress.x&&lastPress.y < firstPress.y)
+				{
+					//左下角
+					Size _size = Size(firstPress.x - lastPress.x, firstPress.y - lastPress.y);
+					selectRect = Rect(lastPress, _size);
+				}
+				else if (lastPress.x<firstPress.x&&lastPress.y>firstPress.y)
+				{
+					//左上角
+					Size _size = Size(firstPress.x - lastPress.x, lastPress.y - firstPress.y);
+					Point _start = Vec2(lastPress.x, firstPress.y);
+					selectRect = Rect(_start, _size);
+				}
+				else if (lastPress.x > firstPress.x&&lastPress.y > firstPress.y)
+				{
+					//右上角
+					Size _size = Size(lastPress.x - firstPress.x, lastPress.y - firstPress.y);
+					selectRect = Rect(firstPress, _size);
+				}
+				else if (lastPress.x > firstPress.x&&lastPress.y < firstPress.y)
+				{
+					//右下角
+					Size _size = Size(lastPress.x - firstPress.x, firstPress.y - lastPress.y);
+					Point _start = Vec2(firstPress.x, lastPress.y);
+					selectRect = Rect(_start, _size);
+				}
 			}
 
 			//遍历建筑
@@ -722,10 +822,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 					vector<Basement*>::iterator iterBasement;
 					for (iterBasement = basementGroup[myTeam].begin(); iterBasement != basementGroup[myTeam].end(); iterBasement++)
 					{
-						if (rectContain(selectRect, (*iterBasement)->positionCurrent))
-						{
-							(*iterBasement)->setSelected(false);
-						}
+						(*iterBasement)->setSelected(false);
 					}
 				}
 				//Minefield
@@ -733,10 +830,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 					vector<Minefield*>::iterator iterMinefield;
 					for (iterMinefield = minefieldGroup[myTeam].begin(); iterMinefield != minefieldGroup[myTeam].end(); iterMinefield++)
 					{
-						if (rectContain(selectRect, (*iterMinefield)->positionCurrent))
-						{
-							(*iterMinefield)->setSelected(false);
-						}
+						(*iterMinefield)->setSelected(false);
 					}
 				}
 				//Barrack
@@ -744,10 +838,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 					vector<Barrack*>::iterator iterBarrack;
 					for (iterBarrack = barrackGroup[myTeam].begin(); iterBarrack != barrackGroup[myTeam].end(); iterBarrack++)
 					{
-						if (rectContain(selectRect, (*iterBarrack)->positionCurrent))
-						{
-							(*iterBarrack)->setSelected(false);
-						}
+						(*iterBarrack)->setSelected(false);
 					}
 				}
 				//Warfactory
@@ -755,10 +846,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 					vector<Warfactory*>::iterator iterWarfactory;
 					for (iterWarfactory = warfactoryGroup[myTeam].begin(); iterWarfactory != warfactoryGroup[myTeam].end(); iterWarfactory++)
 					{
-						if (rectContain(selectRect, (*iterWarfactory)->positionCurrent))
-						{
-							(*iterWarfactory)->setSelected(false);
-						}
+						(*iterWarfactory)->setSelected(false);
 					}
 				}
 				//Powerplant
@@ -781,12 +869,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						(*iterInfantry)->setSelected(true);
 						selectedType = Character::CharacterChosen;
-						(*iterInfantry)->shadow->setVisible(true);	//显示选中的标志
 					}
 					else
 					{
 						(*iterInfantry)->setSelected(false);
-						(*iterInfantry)->shadow->setVisible(false);	//隐藏选中的标志
 					}
 				}
 				//dog
@@ -797,12 +883,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						(*iterDog)->setSelected(true);
 						selectedType = Character::CharacterChosen;
-						(*iterDog)->shadow->setVisible(true);	//显示选中的标志
 					}
 					else
 					{
 						(*iterDog)->setSelected(false);
-						(*iterDog)->shadow->setVisible(false);	//隐藏选中的标志
 					}
 				}
 				//tank
@@ -813,12 +897,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						(*iterTank)->setSelected(true);
 						selectedType = Character::CharacterChosen;
-						(*iterTank)->shadow->setVisible(true);	//显示选中的标志
 					}
 					else
 					{
 						(*iterTank)->setSelected(false);
-						(*iterTank)->shadow->setVisible(false);	//隐藏选中的标志
 					}
 				}
 			}

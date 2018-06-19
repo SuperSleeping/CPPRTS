@@ -22,6 +22,7 @@ public:
 
 	//选中标记
 	Sprite* shadow;
+	virtual void setSelected(bool isSelected);
 
 	//运动相关
 	Vec2 positionGoal;

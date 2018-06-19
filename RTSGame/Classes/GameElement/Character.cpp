@@ -47,3 +47,17 @@ void Character::move()
 	auto moveToAction = MoveTo::create(time, positionGoal);
 	this->runAction(moveToAction);
 }
+
+void Character::setSelected(bool isSelected)
+{
+	if (isSelected)
+	{
+		this->selected = true;
+		this->shadow->setVisible(true);
+	}
+	else
+	{
+		this->selected = false;
+		this->shadow->setVisible(false);
+	}
+}
