@@ -1018,7 +1018,7 @@ void Game::menuReturn(cocos2d::Ref* pSender)
 {
 	
 }
-<<<<<<< HEAD
+
 
 void MapBlockBegin() 
 {
@@ -1086,12 +1086,7 @@ void BuildBlock(int x, int y, int size)
 	}
 }
 
-void Character::updateMove(float di) {
-	if (!this->numberOfRunningActions) {
-		Point position;
-		position=convertToNeightborTiledMap(this->getPosition());
-	}
-}
 
-=======
->>>>>>> caocao
+
+
+
