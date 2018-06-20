@@ -271,7 +271,7 @@ bool Game::init()
 	*/
 
 	this->scheduleUpdate();
-	this->schedule(schedule_selector(Game::updateMapCharacter),0, kRepeatForever, 0.1f);
+	this->schedule(schedule_selector(Game::updateMapCharacter),0, kRepeatForever, 0.01f);
 
 	return true;
 }
@@ -1212,7 +1212,7 @@ void BuildBlock(int x, int y, int size)
 	}
 }
 
-
+int tm = 1;
 void Game::updateMapCharacter(float di)
 {
 	for (int i = 0; i < 118; i++)
@@ -1226,6 +1226,29 @@ void Game::updateMapCharacter(float di)
 	{
 		int x = infa->positionNow.x;
 		int y = infa->positionNow.y;
-		Characters[x][y] = -700;
+		Characters[x][y]-=700;
+	}
+	for (int i = 0; i < 118; i++)
+	{
+		for (int j = 0; j < 138; j++)
+		{
+			if (Characters[i][j] <= -1400)
+			{
+				for (Infantry* infa : infantryGroup[myTeam])
+				{
+					if (infa->positionNow == Vec2(i, j))
+					{
+						for (int i = 0; i < 8; i++) {
+							if (Characters[i + DIRECTION[i][0]][j + DIRECTION[i][1]] == 0) 
+							{
+								infa->positionGoal = Vec2(i + DIRECTION[i][0], j + DIRECTION[i][1]);
+							}
+							break;
+						}
+						break;
+					}
+				}
+			}
+		}
 	}
 }
