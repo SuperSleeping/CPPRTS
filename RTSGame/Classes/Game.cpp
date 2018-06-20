@@ -24,6 +24,18 @@ vector<Warfactory*> warfactoryGroup[4];
 vector<Minefield*> minefieldGroup[4];
 vector<Powerplant*> powerplantGroup[4];
 
+int MapInfo[118][138];
+int Block[118][138];
+int Characters[118][138];
+int Buildings[118][138];
+
+vector<int[118][138]> MapDestination;
+
+
+void MapBlockBegin();
+void BuildBlock(int x, int y, int size);
+void RefreshMap(int map[118][138]);
+
 //当前玩家的资源数据
 int money;
 int electricity;
@@ -607,6 +619,16 @@ void Game::onMouseUp(cocos2d::Event* event)
 	int x = position[tiledmapTM].x;
 	int y = position[tiledmapTM].y;
 
+	for (Infantry* character : infantryGroup[myTeam])
+	{
+		if (character->selected)
+		{
+			character->positionGoal = position[tiledmapTM];
+			character->setMapDestination(position[tiledmapTM]);
+			character->schedule(schedule_selector(Character::updateMove), 0.1f, kRepeatForever, 0.0f);
+		}
+	}
+	
 	//建筑状态
 	if (buildState) return;
 
@@ -1121,4 +1143,69 @@ void Game::changeOccupiedTile(Point tmPoint, int buildingType)
 void Game::menuReturn(cocos2d::Ref* pSender)
 {
 	
+}
+void MapBlockBegin()
+{
+	for (int i = 0; i < 118; i++) {
+		for (int j = 0; j < 138; j++) {
+			MapInfo[i][j] = 0;
+			Block[i][j] = 0;
+			Characters[i][j] = 0;
+			Buildings[i][j] = 0;
+		}
+	}
+}
+
+void BuildBlock(int x, int y, int size)
+{
+	int q = 2;
+	if (size == 2)
+	{
+
+		for (int i = x - 2; i <= x + 2; i++)
+		{
+			Buildings[i][y] = -700;
+		}
+		for (int i = y - 2; i <= y + 2; i++)
+		{
+			Buildings[x][i] = -700;
+		}
+
+		Buildings[x - 1][y - 1] = -700;
+		Buildings[x - 1][y + 1] = -700;
+		Buildings[x + 1][y - 1] = -700;
+		Buildings[x + 1][y + 1] = -700;
+		Buildings[x][y + 3] -= q;
+		Buildings[x][y - 3] -= q;
+		Buildings[x - 1][y + 2] -= q;
+		Buildings[x - 1][y - 2] -= q;
+		Buildings[x + 1][y + 2] -= q;
+		Buildings[x + 1][y - 2] -= q;
+		Buildings[x - 2][y + 1] -= q;
+		Buildings[x - 2][y - 1] -= q;
+		Buildings[x + 2][y + 1] -= q;
+		Buildings[x + 2][y - 1] -= q;
+		Buildings[x + 3][y] -= q;
+		Buildings[x - 3][y] -= q;
+	}
+	else if (size == 1)
+	{
+
+		for (int i = x - 1; i <= x + 1; i++)
+		{
+			Buildings[i][y] = -700;
+		}
+		for (int i = y - 1; i <= y + 1; i++)
+		{
+			Buildings[x][i] = -700;
+		}
+		Buildings[x - 2][y] = -700;
+		Buildings[x + 2][y] = -700;
+		Buildings[x][y - 2] = -700;
+		Buildings[x - 1][y - 1] = -700;
+		Buildings[x - 1][y + 1] = -700;
+		Buildings[x + 1][y - 1] = -700;
+		Buildings[x + 1][y + 1] = -700;
+
+	}
 }

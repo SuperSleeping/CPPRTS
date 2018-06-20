@@ -3,6 +3,14 @@
 
 #include "GameElement.h"
 
+extern int MapInfo[118][138];
+extern int Block[118][138];
+extern int Characters[118][138];
+extern int Buildings[118][138];
+
+extern Point convertToTiledMap(Point pt);
+extern Point convertFromTMToWorld(Point pt);
+
 class Character : public GameElement
 {
 public:
@@ -30,7 +38,87 @@ public:
 	//检测目标位置与当前位置后进行移动
 	void move();
 
+	void updateMove(float di) {
+		Point TMposition = convertToTiledMap(this->getPosition());
+		int MapCondition[118][138];
+		if (TMposition != positionGoal)
+		{
+			if (!this->numberOfRunningActions())
+			{
+				for (int i = 0; i < 118; i++)
+				{
+					for (int j = 0; j < 138; j++)
+					{
+						MapCondition[i][j] = MapInfo[i][j] + Block[i][j] + Buildings[i][j] + Characters[i][j] + this->MapDestination[i][j];
+					}
+				}
+				Point BestTarget = TMposition;
+				int x = TMposition.x;
+				int y = TMposition.y;
+				int direction;
+				int best = -500;
+				for (int i = 0; i < 8; i++)
+				{
+					if (MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]] > best)
+					{
+						best = MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]];
+						direction = i;
+					}
+				}
+				BestTarget.x += DIRECTION[direction][0];
+				BestTarget.y += DIRECTION[direction][1];
+				MoveTo* move = MoveTo::create(0.5f, convertFromTMToWorld(BestTarget));
+				this->runAction(move);
+			}
+		}
+	}
+	
+	int MapDestination[118][138];
+	
+	void setMapDestination(Point pt)
+	{
+		int x = pt.x;
+		int y = pt.y;
+		int q = 5;					//权重值
+		
+		for (int i = 0; i < 118; i++) 
+		{
+			for (int j = 0; j < 138; j++)
+			{
+				MapDestination[i][j] = 0;
+			}
+		}
+		
+		MapDestination[x][y] = 700;				//确保所有辐射值都为正数
+		for (int i = x; i >= 0; i--) 
+		{
+			MapDestination[i][y] = 700 - q * (x - i);
+			for (int j = y - 1; j >= 0; j--)
+			{
+				MapDestination[i][j] = MapDestination[i][y] - q * (y - j);
+			}
+			for (int j = y + 1; j < 138; j++) 
+			{
+				MapDestination[i][j] = MapDestination[i][y] - q * (j - y);
+			}
+		}
+		for (int i = x; i < 118; i++)
+		{
+			MapDestination[i][y] = 700 - q * (i - x);
+			for (int j = y - 1; j >= 0; j--)
+			{
+				MapDestination[i][j] = MapDestination[i][y] - q * (y - j);
+			}
+			for (int j = y + 1; j < 138; j++) 
+			{
+				MapDestination[i][j] = MapDestination[i][y] - q * (j - y);
+			}
+		}
+	}
+
 private:
+	
+	
 	float distance(Vec2 a, Vec2 b)
 	{
 		float _distance = sqrt(

@@ -5,6 +5,9 @@
 #include <string>
 USING_NS_CC;
 
+const int DIRECTION[8][2] = {
+	{ -1,0 },{ -1,1 },{ 0,1 },{ 1,1 },{ 1,0 },{ 1,-1 } ,{ 0,-1 },{ -1,-1 }
+};
 
 class GameElement : public Sprite
 {
@@ -16,7 +19,7 @@ public:
 	EventListenerTouchOneByOne * touchListener;
 
 	// Ù–‘
-	bool selected;
+	bool selected=0;
 	int team;
 	int prize;
 	int blood;
