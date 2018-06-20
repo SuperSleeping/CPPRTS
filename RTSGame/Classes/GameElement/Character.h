@@ -33,12 +33,7 @@ public:
 private:
 	float distance(Vec2 a, Vec2 b)
 	{
-		float _distance = sqrt(
-			abs(
-			(a.x - b.x)*(a.x - b.x) +
-				(a.y - b.y)*(a.y - b.y)
-			)
-		);
+		float _distance = sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 		return _distance;
 	}
 };

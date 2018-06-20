@@ -16,7 +16,7 @@ public:
 	EventListenerTouchOneByOne * touchListener;
 
 	// Ù–‘
-	bool selected;
+	bool selected = 0;
 	int team;
 	int prize;
 	int blood;

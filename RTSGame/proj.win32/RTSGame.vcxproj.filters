@@ -72,7 +72,9 @@
     <ClCompile Include="..\Classes\GameElement\Tank.cpp">
       <Filter>src\GameElement\Character</Filter>
     </ClCompile>
-    <ClCompile Include="Outline.cpp" />
+    <ClCompile Include="..\Classes\Routine.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -126,7 +128,9 @@
     <ClInclude Include="..\Classes\GameElement\Tank.h">
       <Filter>src\GameElement\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Outline.h" />
+    <ClInclude Include="..\Classes\Routine.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
