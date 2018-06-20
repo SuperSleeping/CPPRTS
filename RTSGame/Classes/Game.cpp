@@ -271,7 +271,7 @@ bool Game::init()
 	*/
 
 	this->scheduleUpdate();
-	
+	this->schedule(schedule_selector(Game::updateMapCharacter),0, kRepeatForever, 0.1f);
 
 	return true;
 }
@@ -623,9 +623,11 @@ void Game::onMouseUp(cocos2d::Event* event)
 	{
 		if (character->selected)
 		{
+			character->stopAllActions();
 			character->positionGoal = position[tiledmapTM];
 			character->setMapDestination(position[tiledmapTM]);
-			character->schedule(schedule_selector(Character::updateMove), 0.1f, kRepeatForever, 0.0f);
+			character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
+			
 		}
 	}
 	
@@ -1207,5 +1209,23 @@ void BuildBlock(int x, int y, int size)
 		Buildings[x + 1][y - 1] = -700;
 		Buildings[x + 1][y + 1] = -700;
 
+	}
+}
+
+
+void Game::updateMapCharacter(float di)
+{
+	for (int i = 0; i < 118; i++)
+	{
+		for (int j = 0; j < 138; j++)
+		{
+			Characters[i][j] = 0;
+		}
+	}
+	for (Infantry* infa : infantryGroup[myTeam])
+	{
+		int x = infa->positionNow.x;
+		int y = infa->positionNow.y;
+		Characters[x][y] = -700;
 	}
 }

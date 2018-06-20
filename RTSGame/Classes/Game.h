@@ -6,8 +6,13 @@
 #include <vector>
 #include "GameElement/GameElement.h"
 
+
 USING_NS_CC;
 using std::vector;
+
+extern int Characters[118][138];
+
+//extern vector<Infantry*> infantryGroup[4];
 
 class Game : public cocos2d::Scene
 {
@@ -16,7 +21,7 @@ public:
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
-	
+
 	//层
 	Layer* mouseLayer;
 	Layer* game;
@@ -48,9 +53,9 @@ public:
 
 	//某些操作功能
 	//@范围判断 - 注意保证坐标系一致
-	bool rectContain(Rect rect,Point position)
+	bool rectContain(Rect rect, Point position)
 	{
-		if (position.x >= rect.getMinX() && position.x <= rect.getMaxX() && position.y >= rect.getMinY() &&position.y <= rect.getMaxY())
+		if (position.x >= rect.getMinX() && position.x <= rect.getMaxX() && position.y >= rect.getMinY() && position.y <= rect.getMaxY())
 			return true;
 		else
 			return false;
@@ -138,7 +143,7 @@ public:
 	Rect selectRect;
 	DrawNode* rectangle;
 	void drawline();
-	
+
 	//@建筑状态
 	Sprite* BuildingPictureWithMouse;
 
@@ -186,6 +191,8 @@ public:
 	virtual void update(float dt);
 	void menuUpdate();
 
+	void updateMapCharacter(float di);
+	
 	//场景切换
 	void menuReturn(cocos2d::Ref* pSender);
 
