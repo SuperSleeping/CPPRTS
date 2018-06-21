@@ -3,11 +3,14 @@
 
 //保证不在origin=destination的时候调用routine搜索路径
 
-Routine::Routine(Point originTM, Point destinationTM, bool blockMessage[118][138])
+Routine::Routine(bool blockMessage[118][138])
 {
 	//置入信息
 	isBlock = blockMessage;
+}
 
+void Routine::FromStartToEnd(Point originTM, Point destinationTM)
+{
 	Origin.x = (int)originTM.x;
 	Origin.y = (int)originTM.y;
 	Origin.f = 0;
@@ -17,8 +20,10 @@ Routine::Routine(Point originTM, Point destinationTM, bool blockMessage[118][138
 	//Open表格初始化，table表格初始化
 	open.push_back(Origin);
 	table[Origin.x][Origin.y] = 1;
-}
 
+	//final_path更新
+	doSearch();
+}
 
 Routine::~Routine()
 {
@@ -52,7 +57,7 @@ void Routine::doSearch()
 		if (GOAL == open.begin())
 		{
 			//open.begin()不是Destination
-			if (open.begin != Destination)
+			if (*open.begin() != Destination)
 				continue;
 			//找到Destination了
 			else
@@ -85,7 +90,7 @@ void Routine::openTableInit()
 	//找到open表中f最小的Note，命名temp
 	vector<Note>::iterator temp = open.begin();
 	vector<Note>::iterator iter;
-	for (iter = open.begin() + 1; iter != open.end(); iter++)
+	for (iter = open.begin(); iter != open.end(); iter++)
 	{
 		//遍历open表格找到估计代价最小的Note
 		if (temp->f > iter->f)
@@ -98,11 +103,28 @@ void Routine::openTableInit()
 	close.push_back(*temp);
 	table[temp->x][temp->y] = 1;
 
+	//保存temp信息后删除open中的temp
+	int X, Y, G;
+	X = temp->x;
+	Y = temp->y;
+	G = temp->g;
+
+	open.erase(temp);
+
 	//八个方向
 	for (int num = 0; num < 8; num++)
 	{
-		int x = temp->x + direction[num][0];
-		int y = temp->y + direction[num][1];
+		int dis;
+		if (num < 4)
+		{
+			dis = 10;
+		}
+		else
+		{
+			dis = 14;
+		}
+		int x = X + direction[num][0];
+		int y = Y + direction[num][1];
 
 		//检查格子是否有障碍物或已经加入检查
 		if (isBlock[x][y] == 1 || table[x][y] == 1)continue;
@@ -113,16 +135,13 @@ void Routine::openTableInit()
 			note.x = x;
 			note.y = y;
 			note.father = &(*(close.end() - 1));
-			note.g = temp->f;
+			note.g = G + dis;
 			note.h = distance(note);
+			note.f = note.g + note.h;
 
 			//note加入Open队列
 			open.push_back(note);
 		}
 	}
-	
-	//删除open中的temp
-	open.erase(temp);
-
 }
 

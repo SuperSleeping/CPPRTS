@@ -24,6 +24,8 @@ struct Note
 	//运算符重载
 	bool operator==(Note note)
 	{
+		if (this == NULL || &note == NULL)
+			return false;
 		if (x == note.x&&y == note.y)
 		{
 			return true;
@@ -35,6 +37,8 @@ struct Note
 	}
 	bool operator!=(Note note)
 	{
+		if (this == NULL || &note == NULL)
+			return false;
 		if (x != note.x||y != note.y)
 		{
 			return true;
@@ -46,16 +50,17 @@ struct Note
 	}
 };
 
-
-
 class Routine
 {
 public:
-	Routine(Point origin,Point destination,bool blockMessage[118][138]);
+	Routine(bool blockMessage[118][138]);
 	~Routine();
 
 	//存储最终路径需要走过的每一个Point
 	vector<Point> final_path;
+
+	//导入起始、终点坐标
+	void FromStartToEnd(Point originTM, Point destinationTM);
 
 private:
 	//地图信息置入

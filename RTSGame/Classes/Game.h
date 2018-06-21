@@ -27,9 +27,7 @@ public:
 	bool readBlock(Point tmPoint);
 	void addBlock(Point tmPoint);
 	void removeBlock(Point tmPoint);
-	//@元地图Block属性用isBlock数组保存 便于修改
-	bool isBlock[118][138];
-	void isBlockInitialize();
+
 
 
 
@@ -185,6 +183,8 @@ public:
 	//Update周期函数
 	virtual void update(float dt);
 	void menuUpdate();
+	void characterUpdate();
+
 
 	//场景切换
 	void menuReturn(cocos2d::Ref* pSender);

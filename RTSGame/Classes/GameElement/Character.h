@@ -2,6 +2,8 @@
 #define _CHARACTER_H_
 
 #include "GameElement.h"
+#include <vector>
+using std::vector;
 
 class Character : public GameElement
 {
@@ -27,8 +29,12 @@ public:
 	//运动相关
 	Vec2 positionGoal;
 	float velocity;
-	//检测目标位置与当前位置后进行移动
+	DrawNode* drawRoutine;
+
+	//进行移动
 	void move();
+	vector<Point> path;
+	void pathInit(vector<Point> &final_path);
 
 private:
 	float distance(Vec2 a, Vec2 b)

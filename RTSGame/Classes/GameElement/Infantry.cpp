@@ -9,10 +9,11 @@ Infantry* Infantry::create(Vec2 position)
 		infantry->setAnchorPoint(Vec2(0.5, 0));
 		infantry->setPosition(position);
 		infantry->positionCurrent = position;
+		infantry->positionGoal = position;
 		//属性设置
 		infantry->blood = 125;
 		infantry->prize = 120;
-		infantry->velocity = 10;
+		infantry->velocity = 150;
 		//自动释放
 		infantry->autorelease();
 		return infantry;

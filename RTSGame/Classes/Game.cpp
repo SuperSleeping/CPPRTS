@@ -2,6 +2,8 @@
 #include "HelloWorldScene.h"
 #include <iostream>
 
+#include "Routine.h"
+
 #include"GameElement/Basement.h"
 #include"GameElement/Barrack.h"
 #include"GameElement/Warfactory.h"
@@ -49,14 +51,21 @@ Point mapSize;
 Point tmSize;
 Point tmNumber;
 
+//@元地图Block属性用isBlock数组保存 便于修改
+bool isBlock[118][138];
+void isBlockInitialize();
+
+//寻路
+Routine routine(isBlock);
+
 //@屏幕坐标转换成层坐标（世界坐标系）
-Point convertToMapLayer(Point position)
+extern Point convertToMapLayer(Point position)
 {
 	position = position - map->getPosition();
 	return position;
 }
 //@世界坐标转换成瓦片地图坐标
-Point convertToTiledMap(Point position)
+extern Point convertToTiledMap(Point position)
 {
 	int x, y;
 	x = position.x / tmSize.x;
@@ -64,7 +73,7 @@ Point convertToTiledMap(Point position)
 	return Vec2(x, y);
 }
 //@瓦片转换成世界坐标
-Point convertFromTMToWorld(Point position)
+extern Point convertFromTMToWorld(Point position)
 {
 	position.x *= tmSize.x;
 	position.y *= tmSize.y;
@@ -72,7 +81,7 @@ Point convertFromTMToWorld(Point position)
 	return position;
 }
 //@世界坐标换成相邻的瓦片坐标
-Point convertToNeightborTiledMap(Point position)
+extern Point convertToNeightborTiledMap(Point position)
 {
 	Point tmPoint;
 	tmPoint = convertToTiledMap(position);
@@ -87,7 +96,7 @@ Point convertToNeightborTiledMap(Point position)
 	return tmPoint;
 }
 //判断目标是否超出瓦片地图的范围
-bool isTileOutOfRange(Point tmPoint)
+extern bool isTileOutOfRange(Point tmPoint)
 {
 	if (0 <= tmPoint.x&&tmPoint.x < tmNumber.x && 0 <= tmPoint.y&&tmPoint.y < tmNumber.y)
 	{
@@ -268,6 +277,7 @@ bool Game::init()
 void Game::update(float dt)
 {
 	menuUpdate();
+	characterUpdate();
 }
 
 void Game::menuUpdate()
@@ -288,6 +298,20 @@ void Game::menuUpdate()
 	else
 	{
 
+	}
+}
+
+void Game::characterUpdate()
+{
+	for (Infantry* purpose : infantryGroup[myTeam])
+	{
+		if (purpose->positionCurrent != purpose->positionGoal)
+		{
+			Point goal = convertToTiledMap(purpose->positionGoal);
+			routine.FromStartToEnd(purpose->positionCurrentTM, goal);
+			purpose->pathInit(routine.final_path);
+			purpose->move();
+		}
 	}
 }
 
@@ -582,10 +606,27 @@ void Game::onMouseDown(cocos2d::Event* event)
 	//选择状态（非建筑状态）
 	else
 	{
-		//加载选择状态
-		selectedState = true;
-		//firstPress信息载入
-		firstPress = position[world];
+		//已经有选择中的character，要进行行走攻击等操作
+		if (selectedType==Character::CharacterType::CharacterChosen)
+		{
+			//遍历人物
+			//Infantry
+			for (Infantry* purpose : infantryGroup[myTeam])
+			{
+				if (purpose->selected == true)
+				{
+					purpose->positionGoal = position[tiledmapW];
+				}
+			}
+		}
+
+		else
+		{
+			//加载选择状态
+			selectedState = true;
+			//firstPress信息载入
+			firstPress = position[world];
+		}
 	}
 
 }
@@ -991,7 +1032,7 @@ void Game::buttonx(Ref* pSender)
 //瓦片地图API
 /***************/
 
-void Game::isBlockInitialize()
+void isBlockInitialize()
 {
 	Point tmPoint;
 	for (int x = 0; x < tmNumber.x; x++)
