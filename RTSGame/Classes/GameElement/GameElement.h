@@ -11,6 +11,9 @@ const int DIRECTION[8][2] = {
 static int CreateTag = 0;
 static int myTeam = 0;
 
+static int Gold[4] = { 5000,5000,5000,5000 };
+static int Power[4] = { 0,0,0,0 };
+
 class GameElement : public Sprite
 {
 public:

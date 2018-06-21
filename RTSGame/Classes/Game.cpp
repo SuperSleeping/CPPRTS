@@ -638,7 +638,89 @@ void Game::onMouseUp(cocos2d::Event* event)
 
 	//hcw
 	bool swallow = 0;
-	for (Infantry* enemy_character : infantryGroup[(myTeam + 1) % 2])
+
+
+	//遍历人物
+	{
+		//由于人物比较小，所以改变selectedRect的大小
+		Point leftdown = Vec2(position[world].x - 10, position[world].y - 30);
+		Size size = Size(20, 40);
+		selectRect = Rect(leftdown, size);
+		int zo = 0;
+
+		//Infantry
+		for (int s = (myTeam + 1) % 2; s < 4; s += 2)
+		{
+			vector<Infantry*>::iterator iterInfantry;
+			for (iterInfantry = infantryGroup[s].begin(); iterInfantry != infantryGroup[s].end(); iterInfantry++)
+			{
+				if (rectContain(selectRect, (*iterInfantry)->getPosition()))
+				{
+					if ((*iterInfantry)->getZOrder() > zo)
+					{
+						zo = (*iterInfantry)->getZOrder();
+						for (Infantry* character : infantryGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterInfantry)->getTag();
+								log("set tag: %d", (*iterInfantry)->getTag());
+							}
+						}
+					}
+					swallow = 1;
+				}
+
+			}
+			//dog
+			vector<Dog*>::iterator iterDog;
+			for (iterDog = dogGroup[s].begin(); iterDog != dogGroup[s].end(); iterDog++)
+			{
+				if (rectContain(selectRect, (*iterDog)->getPosition()))
+				{
+					if ((*iterDog)->getZOrder() > zo)
+					{
+						zo = (*iterDog)->getZOrder();
+						for (Infantry* character : infantryGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterInfantry)->getTag();
+								log("set tag: %d", (*iterInfantry)->getTag());
+							}
+						}
+					}
+					swallow = 1;
+				}
+			}
+			//tank
+			vector<Tank*>::iterator iterTank;
+			for (iterTank = tankGroup[myTeam].begin(); iterTank != tankGroup[myTeam].end(); iterTank++)
+			{
+				if (rectContain(selectRect, (*iterTank)->getPosition()))
+				{
+					if ((*iterTank)->getZOrder() > zo)
+					{
+						zo = (*iterTank)->getZOrder();
+						for (Infantry* character : infantryGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterInfantry)->getTag();
+								log("set tag: %d", (*iterInfantry)->getTag());
+							}
+						}
+					}
+					swallow = 1;
+				}
+			}
+		}
+
+	}
+	/*for (Infantry* enemy_character : infantryGroup[(myTeam + 1) % 2])
 	{
 		if (enemy_character->positionNow == position[tiledmapTM])
 		{
@@ -654,7 +736,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 			swallow = 1;
 			break;
 		}
-	}
+	}*/
 	if (!swallow)
 	{
 		for (Infantry* character : infantryGroup[myTeam])
@@ -702,6 +784,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 			//遍历建筑
 			//@清除原来的select痕迹，创建新的select标记
 			{
+				//int zo = 0;
 				//Basement
 				{
 					vector<Basement*>::iterator iterBasement;
@@ -1512,15 +1595,15 @@ void Game::updateZOrder(float di)
 	{
 		for (auto infa : infantryGroup[i])
 		{
-			infa->setZOrder = infa->positionNow.y;
+			infa->setZOrder(infa->positionNow.y);
 		}
 		for (auto dog : dogGroup[i])
 		{
-			dog->setZOrder = dog->positionNow.y;
+			dog->setZOrder(dog->positionNow.y);
 		}
 		for (auto tank : tankGroup[i])
 		{
-			tank->setZOrder = tank->positionNow.y;
+			tank->setZOrder(tank->positionNow.y);
 		}
 	}
 }
