@@ -41,7 +41,7 @@ public:
 
 	//事件
 	//@基本信息
-	int myTeam=0;
+	
 	int resourceMoney;
 	int resourcePower;
 	//@游戏状态 - 0-off 1-on 2-building
@@ -192,6 +192,7 @@ public:
 	void menuUpdate();
 
 	void updateMapCharacter(float di);
+	void updateZOrder(float di);
 	
 	//场景切换
 	void menuReturn(cocos2d::Ref* pSender);

@@ -17,6 +17,9 @@ Warfactory* Warfactory::create(Vec2 position)
 		warfactory->setPosition(position);
 		//属性设置
 		warfactory->blood = 200;
+		warfactory->bloodNow = 200;
+		CreateTag++;
+		warfactory->setTag(CreateTag);
 		//自动释放
 		warfactory->autorelease();
 		return warfactory;

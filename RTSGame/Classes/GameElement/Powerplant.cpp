@@ -19,6 +19,9 @@ Powerplant* Powerplant::create(Vec2 position)
 		powerplant->selected = 0;
 		powerplant->positionCurrent = position;
 		powerplant->blood = 200;
+		powerplant->bloodNow = 200;
+		CreateTag++;
+		powerplant->setTag(CreateTag);
 		//×Ô¶¯ÊÍ·Å
 		powerplant->autorelease();
 		return powerplant;

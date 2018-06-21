@@ -8,6 +8,8 @@ USING_NS_CC;
 const int DIRECTION[8][2] = {
 	{ -1,0 },{ -1,1 },{ 0,1 },{ 1,1 },{ 1,0 },{ 1,-1 } ,{ 0,-1 },{ -1,-1 }
 };
+static int CreateTag = 0;
+static int myTeam = 0;
 
 class GameElement : public Sprite
 {
@@ -23,6 +25,19 @@ public:
 	int team;
 	int prize;
 	int blood;
+	int bloodNow;
+	bool died = 0;
+
+	void beAttacked(int damage)
+	{
+		bloodNow -= damage;
+		bloodPicture->setScaleX(bloodNow / blood);
+		log("Blood : %d", bloodNow);
+		if (bloodNow <= 0)
+		{
+			died = 1;
+		}
+	}
 
 	//ÑªÌõ
 	Sprite* bloodFrame;

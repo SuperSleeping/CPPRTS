@@ -12,8 +12,11 @@ Dog* Dog::create(Vec2 position)
 		dog->positionCurrent = position;
 		//属性设置
 		dog->blood = 80;
+		dog->bloodNow = 80;
 		dog->prize = 150;
 		dog->velocity = 25;
+		CreateTag++;
+		dog->setTag(CreateTag);
 		//自动释放
 		dog->autorelease();
 		return dog;

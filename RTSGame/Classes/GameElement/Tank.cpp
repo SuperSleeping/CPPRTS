@@ -12,8 +12,11 @@ Tank* Tank::create(Vec2 position)
 		tank->positionCurrent = position;
 		//属性设置
 		tank->blood = 170;
+		tank->bloodNow = 170;
 		tank->prize = 250;
 		tank->velocity = 15;
+		CreateTag++;
+		tank->setTag(CreateTag);
 		//自动释放
 		tank->autorelease();
 		return tank;

@@ -14,6 +14,8 @@
 
 //建立vector储存gameElement
 //4个数组分别存放四个国家的兵力和建筑
+
+
 vector<Infantry*> infantryGroup[4];
 vector<Dog*> dogGroup[4];
 vector<Tank*> tankGroup[4];
@@ -28,6 +30,7 @@ int MapInfo[118][138];
 int Block[118][138];
 int Characters[118][138];
 int Buildings[118][138];
+int MapCondition[118][138];
 
 vector<int[118][138]> MapDestination;
 
@@ -161,6 +164,15 @@ bool Game::init()
 	occupiedRelatedCoordinateInitialize();
 	isBlockInitialize();
 
+	//测试用攻击对象
+	auto character = Infantry::create(selectedSpawnPoint);
+	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
+	game->addChild(character, z);
+	infantryGroup[1].push_back(character);
+	character->positionGoal = Vec2(20, 100);
+	character->setPosition(Vec2(200, 200));
+	character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0);
+	character->setMapDestination(Vec2(20, 100));
 
 	//菜单栏
 	{
@@ -271,7 +283,7 @@ bool Game::init()
 	*/
 
 	this->scheduleUpdate();
-	this->schedule(schedule_selector(Game::updateMapCharacter), 0.01f, kRepeatForever,0);
+	this->schedule(schedule_selector(Game::updateMapCharacter), 0.01f, kRepeatForever, 0);
 
 	return true;
 }
@@ -553,30 +565,35 @@ void Game::onMouseDown(cocos2d::Event* event)
 			auto building = Basement::create(position[tiledmapW]);
 			basementGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
+			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
 			auto building = Barrack::create(position[tiledmapW]);
 			barrackGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
+			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
 			auto building = Minefield::create(position[tiledmapW]);
 			minefieldGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
+			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
 			auto building = Powerplant::create(position[tiledmapW]);
 			powerplantGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
+			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 1);
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
 			auto building = Warfactory::create(position[tiledmapW]);
 			warfactoryGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
+			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 		}
 		else
 		{
@@ -619,15 +636,40 @@ void Game::onMouseUp(cocos2d::Event* event)
 	int x = position[tiledmapTM].x;
 	int y = position[tiledmapTM].y;
 
-	for (Infantry* character : infantryGroup[myTeam])
+	//hcw
+	bool swallow = 0;
+	for (Infantry* enemy_character : infantryGroup[(myTeam + 1) % 2])
 	{
-		if (character->selected)
+		if (enemy_character->positionNow == position[tiledmapTM])
 		{
-			character->stopAllActions();
-			character->positionGoal = position[tiledmapTM];
-			character->setMapDestination(position[tiledmapTM]);
-			character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
+			for (Infantry* character : infantryGroup[myTeam])
+			{
+				if (character->selected)
+				{
+					character->stopAllActions();
+					character->attackTag = enemy_character->getTag();
+					log("set tag: %d", enemy_character->getTag());
+				}
+			}
+			swallow = 1;
+			break;
+		}
+	}
+	if (!swallow)
+	{
+		for (Infantry* character : infantryGroup[myTeam])
+		{
+			if (character->selected)
+			{
+				character->stopAllActions();
+				//character->positionGoal = position[tiledmapTM];
+				character->setGoal(position[tiledmapTM]);
+				character->attackTag = 0;
+				//character->setMapDestination(position[tiledmapTM]);
+				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
+				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
 
+			}
 		}
 	}
 
@@ -637,6 +679,8 @@ void Game::onMouseUp(cocos2d::Event* event)
 	//选择状态
 	if (selectedState)
 	{
+
+
 		//lastPress信息载入
 		lastPress = position[world];
 		//清除框选
@@ -932,6 +976,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 
 		//退出选择状态
 		selectedState = false;
+
 	}
 	/*int nm = 1;
 	for (Infantry* infa : infantryGroup[myTeam])
@@ -941,11 +986,15 @@ void Game::onMouseUp(cocos2d::Event* event)
 		nm++;
 		log("%d : %d,%d", nm, x, y);
 		log("%d", Characters[x][y]);
-		
+
 	}*/
+
+
+
+
 	int a = position[tiledmapTM].x;
 	int b = position[tiledmapTM].y;
-	log("%d", Characters[a][b]);
+	log("BD :%d", Buildings[a][b]);
 
 	//排除菜单范围
 	if (rectContain(menuRect, position[screen]))return;
@@ -1179,17 +1228,17 @@ void BuildBlock(int x, int y, int size)
 
 		for (int i = x - 2; i <= x + 2; i++)
 		{
-			Buildings[i][y] = -700;
+			Buildings[i][y] = -1400;
 		}
 		for (int i = y - 2; i <= y + 2; i++)
 		{
-			Buildings[x][i] = -700;
+			Buildings[x][i] = -1400;
 		}
 
-		Buildings[x - 1][y - 1] = -700;
-		Buildings[x - 1][y + 1] = -700;
-		Buildings[x + 1][y - 1] = -700;
-		Buildings[x + 1][y + 1] = -700;
+		Buildings[x - 1][y - 1] = -1400;
+		Buildings[x - 1][y + 1] = -1400;
+		Buildings[x + 1][y - 1] = -1400;
+		Buildings[x + 1][y + 1] = -1400;
 		Buildings[x][y + 3] -= q;
 		Buildings[x][y - 3] -= q;
 		Buildings[x - 1][y + 2] -= q;
@@ -1208,19 +1257,19 @@ void BuildBlock(int x, int y, int size)
 
 		for (int i = x - 1; i <= x + 1; i++)
 		{
-			Buildings[i][y] = -700;
+			Buildings[i][y] = -1400;
 		}
 		for (int i = y - 1; i <= y + 1; i++)
 		{
-			Buildings[x][i] = -700;
+			Buildings[x][i] = -1400;
 		}
-		Buildings[x - 2][y] = -700;
-		Buildings[x + 2][y] = -700;
-		Buildings[x][y - 2] = -700;
-		Buildings[x - 1][y - 1] = -700;
-		Buildings[x - 1][y + 1] = -700;
-		Buildings[x + 1][y - 1] = -700;
-		Buildings[x + 1][y + 1] = -700;
+		Buildings[x - 2][y] = -1400;
+		Buildings[x + 2][y] = -1400;
+		Buildings[x][y - 2] = -1400;
+		Buildings[x - 1][y - 1] = -1400;
+		Buildings[x - 1][y + 1] = -1400;
+		Buildings[x + 1][y - 1] = -1400;
+		Buildings[x + 1][y + 1] = -1400;
 
 	}
 }
@@ -1240,15 +1289,15 @@ void Game::updateMapCharacter(float di)
 		int x = infa->positionNow.x;
 		int y = infa->positionNow.y;
 		Characters[x][y] -= 700;
-		int qi = 1;
-		Characters[x - 1][y]+= qi;
-		Characters[x + 1][y]+= qi;
-		Characters[x][y + 1]+= qi;
-		Characters[x][y - 1]+= qi;
-		/*Characters[x + 1][y + 1]++;
+		int qi = 2;
+		Characters[x - 1][y] += qi;
+		Characters[x + 1][y] += qi;
+		Characters[x][y + 1] += qi;
+		Characters[x][y - 1] += qi;
+		Characters[x + 1][y + 1]++;
 		Characters[x + 1][y - 1]++;
 		Characters[x - 1][y + 1]++;
-		Characters[x - 1][y - 1]++;*/
+		Characters[x - 1][y - 1]++;
 		x = infa->positionTarget.x;
 		y = infa->positionTarget.y;
 		Characters[x][y] -= 700;
@@ -1257,10 +1306,10 @@ void Game::updateMapCharacter(float di)
 		Characters[x + 1][y] += qi;
 		Characters[x][y + 1] += qi;
 		Characters[x][y - 1] += qi;
-		/*Characters[x + 1][y + 1]++;
+		Characters[x + 1][y + 1]++;
 		Characters[x + 1][y - 1]++;
 		Characters[x - 1][y + 1]++;
-		Characters[x - 1][y - 1]++;*/
+		Characters[x - 1][y - 1]++;
 	}
 	/*for (int i = 0; i < 118; i++)
 	{
@@ -1292,13 +1341,20 @@ void Game::updateMapCharacter(float di)
 }
 
 void Character::updateMove(float di) {
-	this->setZOrder(100 + positionNow.y);
+	if (stop)
+	{
+		return;
+	}
+	//this->setMapDestination(positionGoal);
+
+	this->setZOrder(positionNow.y);
 	Point TMposition = convertToTiledMap(this->getPosition());
 	if (!this->numberOfRunningActions()) {
 		positionNow = TMposition;
 	}
 
-	int MapCondition[118][138];
+	int x_goal = positionGoal.x;
+	int y_goal = positionGoal.y;
 	if (TMposition != positionGoal)
 	{
 		if (!this->numberOfRunningActions())
@@ -1323,8 +1379,9 @@ void Character::updateMove(float di) {
 
 					if (MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]] < 0)
 					{
-						positionGoal = positionNow;
-						log("stop");
+						this->setGoal(positionNow);
+						//positionGoal = positionNow;
+						//log("stop");
 						direction = -1;
 						return;
 						break;
@@ -1349,6 +1406,21 @@ void Character::updateMove(float di) {
 			}
 			else
 			{
+				bool competely = 1;
+				for (int i = 0; i < 8; i++)
+				{
+
+					if (Characters[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 && Buildings[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200)
+					{
+						competely = 0;
+						break;
+					}
+				}
+				if (competely)
+				{
+					this->setGoal(positionNow);
+					//positionGoal = positionNow;
+				}
 				BestTarget.x += DIRECTION[direction][0];
 				BestTarget.y += DIRECTION[direction][1];
 				int xx = BestTarget.x;
@@ -1356,11 +1428,99 @@ void Character::updateMove(float di) {
 				bool neighbor = 0;
 				Characters[xx][yy] -= 700;
 				positionTarget = BestTarget;
-				MoveTo* move = MoveTo::create(0.5f, convertFromTMToWorld(BestTarget));
+				MoveTo* move = MoveTo::create(0.1f, convertFromTMToWorld(BestTarget));
 				this->runAction(move);
 				MapDestination[x][y] = -700;
 			}
+			/*bool competely = 1;
+			for (int i = 0; i < 8; i++)
+			{
 
+				if (Characters[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 && Buildings[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200)
+				{
+					competely = 0;
+					break;
+				}
+			}
+			if (competely)
+			{
+				this->setGoal(positionNow);
+				//positionGoal = positionNow;
+			}*/
+		}
+	}
+}
+
+void Character::updateAttack(float di)
+{
+	if (!attackTag)
+	{
+		stop = 0;
+		return;
+	}
+
+	for (Infantry* enemy_infa : infantryGroup[1])
+	{
+
+		if (enemy_infa->died)
+		{
+			this->attackTag = 0;
+			return;
+		}
+		if (enemy_infa->getTag() == this->attackTag)
+		{
+			if (abs(this->positionNow.x - enemy_infa->positionNow.x) > attackDistance + 1 || abs(this->positionNow.y - enemy_infa->positionNow.y) > attackDistance + 1)
+			{
+				//this->positionGoal = enemy_infa->positionNow;
+				if (this->positionGoal != enemy_infa->positionNow)
+				{
+					this->setGoal(enemy_infa->positionNow);
+				}
+
+				/*if (positionNow.x < enemy_infa->positionNow.x)
+				{
+					positionGoal.x = enemy_infa->positionNow.x - 2;
+				}
+				if (positionNow.x > enemy_infa->positionNow.x)
+				{
+					positionGoal.x = enemy_infa->positionNow.x + 2;
+				}
+				if (positionNow.y < enemy_infa->positionNow.y)
+				{
+					positionGoal.y = enemy_infa->positionNow.y - 2;
+				}
+				if (positionNow.y > enemy_infa->positionNow.y)
+				{
+					positionGoal.y = enemy_infa->positionNow.y - 2;
+				}*/
+			}
+			else
+			{
+				log("atk");
+				//this->positionGoal = positionNow;
+				this->setGoal(positionNow);
+				stop = 1;
+				//enemy_infa->beAttacked(this->attack);
+			}
+		}
+	}
+}
+
+void Game::updateZOrder(float di)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (auto infa : infantryGroup[i])
+		{
+			infa->setZOrder = infa->positionNow.y;
+		}
+		for (auto dog : dogGroup[i])
+		{
+			dog->setZOrder = dog->positionNow.y;
+		}
+		for (auto tank : tankGroup[i])
+		{
+			tank->setZOrder = tank->positionNow.y;
 		}
 	}
 }
