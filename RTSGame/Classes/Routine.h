@@ -9,8 +9,8 @@ using std::vector;
 
 struct Note
 {
-	//父节点
-	Note* father;
+	//父节点(father是close表格中的角标)
+	int father;
 	//自己
 	int x;
 	int y;
@@ -109,9 +109,9 @@ private:
 	//判断该位置是否需要加入检查（检查过=1；未检查=0）
 	bool table[118][138];
 
-	void openTableInit();
+	Note Search();
 
-	void doSearch();
+	void findPath();
 };
 
 #endif

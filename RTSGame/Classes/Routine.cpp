@@ -22,7 +22,7 @@ void Routine::FromStartToEnd(Point originTM, Point destinationTM)
 	table[Origin.x][Origin.y] = 1;
 
 	//final_path更新
-	doSearch();
+	findPath();
 }
 
 Routine::~Routine()
@@ -30,117 +30,118 @@ Routine::~Routine()
 }
 
 
-void Routine::doSearch()
+void Routine::findPath()
 {
 	vector<Note>::iterator GOAL;
-	while (true)
-	{
-		//更新Open表格
-		openTableInit();
 
-		//查找是否能构成一条完整路径
-		GOAL = open.begin();
-		vector<Note>::iterator iter;
-		for (iter = open.begin(); iter != open.end(); iter++)
-		{
-			//如果有终点
-			if (*iter == Destination)
-			{
-				if (GOAL->f > iter->f)
-				{
-					GOAL = iter;
-				}
-			}
-		}
-
-		//如果没有完整路径，继续search过程，回溯找出完整路径
-		if (GOAL == open.begin())
-		{
-			//open.begin()不是Destination
-			if (*open.begin() != Destination)
-				continue;
-			//找到Destination了
-			else
-			{
-				break;
-			}
-		}
-		//找到Destination了
-		else
-		{
-			break;
-		}
-	}
+	//更新Open表格
+	Note Goal = Search();
 
 	//找到完整路径，回溯路径倒序填入final_path
-	Note* Goal = &(*GOAL);
-	while (*Goal != Origin)
+	while (Goal != Origin)
 	{
 		float x, y;
-		x = Goal->x;
-		y = Goal->y;
+		x = Goal.x;
+		y = Goal.y;
 		final_path.push_back(Vec2(x, y));
 		//回溯到父节点
-		Goal = Goal->father;
+		Goal = close[Goal.father];
 	}
 }
 
-void Routine::openTableInit()
+Note Routine::Search()
 {
-	//找到open表中f最小的Note，命名temp
-	vector<Note>::iterator temp = open.begin();
-	vector<Note>::iterator iter;
-	for (iter = open.begin(); iter != open.end(); iter++)
+	while (true)
 	{
-		//遍历open表格找到估计代价最小的Note
-		if (temp->f > iter->f)
+		//找到open表中f最小的Note，命名*temp
+		vector<Note>::iterator temp = open.begin();
+		vector<Note>::iterator iter;
+		for (iter = open.begin(); iter != open.end(); iter++)
 		{
-			temp = iter;
+			//遍历open表格找到估计代价最小的Note
+			if (temp->f > iter->f)
+			{
+				temp = iter;
+			}
 		}
-	}
 
-	//temp加入Close表格中，改变teble
-	close.push_back(*temp);
-	table[temp->x][temp->y] = 1;
-
-	//保存temp信息后删除open中的temp
-	int X, Y, G;
-	X = temp->x;
-	Y = temp->y;
-	G = temp->g;
-
-	open.erase(temp);
-
-	//八个方向
-	for (int num = 0; num < 8; num++)
-	{
-		int dis;
-		if (num < 4)
+		//如果目前f最小的Note就是Destination，则返回该点且可以进行回溯路径的工作
+		if (*temp == Destination)
 		{
-			dis = 10;
+			return *temp;
 		}
-		else
-		{
-			dis = 14;
-		}
-		int x = X + direction[num][0];
-		int y = Y + direction[num][1];
 
-		//检查格子是否有障碍物或已经加入检查
-		if (isBlock[x][y] == 1 || table[x][y] == 1)continue;
-		else
-		{
-			//创建相应Note
-			Note note;
-			note.x = x;
-			note.y = y;
-			note.father = &(*(close.end() - 1));
-			note.g = G + dis;
-			note.h = distance(note);
-			note.f = note.g + note.h;
 
-			//note加入Open队列
-			open.push_back(note);
+		//temp加入Close表格中，改变table
+		close.push_back(*temp);
+		table[temp->x][temp->y] = 1;
+
+		//保存temp信息后删除open中的temp
+		int X, Y, G;
+		X = temp->x;
+		Y = temp->y;
+		G = temp->g;
+
+		open.erase(temp);
+
+		//八个方向
+		for (int num = 0; num < 8; num++)
+		{
+			int dis;
+			if (num < 4)
+			{
+				dis = 10;
+			}
+			else
+			{
+				dis = 14;
+			}
+			int x = X + direction[num][0];
+			int y = Y + direction[num][1];
+
+			//检查格子是否有障碍物
+			if (isBlock[x][y] == 1)
+			{
+				continue;
+			}
+			//检查格子是否已加入open队列
+			else if (table[x][y] == 1)
+			{
+				//寻找对应的Note
+				Note temp;
+				temp.x = x;
+				temp.y = y;
+				for (Note search : open)
+				{
+					if (temp == search)
+					{
+						//通过当前节点有更小的起点代价G
+						if (search.g > G + dis)
+						{
+							//将当前节点设置成父节点并且改变g值
+							search.father = close.size() - 1;
+							search.g = G + dis;
+						}
+					}
+				}
+			}
+			else
+			{
+				//创建相应Note
+				Note note;
+				note.x = x;
+				note.y = y;
+				note.father = close.size() - 1;
+				note.g = G + dis;
+				note.h = distance(note);
+				note.f = note.g + note.h;
+
+				//note加入Open队列
+				open.push_back(note);
+
+				log("OpenSize=");
+				printf("%d", open.size());
+			}
 		}
 	}
 }
