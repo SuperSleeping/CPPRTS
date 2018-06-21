@@ -41,7 +41,7 @@ public:
 
 	//事件
 	//@基本信息
-	int myTeam;
+	int myTeam=0;
 	int resourceMoney;
 	int resourcePower;
 	//@游戏状态 - 0-off 1-on 2-building

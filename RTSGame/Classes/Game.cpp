@@ -161,87 +161,87 @@ bool Game::init()
 	occupiedRelatedCoordinateInitialize();
 	isBlockInitialize();
 
-	
+
 	//菜单栏
 	{
-	menu = Menu::create();
-	//按钮的z坐标决定图像和触发函数 z坐标较大的图像显示在上层 但是先调用的是z坐标较小的函数
-	//解决办法是改变按钮是否可按的状态
-	basement_button = MenuItemImage::create("Game/button/basement_button1.png", "Game/button/basement_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
-	basementx_button = MenuItemImage::create("Game/button/basement_button2.png", "Game/button/basement_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	barrack_button = MenuItemImage::create("Game/button/barrack_button1.png", "Game/button/barrack_button3.png", CC_CALLBACK_1(Game::buttonBarrack, this));
-	barrackx_button = MenuItemImage::create("Game/button/barrack_button2.png", "Game/button/barrack_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	powerplant_button = MenuItemImage::create("Game/button/powerplant_button1.png", "Game/button/powerplant_button3.png", CC_CALLBACK_1(Game::buttonPowerplant, this));
-	powerplantx_button = MenuItemImage::create("Game/button/powerplant_button2.png", "Game/button/powerplant_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	minefield_button = MenuItemImage::create("Game/button/minefield_button1.png", "Game/button/minefield_button3.png", CC_CALLBACK_1(Game::buttonMinefield, this));
-	minefieldx_button = MenuItemImage::create("Game/button/minefield_button2.png", "Game/button/minefield_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	warfactory_button = MenuItemImage::create("Game/button/warfactory_button1.png", "Game/button/warfactory_button3.png", CC_CALLBACK_1(Game::buttonWarfactory, this));
-	warfactoryx_button = MenuItemImage::create("Game/button/warfactory_button2.png", "Game/button/warfactory_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	infantry_button = MenuItemImage::create("Game/button/infantry_button1.png", "Game/button/infantry_button3.png", CC_CALLBACK_1(Game::buttonInfantry, this));
-	infantryx_button = MenuItemImage::create("Game/button/infantry_button2.png", "Game/button/infantry_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	dog_button = MenuItemImage::create("Game/button/dog_button1.png", "Game/button/dog_button3.png", CC_CALLBACK_1(Game::buttonDog, this));
-	dogx_button = MenuItemImage::create("Game/button/dog_button2.png", "Game/button/dog_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-	tank_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonTank, this));
-	tankx_button = MenuItemImage::create("Game/button/tank_button2.png", "Game/button/tank_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		menu = Menu::create();
+		//按钮的z坐标决定图像和触发函数 z坐标较大的图像显示在上层 但是先调用的是z坐标较小的函数
+		//解决办法是改变按钮是否可按的状态
+		basement_button = MenuItemImage::create("Game/button/basement_button1.png", "Game/button/basement_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
+		basementx_button = MenuItemImage::create("Game/button/basement_button2.png", "Game/button/basement_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		barrack_button = MenuItemImage::create("Game/button/barrack_button1.png", "Game/button/barrack_button3.png", CC_CALLBACK_1(Game::buttonBarrack, this));
+		barrackx_button = MenuItemImage::create("Game/button/barrack_button2.png", "Game/button/barrack_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		powerplant_button = MenuItemImage::create("Game/button/powerplant_button1.png", "Game/button/powerplant_button3.png", CC_CALLBACK_1(Game::buttonPowerplant, this));
+		powerplantx_button = MenuItemImage::create("Game/button/powerplant_button2.png", "Game/button/powerplant_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		minefield_button = MenuItemImage::create("Game/button/minefield_button1.png", "Game/button/minefield_button3.png", CC_CALLBACK_1(Game::buttonMinefield, this));
+		minefieldx_button = MenuItemImage::create("Game/button/minefield_button2.png", "Game/button/minefield_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		warfactory_button = MenuItemImage::create("Game/button/warfactory_button1.png", "Game/button/warfactory_button3.png", CC_CALLBACK_1(Game::buttonWarfactory, this));
+		warfactoryx_button = MenuItemImage::create("Game/button/warfactory_button2.png", "Game/button/warfactory_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		infantry_button = MenuItemImage::create("Game/button/infantry_button1.png", "Game/button/infantry_button3.png", CC_CALLBACK_1(Game::buttonInfantry, this));
+		infantryx_button = MenuItemImage::create("Game/button/infantry_button2.png", "Game/button/infantry_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		dog_button = MenuItemImage::create("Game/button/dog_button1.png", "Game/button/dog_button3.png", CC_CALLBACK_1(Game::buttonDog, this));
+		dogx_button = MenuItemImage::create("Game/button/dog_button2.png", "Game/button/dog_button2.png", CC_CALLBACK_1(Game::buttonx, this));
+		tank_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonTank, this));
+		tankx_button = MenuItemImage::create("Game/button/tank_button2.png", "Game/button/tank_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 
-	//锚点坐标设置
-	basement_button->setAnchorPoint(Vec2(0, 0));
-	basementx_button->setAnchorPoint(Vec2(0, 0));
-	barrack_button->setAnchorPoint(Vec2(0, 0));
-	barrackx_button->setAnchorPoint(Vec2(0, 0));
-	powerplant_button->setAnchorPoint(Vec2(0, 0));
-	powerplantx_button->setAnchorPoint(Vec2(0, 0));
-	minefield_button->setAnchorPoint(Vec2(0, 0));
-	minefieldx_button->setAnchorPoint(Vec2(0, 0));
-	warfactory_button->setAnchorPoint(Vec2(0, 0));
-	warfactoryx_button->setAnchorPoint(Vec2(0, 0));
-	infantry_button->setAnchorPoint(Vec2(0, 0));
-	infantryx_button->setAnchorPoint(Vec2(0, 0));
-	dog_button->setAnchorPoint(Vec2(0, 0));
-	dogx_button->setAnchorPoint(Vec2(0, 0));
-	tank_button->setAnchorPoint(Vec2(0, 0));
-	tankx_button->setAnchorPoint(Vec2(0, 0));
-	//坐标设置
-	basement_button->setPosition(Vec2(0, 0));
-	basementx_button->setPosition(Vec2(0, 0));
-	barrack_button->setPosition(Vec2(100, 0));
-	barrackx_button->setPosition(Vec2(100, 0));
-	powerplant_button->setPosition(Vec2(200, 0));
-	powerplantx_button->setPosition(Vec2(200, 0));
-	minefield_button->setPosition(Vec2(300, 0));
-	minefieldx_button->setPosition(Vec2(300, 0));
-	warfactory_button->setPosition(Vec2(400, 0));
-	warfactoryx_button->setPosition(Vec2(400, 0));
-	infantry_button->setPosition(Vec2(200, 100));
-	infantryx_button->setPosition(Vec2(200, 100));
-	dog_button->setPosition(Vec2(300, 100));
-	dogx_button->setPosition(Vec2(300, 100));
-	tank_button->setPosition(Vec2(400, 100));
-	tankx_button->setPosition(Vec2(400, 100));
-	//按钮加入菜单
-	menu->addChild(basement_button, 0);
-	menu->addChild(basementx_button, 1);
-	menu->addChild(barrack_button, 0);
-	menu->addChild(barrackx_button, 1);
-	menu->addChild(powerplant_button, 0);
-	menu->addChild(powerplantx_button, 1);
-	menu->addChild(minefield_button, 0);
-	menu->addChild(minefieldx_button, 1);
-	menu->addChild(warfactory_button, 0);
-	menu->addChild(warfactoryx_button, 1);
-	menu->addChild(infantry_button, 0);
-	menu->addChild(infantryx_button, 1);
-	menu->addChild(dog_button, 0);
-	menu->addChild(dogx_button, 1);
-	menu->addChild(tank_button, 0);
-	menu->addChild(tankx_button, 1);
+		//锚点坐标设置
+		basement_button->setAnchorPoint(Vec2(0, 0));
+		basementx_button->setAnchorPoint(Vec2(0, 0));
+		barrack_button->setAnchorPoint(Vec2(0, 0));
+		barrackx_button->setAnchorPoint(Vec2(0, 0));
+		powerplant_button->setAnchorPoint(Vec2(0, 0));
+		powerplantx_button->setAnchorPoint(Vec2(0, 0));
+		minefield_button->setAnchorPoint(Vec2(0, 0));
+		minefieldx_button->setAnchorPoint(Vec2(0, 0));
+		warfactory_button->setAnchorPoint(Vec2(0, 0));
+		warfactoryx_button->setAnchorPoint(Vec2(0, 0));
+		infantry_button->setAnchorPoint(Vec2(0, 0));
+		infantryx_button->setAnchorPoint(Vec2(0, 0));
+		dog_button->setAnchorPoint(Vec2(0, 0));
+		dogx_button->setAnchorPoint(Vec2(0, 0));
+		tank_button->setAnchorPoint(Vec2(0, 0));
+		tankx_button->setAnchorPoint(Vec2(0, 0));
+		//坐标设置
+		basement_button->setPosition(Vec2(0, 0));
+		basementx_button->setPosition(Vec2(0, 0));
+		barrack_button->setPosition(Vec2(100, 0));
+		barrackx_button->setPosition(Vec2(100, 0));
+		powerplant_button->setPosition(Vec2(200, 0));
+		powerplantx_button->setPosition(Vec2(200, 0));
+		minefield_button->setPosition(Vec2(300, 0));
+		minefieldx_button->setPosition(Vec2(300, 0));
+		warfactory_button->setPosition(Vec2(400, 0));
+		warfactoryx_button->setPosition(Vec2(400, 0));
+		infantry_button->setPosition(Vec2(200, 100));
+		infantryx_button->setPosition(Vec2(200, 100));
+		dog_button->setPosition(Vec2(300, 100));
+		dogx_button->setPosition(Vec2(300, 100));
+		tank_button->setPosition(Vec2(400, 100));
+		tankx_button->setPosition(Vec2(400, 100));
+		//按钮加入菜单
+		menu->addChild(basement_button, 0);
+		menu->addChild(basementx_button, 1);
+		menu->addChild(barrack_button, 0);
+		menu->addChild(barrackx_button, 1);
+		menu->addChild(powerplant_button, 0);
+		menu->addChild(powerplantx_button, 1);
+		menu->addChild(minefield_button, 0);
+		menu->addChild(minefieldx_button, 1);
+		menu->addChild(warfactory_button, 0);
+		menu->addChild(warfactoryx_button, 1);
+		menu->addChild(infantry_button, 0);
+		menu->addChild(infantryx_button, 1);
+		menu->addChild(dog_button, 0);
+		menu->addChild(dogx_button, 1);
+		menu->addChild(tank_button, 0);
+		menu->addChild(tankx_button, 1);
 
-	//菜单范围
-	menuRect = Rect(visibleSize.x - 500, 0, 500, 200);
+		//菜单范围
+		menuRect = Rect(visibleSize.x - 500, 0, 500, 200);
 
-	menu->setPosition(Vec2(visibleSize.x - 500, 0));
+		menu->setPosition(Vec2(visibleSize.x - 500, 0));
 
-	menuLayer->addChild(menu);
+		menuLayer->addChild(menu);
 	}
 
 	//触发事件
@@ -271,7 +271,7 @@ bool Game::init()
 	*/
 
 	this->scheduleUpdate();
-	this->schedule(schedule_selector(Game::updateMapCharacter),0, kRepeatForever, 0.01f);
+	this->schedule(schedule_selector(Game::updateMapCharacter), 0.01f, kRepeatForever,0);
 
 	return true;
 }
@@ -291,7 +291,7 @@ void Game::menuUpdate()
 	}
 	else if (selectedType == Building::BuildingType::BARRACK)
 	{
-		
+
 	}
 	else if (selectedType == Building::BuildingType::WARFACTORY)
 	{
@@ -322,7 +322,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 	if (!rectContain(menuRect, position))
 	{
 		if (position.x > visibleSize.x - 100)
-			{
+		{
 			if (!(map->numberOfRunningActions()))
 			{
 				auto map_move = MoveTo::create((map->getPosition().x + (mapSize.x - visibleSize.x)) / 2000, Vec2(-(mapSize.x - visibleSize.x), map->getPosition().y));
@@ -464,7 +464,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		selectedState = false;
 		selectedType = NULL;
 		rectangle->clear();
-	
+
 		//清除所有选择标志
 		//遍历建筑
 		{
@@ -534,7 +534,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 	}
 
 
-	enum {screen,world,tiledmapTM, tiledmapW};
+	enum { screen, world, tiledmapTM, tiledmapW };
 	Point position[4];
 	position[screen] = e->getLocationInView();
 	position[world] = convertToMapLayer(position[screen]);
@@ -584,7 +584,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		}
 
 		//添加建筑占地 改变地图属性
-		changeOccupiedTile(position[tiledmapTM],buildState);
+		changeOccupiedTile(position[tiledmapTM], buildState);
 
 		//退出建筑状态
 		buildState = NULL;
@@ -627,10 +627,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 			character->positionGoal = position[tiledmapTM];
 			character->setMapDestination(position[tiledmapTM]);
 			character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
-			
+
 		}
 	}
-	
+
 	//建筑状态
 	if (buildState) return;
 
@@ -801,7 +801,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 					}
 				}
 			}
-			
+
 
 		}
 
@@ -933,6 +933,19 @@ void Game::onMouseUp(cocos2d::Event* event)
 		//退出选择状态
 		selectedState = false;
 	}
+	/*int nm = 1;
+	for (Infantry* infa : infantryGroup[myTeam])
+	{
+		int x = infa->positionNow.x;
+		int y = infa->positionNow.y;
+		nm++;
+		log("%d : %d,%d", nm, x, y);
+		log("%d", Characters[x][y]);
+		
+	}*/
+	int a = position[tiledmapTM].x;
+	int b = position[tiledmapTM].y;
+	log("%d", Characters[a][b]);
 
 	//排除菜单范围
 	if (rectContain(menuRect, position[screen]))return;
@@ -986,7 +999,7 @@ void Game::buttonInfantry(Ref* pSender)
 {
 	auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
-	game->addChild(character,z);
+	game->addChild(character, z);
 	infantryGroup[myTeam].push_back(character);
 }
 
@@ -1144,7 +1157,7 @@ void Game::changeOccupiedTile(Point tmPoint, int buildingType)
 
 void Game::menuReturn(cocos2d::Ref* pSender)
 {
-	
+
 }
 void MapBlockBegin()
 {
@@ -1212,7 +1225,7 @@ void BuildBlock(int x, int y, int size)
 	}
 }
 
-int tm = 1;
+
 void Game::updateMapCharacter(float di)
 {
 	for (int i = 0; i < 118; i++)
@@ -1226,9 +1239,30 @@ void Game::updateMapCharacter(float di)
 	{
 		int x = infa->positionNow.x;
 		int y = infa->positionNow.y;
-		Characters[x][y]-=700;
+		Characters[x][y] -= 700;
+		int qi = 1;
+		Characters[x - 1][y]+= qi;
+		Characters[x + 1][y]+= qi;
+		Characters[x][y + 1]+= qi;
+		Characters[x][y - 1]+= qi;
+		/*Characters[x + 1][y + 1]++;
+		Characters[x + 1][y - 1]++;
+		Characters[x - 1][y + 1]++;
+		Characters[x - 1][y - 1]++;*/
+		x = infa->positionTarget.x;
+		y = infa->positionTarget.y;
+		Characters[x][y] -= 700;
+		Characters[x][y] -= 700;
+		Characters[x - 1][y] += qi;
+		Characters[x + 1][y] += qi;
+		Characters[x][y + 1] += qi;
+		Characters[x][y - 1] += qi;
+		/*Characters[x + 1][y + 1]++;
+		Characters[x + 1][y - 1]++;
+		Characters[x - 1][y + 1]++;
+		Characters[x - 1][y - 1]++;*/
 	}
-	for (int i = 0; i < 118; i++)
+	/*for (int i = 0; i < 118; i++)
 	{
 		for (int j = 0; j < 138; j++)
 		{
@@ -1238,17 +1272,95 @@ void Game::updateMapCharacter(float di)
 				{
 					if (infa->positionNow == Vec2(i, j))
 					{
-						for (int i = 0; i < 8; i++) {
-							if (Characters[i + DIRECTION[i][0]][j + DIRECTION[i][1]] == 0) 
-							{
-								infa->positionGoal = Vec2(i + DIRECTION[i][0], j + DIRECTION[i][1]);
+						if (infa->positionNow == infa->positionGoal)
+						{
+							for (int t = 0; t <8; t++) {
+
+								if (Characters[i + DIRECTION[t][0]][j + DIRECTION[t][1]] == 0)
+								{
+									infa->positionGoal = Vec2(i + DIRECTION[t][0], j + DIRECTION[t][1]);
+								}
+								break;
 							}
 							break;
 						}
-						break;
 					}
 				}
 			}
+		}
+	}*/
+}
+
+void Character::updateMove(float di) {
+	this->setZOrder(100 + positionNow.y);
+	Point TMposition = convertToTiledMap(this->getPosition());
+	if (!this->numberOfRunningActions()) {
+		positionNow = TMposition;
+	}
+
+	int MapCondition[118][138];
+	if (TMposition != positionGoal)
+	{
+		if (!this->numberOfRunningActions())
+		{
+			for (int i = 0; i < 118; i++)
+			{
+				for (int j = 0; j < 138; j++)
+				{
+					MapCondition[i][j] = MapInfo[i][j] + Block[i][j] + Buildings[i][j] + Characters[i][j] + this->MapDestination[i][j];
+				}
+			}
+			Point BestTarget = positionNow;
+			int x = positionNow.x;
+			int y = positionNow.y;
+			int direction = -1;
+			int best = MapCondition[x][y];
+			for (int i = 0; i < 8; i++)
+			{
+				if (Vec2(x + DIRECTION[i][0], y + DIRECTION[i][1]) == positionGoal)
+				{
+					//log("stop");
+
+					if (MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]] < 0)
+					{
+						positionGoal = positionNow;
+						log("stop");
+						direction = -1;
+						return;
+						break;
+
+					}
+				}
+				if (MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]] > best)
+				{
+					best = MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]];
+					direction = i;
+				}
+			}
+			if (direction == -1)
+			{
+				return;
+				/*repeat++;
+				if (repeat == 1)
+				{
+					positionGoal = positionNow;
+					repeat = 0;
+				}*/
+			}
+			else
+			{
+				BestTarget.x += DIRECTION[direction][0];
+				BestTarget.y += DIRECTION[direction][1];
+				int xx = BestTarget.x;
+				int yy = BestTarget.y;
+				bool neighbor = 0;
+				Characters[xx][yy] -= 700;
+				positionTarget = BestTarget;
+				MoveTo* move = MoveTo::create(0.5f, convertFromTMToWorld(BestTarget));
+				this->runAction(move);
+				MapDestination[x][y] = -700;
+			}
+
 		}
 	}
 }

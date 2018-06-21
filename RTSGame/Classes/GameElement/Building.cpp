@@ -1,4 +1,5 @@
 #include "Building.h"
+extern void BuildBlock(int x, int y, int size);
 
 Building::Building()
 {

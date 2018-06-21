@@ -11,6 +11,7 @@ extern int Buildings[118][138];
 extern Point convertToTiledMap(Point pt);
 extern Point convertFromTMToWorld(Point pt);
 
+
 class Character : public GameElement
 {
 public:
@@ -35,11 +36,27 @@ public:
 	//运动相关
 	Vec2 positionGoal;
 	Vec2 positionNow;
+	Vec2 positionTarget;
 	float velocity;
 	//检测目标位置与当前位置后进行移动
 	void move();
 
-	void updateMove(float di) {
+	int repeat = 0;
+	void updateMove(float di);
+	/*void updateMove(float di) {
+		for (int i = 0; i < 118; i++)
+		{
+			for (int j = 0; j < 138; j++)
+			{
+				Characters[i][j] = 0;
+			}
+		}
+		for (Infantry* infa : infantryGroup[myTeam])
+		{
+			int x = infa->positionNow.x;
+			int y = infa->positionNow.y;
+			Characters[x][y] -= 700;
+		}
 		Point TMposition = convertToTiledMap(this->getPosition());
 		positionNow = TMposition;
 		int MapCondition[118][138];
@@ -81,7 +98,7 @@ public:
 
 			}
 		}
-	}
+	}*/
 
 	int MapDestination[118][138];
 
