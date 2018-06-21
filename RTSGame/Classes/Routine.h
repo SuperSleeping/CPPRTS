@@ -15,11 +15,11 @@ struct Note
 	int x;
 	int y;
 	//起始点到当前点实际代价
-	float g;
+	int g;
 	//当前节点到目标节点最佳路径的估计代价
-	float h;
+	int h;
 	//估计函数：f = g + h
-	float f;
+	int f;
 
 	//运算符重载
 	bool operator==(Note note)
@@ -66,21 +66,43 @@ private:
 	Note Origin;
 	Note Destination;
 
-	//点x是否满足每一步的估价要求
-	bool meetCommand(Note x);
-
-	//测距：点x到点Destination
-	float omin_distance;
-	float distance(Note x)
+	//方向
+	const int direction[8][2] = 
 	{
-		float f = sqrt((x.x - Destination.x)*(x.x - Destination.x) + (x.y - Destination.y)*(x.y - Destination.y));
+		//距离为10
+		{-1,0},		//West
+		{1,0},		//East
+		{0,-1},		//North
+		{0,1},		//South
+
+		//距离为14
+		{1,-1},		//EastNorth
+		{-1,1},		//WestSouth
+		{-1,-1},	//WestNorth
+		{1,1}		//EastSouth
+	};
+
+	//计算距离（曼哈顿距离）
+	int distance(Note x)
+	{
+		int dis = abs(x.x - Destination.x);
+		dis += abs(x.y + Destination.y);
+		return dis;
+	}
+/*	
+	float distance(Note x, Note y)
+	{
+		float f = sqrt((x.x - y.x)*(x.x - y.x) + (x.y - y.y)*(x.y - y.y));
 		return f;
 	}
+*/
 
-	//open表存储下一步待测的所有子节点（由close表衍生）
+	//open表存储待测的所有子节点
 	vector<Note> open;
-	//close表存储当前所有符合要求节点的信息
+	//close表存储已经检测且确定过的节点的信息
 	vector<Note> close;
+	//判断该位置是否需要加入检查（检查过=1；未检查=0）
+	bool table[118][138];
 
 	void openTableInit();
 
