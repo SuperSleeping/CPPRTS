@@ -34,6 +34,7 @@ int MapCondition[118][138];
 
 vector<int[118][138]> MapDestination;
 
+Vec2 Safe(Vec2 &position);
 
 void MapBlockBegin();
 void BuildBlock(int x, int y, int size);
@@ -268,7 +269,7 @@ bool Game::init()
 
 	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
-
+	MapBlockBegin();
 
 
 
@@ -745,7 +746,8 @@ void Game::onMouseUp(cocos2d::Event* event)
 			{
 				character->stopAllActions();
 				//character->positionGoal = position[tiledmapTM];
-				character->setGoal(position[tiledmapTM]);
+
+				character->setGoal(Safe(position[tiledmapTM]));
 				character->attackTag = 0;
 				//character->setMapDestination(position[tiledmapTM]);
 				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
@@ -1301,6 +1303,17 @@ void MapBlockBegin()
 			Buildings[i][j] = 0;
 		}
 	}
+	for (int i = 0; i < 118; i++)
+	{
+		Block[i][0] = -10000;
+
+		Block[i][138] = -10000;
+	}
+	for (int i = 0; i < 138; i++)
+	{
+		Block[0][i] = -10000;;
+		Block[118][i] = -10000;
+	}
 }
 
 void BuildBlock(int x, int y, int size)
@@ -1424,6 +1437,21 @@ void Game::updateMapCharacter(float di)
 }
 
 void Character::updateMove(float di) {
+	
+	if (!this)
+	{
+		return;
+	}
+	
+	if (!this->getParent())
+	{
+		return;
+	}
+	if (repeat >= 30)
+	{
+		this->stop = 1;
+		//this->setGoal(positionNow);
+	}
 	if (stop)
 	{
 		return;
@@ -1475,8 +1503,14 @@ void Character::updateMove(float di) {
 				{
 					best = MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]];
 					direction = i;
+					
 				}
 			}
+			if (formerValue > best)
+			{
+				repeat++;
+			}
+			formerValue = best;
 			if (direction == -1)
 			{
 				return;
@@ -1493,7 +1527,9 @@ void Character::updateMove(float di) {
 				for (int i = 0; i < 8; i++)
 				{
 
-					if (Characters[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 && Buildings[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200)
+					if (Characters[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 && 
+						Buildings[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 &&
+						Block[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200)
 					{
 						competely = 0;
 						break;
@@ -1536,6 +1572,7 @@ void Character::updateMove(float di) {
 
 void Character::updateAttack(float di)
 {
+	
 	if (!attackTag)
 	{
 		stop = 0;
@@ -1606,4 +1643,26 @@ void Game::updateZOrder(float di)
 			tank->setZOrder(tank->positionNow.y);
 		}
 	}
+}
+
+Vec2 Safe(Vec2 &position)
+{
+	Vec2 safe = position;
+	if (safe.x == 0)
+	{
+		safe.x = 1;
+	}
+	if (safe.x == 118)
+	{
+		safe.x = 117;
+	}
+	if (safe.y == 0)
+	{
+		safe.y = 1;
+	}
+	if (safe.y == 138)
+	{
+		safe.y = 137;
+	}
+	return safe;
 }

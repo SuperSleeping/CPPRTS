@@ -42,6 +42,7 @@ public:
 	void move();
 
 	void setGoal(Vec2 goal) {
+		this->stop = 0;
 		positionGoal = goal;
 		setMapDestination(goal);
 	}
@@ -49,6 +50,7 @@ public:
 	int attack;
 	int attackTag = 0;
 	int attackDistance;
+	int formerValue;
 
 	bool stop = 0;
 
