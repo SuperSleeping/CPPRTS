@@ -104,7 +104,7 @@ private:
 	{
 		int dis = abs(x.x - Destination.x);
 		dis += abs(x.y - Destination.y);
-		dis = dis * 50;
+		dis = dis * 10;
 		return dis;
 	}
 
@@ -112,8 +112,8 @@ private:
 	vector<Note> open;
 	//close表存储已经检测且确定过的节点的信息
 	vector<Note> close;
-	//判断该位置是否需要加入检查（检查过=1；未检查=0）
-	bool table[118][138] = { 0 };
+	//判断该位置是否需要加入检查（未检查=0；已被加入open=1；已被加入close=2）
+	int table[118][138] = { 0 };
 	void table_clear()
 	{
 		for (int i = 0; i < _WIDTH_OF_ARRAY_; i++)

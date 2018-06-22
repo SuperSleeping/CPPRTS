@@ -83,7 +83,7 @@ Note Routine::Search()
 
 		//temp加入Close表格中，改变table
 		close.push_back(*temp);
-		table[temp->x][temp->y] = 1;
+		table[temp->x][temp->y] = 2;
 
 		//保存temp信息后删除open中的temp
 		int X, Y, G;
@@ -115,7 +115,8 @@ Note Routine::Search()
 			}
 
 			//检查格子是否有障碍物
-			if (isBlock[x][y] == 1)
+			//或格子是否已加入close队列
+			if (isBlock[x][y] == 1 || table[x][y] == 2)
 			{
 				continue;
 			}
@@ -154,6 +155,7 @@ Note Routine::Search()
 
 				//note加入Open队列
 				open.push_back(note);
+				table[x][y] = 1;
 			}
 		}
 	}
