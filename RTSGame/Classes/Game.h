@@ -9,6 +9,7 @@
 USING_NS_CC;
 using std::vector;
 
+
 class Game : public cocos2d::Scene
 {
 private:
@@ -21,16 +22,27 @@ public:
 	Layer* mouseLayer;
 	Layer* game;
 
-
 	//元地图属性
 	//@empty 0 @full 1
 	bool readBlock(Point tmPoint);
 	void addBlock(Point tmPoint);
 	void removeBlock(Point tmPoint);
 
-
-
-
+	//8方向
+	struct {
+		int x;
+		int y;
+	}direction[8]=
+	{ 
+		{ -1,1 },		//WestSouth
+		{ 0,1 },		//South
+		{ 1,1 },		//EastSouth
+		{ 1,0 },		//East
+		{ 1,-1 },		//EastNorth
+		{ 0,-1 },		//North
+		{ -1,0 },		//West
+		{ -1,-1 }		//WestNorth
+	};
 
 	//事件
 	//@基本信息
@@ -41,6 +53,8 @@ public:
 	bool selectedState;			//0非选择状态/1选择状态
 	int selectedType;			//0无选择对象/选择的建筑类型（改变菜单）/选择人物状态
 	Point selectedSpawnPoint;
+	Point selectedSpawnPointTM;
+
 	int buildState;				//0非建筑状态/预建设建筑类型
 	bool OKtobuilt;
 
@@ -53,6 +67,8 @@ public:
 		else
 			return false;
 	}
+	//@碰撞 - 找出碰撞点附近最近的一个未碰撞点
+	Point nearby_unblock_point(Point posTM);
 
 	//@碰撞检测
 	//@建造检测
@@ -175,10 +191,6 @@ public:
 	void buttonTank(Ref* pSender);
 
 	void buttonx(Ref* pSender);
-
-	//
-
-
 
 	//Update周期函数
 	virtual void update(float dt);

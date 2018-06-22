@@ -310,9 +310,9 @@ void Game::characterUpdate()
 			if (isBlock[(int)purpose->positionGoalTM.x][(int)purpose->positionGoalTM.x] == 1)
 			{
 				//改变目标位置
-				//find the neighbor one => positionGoal
-			//	Point neighborOne;
-			//	purpose->setPositionGoal(neighborOne);
+				Point pos = nearby_unblock_point(purpose->positionGoalTM);
+				pos = convertFromTMToWorld(pos);
+				purpose->setPositionGoal(pos);
 			}
 		
 			//如果目标位置发生变化（目标位置被占/鼠标点击改变）
@@ -321,6 +321,8 @@ void Game::characterUpdate()
 				//重新规划路线
 				purpose->routine->find_a_new_way(purpose->positionCurrentTM, purpose->positionGoalTM);
 				purpose->positionGoal_change = false;
+				//加入碰撞
+				addBlock(purpose->positionGoalTM);
 			}
 
 			//执行下一次动作
@@ -633,6 +635,8 @@ void Game::onMouseDown(cocos2d::Event* event)
 			{
 				if (purpose->selected == true)
 				{
+					//改变原目标地点的碰撞
+					removeBlock(purpose->positionGoalTM);
 					purpose->setPositionGoal(position[tiledmapW]);
 				}
 			}
@@ -738,6 +742,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 							selectedState = true;
 							selectedType = Building::BARRACK;
 							selectedSpawnPoint = (*iterBarrack)->spawnPoint;
+							selectedSpawnPointTM = convertToTiledMap(selectedSpawnPoint);
 						}
 						else
 						{
@@ -756,6 +761,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 							selectedState = true;
 							selectedType = Building::WARFACTORY;
 							selectedSpawnPoint = (*iterWarfactory)->spawnPoint;
+							selectedSpawnPointTM = convertToTiledMap(selectedSpawnPoint);
 						}
 						else
 						{
@@ -1021,7 +1027,11 @@ void Game::buttonWarfactory(Ref* pSender)
 //character
 void Game::buttonInfantry(Ref* pSender)
 {
-	auto character = Infantry::create(selectedSpawnPoint);
+	//出生点碰撞
+	Point spawnPoint = nearby_unblock_point(selectedSpawnPointTM);
+	addBlock(spawnPoint);
+	spawnPoint = convertFromTMToWorld(spawnPoint);
+	auto character = Infantry::create(spawnPoint);
 	character->routine = new Routine(isBlock);
 
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
@@ -1032,7 +1042,11 @@ void Game::buttonInfantry(Ref* pSender)
 
 void Game::buttonDog(Ref* pSender)
 {
-	auto character = Dog::create(selectedSpawnPoint);
+	//出生点碰撞
+	Point spawnPoint = convertFromTMToWorld(nearby_unblock_point(selectedSpawnPointTM));
+	addBlock(spawnPoint);
+	spawnPoint = convertFromTMToWorld(spawnPoint);
+	auto character = Dog::create(spawnPoint);
 	character->routine = new Routine(isBlock);
 
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
@@ -1043,7 +1057,11 @@ void Game::buttonDog(Ref* pSender)
 
 void Game::buttonTank(Ref* pSender)
 {
-	auto character = Tank::create(selectedSpawnPoint);
+	//出生点碰撞
+	Point spawnPoint = convertFromTMToWorld(nearby_unblock_point(selectedSpawnPointTM));
+	addBlock(spawnPoint);
+	spawnPoint = convertFromTMToWorld(spawnPoint);
+	auto character = Tank::create(spawnPoint);
 	character->routine = new Routine(isBlock);
 
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
@@ -1191,4 +1209,97 @@ void Game::changeOccupiedTile(Point tmPoint, int buildingType)
 void Game::menuReturn(cocos2d::Ref* pSender)
 {
 	
+}
+
+//碰撞相关
+
+//找出目的地点附近的开放空间
+Point Game::nearby_unblock_point(Point posTM)
+{
+	int x = (int)posTM.x;
+	int y = (int)posTM.y;
+	//格子已经被占有就继续循环
+	//蛇形从里到外遍历
+	int length = 2;
+	bool flag = false;
+	int goalX, goalY;
+
+	if (!isBlock[x][y])
+	{
+		flag == true;
+		goalX = x;
+		goalY = y;
+		return Vec2(goalX, goalY);
+	}
+
+	while (flag == false)
+	{
+		x--;
+		
+		for (int dir = 0; dir < 4; dir++)
+		{
+			if (dir == 0)
+			{
+				for (int a = 0; a < length ; a++)
+				{
+					if (!isBlock[x][y])
+					{
+						flag = true;
+						goalX = x;
+						goalY = y;
+						return Vec2(goalX, goalY);
+					}
+					y++;
+				}
+				y--;
+			}
+			else if (dir == 1)
+			{
+				for (int a = 0; a < length; a++)
+				{
+					x++;
+					if (!isBlock[x][y])
+					{
+						flag = true;
+						goalX = x;
+						goalY = y;
+						return Vec2(goalX, goalY);
+					}
+				}
+			}
+			else if (dir == 2)
+			{
+				for (int a = 0; a < length; a++)
+				{
+					y--;
+					if (!isBlock[x][y])
+					{
+						flag = true;
+						goalX = x;
+						goalY = y;
+						return Vec2(goalX, goalY);
+					}
+				}
+			}
+			else if (dir == 3)
+			{
+				for (int a = 0; a < length; a++)
+				{
+					x--;
+					if (!isBlock[x][y])
+					{
+						flag = true;
+						goalX = x;
+						goalY = y;
+						return Vec2(goalX, goalY);
+					}
+				}
+			}
+		}
+		length += 2;
+
+		if (flag == true) return Vec2(goalX, goalY);
+	}
+
+	return Vec2(goalX, goalY);
 }
