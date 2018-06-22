@@ -305,15 +305,38 @@ void Game::characterUpdate()
 {
 	for (Infantry* purpose : infantryGroup[myTeam])
 	{
-		if (purpose->positionCurrent != purpose->positionGoal)
+		//人物未在移动中
+		if (purpose->positionCurrent == purpose->positionGoal)continue;
+		//未执行完当前动作
+		else if (purpose->numberOfRunningActions() != 0)continue;
+		else
 		{
+			//目标位置转换成瓦片坐标
 			Point goal = convertToTiledMap(purpose->positionGoal);
-			routine.FromStartToEnd(purpose->positionCurrentTM, goal);
-			purpose->pathInit(routine.final_path);
-			log("pathDone");
-			log("PATHDONE");
+			int goal_x = goal.x;
+			int goal_y = goal.y;
+
+			//如果目标位置已经被占
+			if (isBlock[goal_x][goal_y] == 1)
+			{
+				//改变目标位置
+				//find the neighbor one => positionGoal
+			//	Point neighborOne;
+			//	purpose->setPositionGoal(neighborOne);
+			}
+		
+			//如果目标位置发生变化（目标位置被占/鼠标点击改变）
+			if (purpose->positionGoal_change)
+			{
+				//重新规划路线
+				routine.FromStartToEnd(convertToNeightborTiledMap(purpose->getPosition()), goal);
+				purpose->pathInit(routine.final_path);
+			}
+
+			//执行下一次动作
 			purpose->move();
 		}
+
 	}
 }
 
@@ -617,7 +640,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 			{
 				if (purpose->selected == true)
 				{
-					purpose->positionGoal = position[tiledmapW];
+					purpose->setPositionGoal(position[tiledmapW]);
 				}
 			}
 		}
@@ -1006,6 +1029,7 @@ void Game::buttonInfantry(Ref* pSender)
 	auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character,z);
+	game->addChild(character->drawRoutine, 0);
 	infantryGroup[myTeam].push_back(character);
 }
 
@@ -1014,6 +1038,7 @@ void Game::buttonDog(Ref* pSender)
 	auto character = Dog::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
+	game->addChild(character->drawRoutine, 0);
 	dogGroup[myTeam].push_back(character);
 }
 
@@ -1022,6 +1047,7 @@ void Game::buttonTank(Ref* pSender)
 	auto character = Tank::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
+	game->addChild(character->drawRoutine, 0);
 	tankGroup[myTeam].push_back(character);
 }
 

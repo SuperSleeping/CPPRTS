@@ -28,8 +28,10 @@ public:
 
 	//运动相关
 	Vec2 positionGoal;
+	bool positionGoal_change = 0;
 	float velocity;
 	DrawNode* drawRoutine;
+	void setPositionGoal(Point position);
 
 	//进行移动
 	void move();

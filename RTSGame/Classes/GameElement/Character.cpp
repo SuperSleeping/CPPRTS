@@ -40,41 +40,15 @@ Character* Character::create(const char* filename, Vec2 position)
 
 void Character::move()
 {
-	/*
-	//判断该不该走
-	if (positionGoal == NULL ||
-		positionCurrent == positionGoal)return;
-	//移动
-	float _distance = distance(positionCurrent, positionGoal);
-	float time = _distance / velocity;
-	*/
-
-	//判断是否改变了终点
-	if (path.front() == positionGoal)
-	{
-
-	}
-	//动作集合和动作顺序
-	Vector<FiniteTimeAction*> moveToActions;
-	Sequence* sequence = Sequence::create(moveToActions);
-
-	while (1)
-	{
-
-	}
 	//移动到下一个点
 	Point nextPosition = path.back();
+	positionCurrent = nextPosition;
 	nextPosition = convertFromTMToWorld(nextPosition);
 	//把将要移动的点从path中删除
 	path.pop_back();
 
-	float _distance = distance(positionCurrent, nextPosition);
-	float time = _distance / velocity;
-
-	auto moveToAction = MoveTo::create(time, nextPosition);
-	this->runAction(sequence);
-
-	positionCurrent = nextPosition;
+	auto moveToAction = MoveTo::create(0.2, nextPosition);
+	this->runAction(moveToAction);
 }
 
 void Character::pathInit(vector<Point> &final_path)
@@ -93,6 +67,27 @@ void Character::pathInit(vector<Point> &final_path)
 	{
 		path.push_back(p);
 	}
+	/*
+	//画路径
+	vector<Point>::iterator p;
+	for (p = path.begin(); p != path.end(); p++)
+	{
+		if (p == path.end() - 1)
+		{
+			Point one = *p;
+			one = convertFromTMToWorld(one);
+			drawRoutine->drawLine(one, positionCurrent, Color4F(0, 0, 0, 1));
+		}
+		else
+		{
+			Point one = *p;
+			Point two = *(p + 1);
+			one = convertFromTMToWorld(one);
+			two = convertFromTMToWorld(two);
+			drawRoutine->drawLine(one, two, Color4F(0, 0, 0, 1));
+		}
+	}
+	*/
 }
 
 void Character::setSelected(bool isSelected)
@@ -107,4 +102,10 @@ void Character::setSelected(bool isSelected)
 		this->selected = false;
 		this->shadow->setVisible(false);
 	}
+}
+
+void Character::setPositionGoal(Point position)
+{
+	positionGoal = position;
+	positionGoal_change = true;
 }
