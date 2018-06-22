@@ -49,15 +49,30 @@ void Character::move()
 	float time = _distance / velocity;
 	*/
 
+	//判断是否改变了终点
+	if (path.front() == positionGoal)
+	{
+
+	}
+	//动作集合和动作顺序
+	Vector<FiniteTimeAction*> moveToActions;
+	Sequence* sequence = Sequence::create(moveToActions);
+
+	while (1)
+	{
+
+	}
+	//移动到下一个点
 	Point nextPosition = path.back();
 	nextPosition = convertFromTMToWorld(nextPosition);
+	//把将要移动的点从path中删除
 	path.pop_back();
 
 	float _distance = distance(positionCurrent, nextPosition);
 	float time = _distance / velocity;
 
 	auto moveToAction = MoveTo::create(time, nextPosition);
-	this->runAction(moveToAction);
+	this->runAction(sequence);
 
 	positionCurrent = nextPosition;
 }

@@ -1,10 +1,22 @@
 #ifndef _ROUTINE_H_
 #define _ROUTINE_H_
 
+#define _WIDTH_OF_ARRAY_ 118
+#define _HEIGHT_OF_ARRAY_ 138
+
+#include "cocos2d.h"
+USING_NS_CC;
+
 #include<vector>
 #include<math.h>
-#include"cocos2d.h"
-USING_NS_CC;
+
+//////调试////// 
+#include<iostream>
+using std::cin;
+using std::cout;
+using std::endl;
+//////////////// 
+
 using std::vector;
 
 struct Note
@@ -53,7 +65,7 @@ struct Note
 class Routine
 {
 public:
-	Routine(bool blockMessage[118][138]);
+	Routine(bool blockMessage[_WIDTH_OF_ARRAY_][_HEIGHT_OF_ARRAY_]);
 	~Routine();
 
 	//存储最终路径需要走过的每一个Point
@@ -64,7 +76,7 @@ public:
 
 private:
 	//地图信息置入
-	bool (*isBlock)[138];
+	bool (*isBlock)[_HEIGHT_OF_ARRAY_];
 
 	//起点Origin
 	//终点Destination
@@ -91,16 +103,10 @@ private:
 	int distance(Note x)
 	{
 		int dis = abs(x.x - Destination.x);
-		dis += abs(x.y + Destination.y);
+		dis += abs(x.y - Destination.y);
+		dis = dis * 10;
 		return dis;
 	}
-/*	
-	float distance(Note x, Note y)
-	{
-		float f = sqrt((x.x - y.x)*(x.x - y.x) + (x.y - y.y)*(x.y - y.y));
-		return f;
-	}
-*/
 
 	//open表存储待测的所有子节点
 	vector<Note> open;

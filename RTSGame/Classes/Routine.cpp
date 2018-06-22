@@ -1,11 +1,11 @@
-#include "Routine.h"
+ï»¿#include "Routine.h"
 
 
-//±£Ö¤²»ÔÚorigin=destinationµÄÊ±ºòµ÷ÓÃroutineËÑË÷Â·¾¶
+//ä¿è¯ä¸åœ¨origin=destinationçš„æ—¶å€™è°ƒç”¨routineæœç´¢è·¯å¾„
 
-Routine::Routine(bool blockMessage[118][138])
+Routine::Routine(bool blockMessage[_WIDTH_OF_ARRAY_][_HEIGHT_OF_ARRAY_])
 {
-	//ÖÃÈëĞÅÏ¢
+	//ç½®å…¥ä¿¡æ¯
 	isBlock = blockMessage;
 }
 
@@ -17,11 +17,11 @@ void Routine::FromStartToEnd(Point originTM, Point destinationTM)
 	Destination.x = (int)destinationTM.x;
 	Destination.y = (int)destinationTM.y;
 
-	//Open±í¸ñ³õÊ¼»¯£¬table±í¸ñ³õÊ¼»¯
+	//Openè¡¨æ ¼åˆå§‹åŒ–ï¼Œtableè¡¨æ ¼åˆå§‹åŒ–
 	open.push_back(Origin);
 	table[Origin.x][Origin.y] = 1;
 
-	//final_path¸üĞÂ
+	//final_pathæ›´æ–°
 	findPath();
 }
 
@@ -34,17 +34,17 @@ void Routine::findPath()
 {
 	vector<Note>::iterator GOAL;
 
-	//¸üĞÂOpen±í¸ñ
+	//æ›´æ–°Openè¡¨æ ¼
 	Note Goal = Search();
 
-	//ÕÒµ½ÍêÕûÂ·¾¶£¬»ØËİÂ·¾¶µ¹ĞòÌîÈëfinal_path
+	//æ‰¾åˆ°å®Œæ•´è·¯å¾„ï¼Œå›æº¯è·¯å¾„å€’åºå¡«å…¥final_path
 	while (Goal != Origin)
 	{
 		float x, y;
 		x = Goal.x;
 		y = Goal.y;
 		final_path.push_back(Vec2(x, y));
-		//»ØËİµ½¸¸½Úµã
+		//å›æº¯åˆ°çˆ¶èŠ‚ç‚¹
 		Goal = close[Goal.father];
 	}
 }
@@ -53,30 +53,34 @@ Note Routine::Search()
 {
 	while (true)
 	{
-		//ÕÒµ½open±íÖĞf×îĞ¡µÄNote£¬ÃüÃû*temp
+		//æ‰¾åˆ°openè¡¨ä¸­fæœ€å°çš„Noteï¼Œå‘½å*temp
 		vector<Note>::iterator temp = open.begin();
 		vector<Note>::iterator iter;
 		for (iter = open.begin(); iter != open.end(); iter++)
 		{
-			//±éÀúopen±í¸ñÕÒµ½¹À¼Æ´ú¼Û×îĞ¡µÄNote
+			//éå†openè¡¨æ ¼æ‰¾åˆ°ä¼°è®¡ä»£ä»·æœ€å°çš„Note
 			if (temp->f > iter->f)
 			{
 				temp = iter;
 			}
 		}
 
-		//Èç¹ûÄ¿Ç°f×îĞ¡µÄNote¾ÍÊÇDestination£¬Ôò·µ»Ø¸ÃµãÇÒ¿ÉÒÔ½øĞĞ»ØËİÂ·¾¶µÄ¹¤×÷
-		if (*temp == Destination)
+		//openè¡¨å·²ç©ºï¼Œè¯´æ˜æ²¡æœ‰è·¯å¾„
+		if (open.size() == 0)
+		{
+			return Origin;
+		}
+		//æˆ–è€…å¦‚æœç›®å‰fæœ€å°çš„Noteå°±æ˜¯Destinationï¼Œåˆ™è¿”å›è¯¥ç‚¹ä¸”å¯ä»¥è¿›è¡Œå›æº¯è·¯å¾„çš„å·¥ä½œ
+		else if (*temp == Destination)
 		{
 			return *temp;
 		}
 
-
-		//temp¼ÓÈëClose±í¸ñÖĞ£¬¸Ä±ätable
+		//tempåŠ å…¥Closeè¡¨æ ¼ä¸­ï¼Œæ”¹å˜table
 		close.push_back(*temp);
 		table[temp->x][temp->y] = 1;
 
-		//±£´ætempĞÅÏ¢ºóÉ¾³ıopenÖĞµÄtemp
+		//ä¿å­˜tempä¿¡æ¯ååˆ é™¤openä¸­çš„temp
 		int X, Y, G;
 		X = temp->x;
 		Y = temp->y;
@@ -84,7 +88,7 @@ Note Routine::Search()
 
 		open.erase(temp);
 
-		//°Ë¸ö·½Ïò
+		//å…«ä¸ªæ–¹å‘
 		for (int num = 0; num < 8; num++)
 		{
 			int dis;
@@ -99,15 +103,15 @@ Note Routine::Search()
 			int x = X + direction[num][0];
 			int y = Y + direction[num][1];
 
-			//¼ì²é¸ñ×ÓÊÇ·ñÓĞÕÏ°­Îï
+			//æ£€æŸ¥æ ¼å­æ˜¯å¦æœ‰éšœç¢ç‰©
 			if (isBlock[x][y] == 1)
 			{
 				continue;
 			}
-			//¼ì²é¸ñ×ÓÊÇ·ñÒÑ¼ÓÈëopen¶ÓÁĞ
+			//æ£€æŸ¥æ ¼å­æ˜¯å¦å·²åŠ å…¥opené˜Ÿåˆ—
 			else if (table[x][y] == 1)
 			{
-				//Ñ°ÕÒ¶ÔÓ¦µÄNote
+				//å¯»æ‰¾å¯¹åº”çš„Note
 				Note temp;
 				temp.x = x;
 				temp.y = y;
@@ -115,19 +119,20 @@ Note Routine::Search()
 				{
 					if (temp == search)
 					{
-						//Í¨¹ıµ±Ç°½ÚµãÓĞ¸üĞ¡µÄÆğµã´ú¼ÛG
+						//é€šè¿‡å½“å‰èŠ‚ç‚¹æœ‰æ›´å°çš„èµ·ç‚¹ä»£ä»·G
 						if (search.g > G + dis)
 						{
-							//½«µ±Ç°½ÚµãÉèÖÃ³É¸¸½Úµã²¢ÇÒ¸Ä±ägÖµ
+							//å°†å½“å‰èŠ‚ç‚¹è®¾ç½®æˆçˆ¶èŠ‚ç‚¹å¹¶ä¸”æ”¹å˜gå€¼
 							search.father = close.size() - 1;
 							search.g = G + dis;
+							search.f = search.g + search.h;
 						}
 					}
 				}
 			}
 			else
 			{
-				//´´½¨ÏàÓ¦Note
+				//åˆ›å»ºç›¸åº”Note
 				Note note;
 				note.x = x;
 				note.y = y;
@@ -136,11 +141,8 @@ Note Routine::Search()
 				note.h = distance(note);
 				note.f = note.g + note.h;
 
-				//note¼ÓÈëOpen¶ÓÁĞ
+				//noteåŠ å…¥Opené˜Ÿåˆ—
 				open.push_back(note);
-
-				log("OpenSize=");
-				printf("%d", open.size());
 			}
 		}
 	}

@@ -310,6 +310,8 @@ void Game::characterUpdate()
 			Point goal = convertToTiledMap(purpose->positionGoal);
 			routine.FromStartToEnd(purpose->positionCurrentTM, goal);
 			purpose->pathInit(routine.final_path);
+			log("pathDone");
+			log("PATHDONE");
 			purpose->move();
 		}
 	}
