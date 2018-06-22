@@ -6,10 +6,12 @@ Infantry* Infantry::create(Vec2 position)
 	Infantry* infantry = new (std::nothrow)Infantry;
 	if (infantry && infantry->initWithFile("Game/character/infantry/leftdown.png"))
 	{
+		//图片设置
 		infantry->setAnchorPoint(Vec2(0.5, 0));
 		infantry->setPosition(position);
-		infantry->positionCurrent = position;
-		infantry->positionGoal = position;
+		//初始位置设置
+		infantry->setPositionCurrent(position);
+		infantry->setPositionGoal(position);
 		//属性设置
 		infantry->blood = 125;
 		infantry->prize = 120;

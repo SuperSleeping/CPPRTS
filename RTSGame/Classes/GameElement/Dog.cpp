@@ -9,7 +9,9 @@ Dog* Dog::create(Vec2 position)
 		//位置设置
 		dog->setAnchorPoint(Vec2(0.5, 0));
 		dog->setPosition(position);
-		dog->positionCurrent = position;
+		//初始位置设置
+		dog->setPositionCurrent(position);
+		dog->setPositionGoal(position);
 		//属性设置
 		dog->blood = 80;
 		dog->prize = 150;

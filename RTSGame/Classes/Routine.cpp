@@ -9,7 +9,7 @@ Routine::Routine(bool blockMessage[_WIDTH_OF_ARRAY_][_HEIGHT_OF_ARRAY_])
 	isBlock = blockMessage;
 }
 
-void Routine::FromStartToEnd(Point originTM, Point destinationTM)
+void Routine::find_a_new_way(Point originTM, Point destinationTM)
 {
 	Origin.x = (int)originTM.x;
 	Origin.y = (int)originTM.y;
@@ -17,12 +17,17 @@ void Routine::FromStartToEnd(Point originTM, Point destinationTM)
 	Destination.x = (int)destinationTM.x;
 	Destination.y = (int)destinationTM.y;
 
-	//Open表格初始化，table表格初始化
+	//Open/Close表格初始化，table表格初始化
+	open.clear();
+	close.clear();
+	table_clear();
 	open.push_back(Origin);
 	table[Origin.x][Origin.y] = 1;
 
 	//final_path更新
 	findPath();
+
+	log("pathFound");
 }
 
 Routine::~Routine()
@@ -102,6 +107,12 @@ Note Routine::Search()
 			}
 			int x = X + direction[num][0];
 			int y = Y + direction[num][1];
+
+			//检查格子是否在范围内
+			if (x<0 || x>_WIDTH_OF_ARRAY_ || y<0 || y>_HEIGHT_OF_ARRAY_)
+			{
+				continue;
+			}
 
 			//检查格子是否有障碍物
 			if (isBlock[x][y] == 1)

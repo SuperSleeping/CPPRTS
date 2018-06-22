@@ -2,8 +2,6 @@
 #include "HelloWorldScene.h"
 #include <iostream>
 
-#include "Routine.h"
-
 #include"GameElement/Basement.h"
 #include"GameElement/Barrack.h"
 #include"GameElement/Warfactory.h"
@@ -54,9 +52,6 @@ Point tmNumber;
 //@元地图Block属性用isBlock数组保存 便于修改
 bool isBlock[118][138];
 void isBlockInitialize();
-
-//寻路
-Routine routine(isBlock);
 
 //@屏幕坐标转换成层坐标（世界坐标系）
 extern Point convertToMapLayer(Point position)
@@ -305,19 +300,14 @@ void Game::characterUpdate()
 {
 	for (Infantry* purpose : infantryGroup[myTeam])
 	{
-		//人物未在移动中
+		//人物不需要移动
 		if (purpose->positionCurrent == purpose->positionGoal)continue;
-		//未执行完当前动作
+		//移动中，但未执行完当前动作
 		else if (purpose->numberOfRunningActions() != 0)continue;
 		else
 		{
-			//目标位置转换成瓦片坐标
-			Point goal = convertToTiledMap(purpose->positionGoal);
-			int goal_x = goal.x;
-			int goal_y = goal.y;
-
 			//如果目标位置已经被占
-			if (isBlock[goal_x][goal_y] == 1)
+			if (isBlock[(int)purpose->positionGoalTM.x][(int)purpose->positionGoalTM.x] == 1)
 			{
 				//改变目标位置
 				//find the neighbor one => positionGoal
@@ -329,8 +319,8 @@ void Game::characterUpdate()
 			if (purpose->positionGoal_change)
 			{
 				//重新规划路线
-				routine.FromStartToEnd(convertToNeightborTiledMap(purpose->getPosition()), goal);
-				purpose->pathInit(routine.final_path);
+				purpose->routine->find_a_new_way(purpose->positionCurrentTM, purpose->positionGoalTM);
+				purpose->positionGoal_change = false;
 			}
 
 			//执行下一次动作
@@ -634,6 +624,9 @@ void Game::onMouseDown(cocos2d::Event* event)
 		//已经有选择中的character，要进行行走攻击等操作
 		if (selectedType==Character::CharacterType::CharacterChosen)
 		{
+			//目标位置是否有物品（isblock）
+			//攻击
+
 			//遍历人物
 			//Infantry
 			for (Infantry* purpose : infantryGroup[myTeam])
@@ -999,6 +992,7 @@ void Game::drawline()
 //菜单button
 /***************/
 
+//building
 void Game::buttonBasement(Ref* pSender)
 {
 	buildState = Building::BuildingType::BASEMENT;
@@ -1024,30 +1018,37 @@ void Game::buttonWarfactory(Ref* pSender)
 	buildState = Building::BuildingType::WARFACTORY;
 }
 
+//character
 void Game::buttonInfantry(Ref* pSender)
 {
 	auto character = Infantry::create(selectedSpawnPoint);
+	character->routine = new Routine(isBlock);
+
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character,z);
-	game->addChild(character->drawRoutine, 0);
+	game->addChild(character->drawRoutineNote, 0);
 	infantryGroup[myTeam].push_back(character);
 }
 
 void Game::buttonDog(Ref* pSender)
 {
 	auto character = Dog::create(selectedSpawnPoint);
+	character->routine = new Routine(isBlock);
+
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	game->addChild(character->drawRoutine, 0);
+	game->addChild(character->drawRoutineNote, 0);
 	dogGroup[myTeam].push_back(character);
 }
 
 void Game::buttonTank(Ref* pSender)
 {
 	auto character = Tank::create(selectedSpawnPoint);
+	character->routine = new Routine(isBlock);
+
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	game->addChild(character->drawRoutine, 0);
+	game->addChild(character->drawRoutineNote, 0);
 	tankGroup[myTeam].push_back(character);
 }
 

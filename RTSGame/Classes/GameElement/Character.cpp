@@ -18,8 +18,14 @@ Character::Character()
 	bloodFrame->setPositionNormalized(Vec2(0.5, 1.2));
 	this->addChild(bloodFrame,1);
 	//载入路径划线
-	drawRoutine = DrawNode::create();
+	drawRoutineNote = DrawNode::create();
 }
+
+Character::~Character()
+{
+	delete routine;
+}
+
 
 Character* Character::create(const char* filename, Vec2 position)
 {
@@ -29,7 +35,8 @@ Character* Character::create(const char* filename, Vec2 position)
 	{
 		character->setPosition(position);
 		//属性设置
-		character->positionCurrent = position;
+		character->setPositionCurrent(position);
+		character->setPositionGoal(position);
 		//自动释放
 		character->autorelease();
 		return character;
@@ -41,42 +48,30 @@ Character* Character::create(const char* filename, Vec2 position)
 void Character::move()
 {
 	//移动到下一个点
-	Point nextPosition = path.back();
-	positionCurrent = nextPosition;
+	//(final_path里是瓦片坐标)
+	//(final_path从begin到end是从终点指向起点的过程)
+	Point nextPosition = routine->final_path.back();
 	nextPosition = convertFromTMToWorld(nextPosition);
-	//把将要移动的点从path中删除
-	path.pop_back();
+	this->setPositionCurrent(nextPosition);
 
-	auto moveToAction = MoveTo::create(0.2, nextPosition);
+	//把将要移动到的点从path中删除
+	routine->final_path.pop_back();
+
+	auto moveToAction = MoveTo::create(0.1, nextPosition);
 	this->runAction(moveToAction);
 }
 
-void Character::pathInit(vector<Point> &final_path)
+void Character::drawRoutine()
 {
-	/*
-	//倒叙加入path
-	vector<Point>::iterator p;
-	for (p = final_path.end(); p != final_path.begin(); p--)
-	{
-		path.push_back(*p);
-	}
-	*/
-	
-	//下一个目标点在path数组的末端
-	for (Point p : final_path)
-	{
-		path.push_back(p);
-	}
-	/*
 	//画路径
 	vector<Point>::iterator p;
-	for (p = path.begin(); p != path.end(); p++)
+	for (p = routine->final_path.begin(); p != routine->final_path.end(); p++)
 	{
-		if (p == path.end() - 1)
+		if (p == routine->final_path.end() - 1)
 		{
 			Point one = *p;
 			one = convertFromTMToWorld(one);
-			drawRoutine->drawLine(one, positionCurrent, Color4F(0, 0, 0, 1));
+			drawRoutineNote->drawLine(one, positionCurrent, Color4F(0, 0, 0, 1));
 		}
 		else
 		{
@@ -84,10 +79,9 @@ void Character::pathInit(vector<Point> &final_path)
 			Point two = *(p + 1);
 			one = convertFromTMToWorld(one);
 			two = convertFromTMToWorld(two);
-			drawRoutine->drawLine(one, two, Color4F(0, 0, 0, 1));
+			drawRoutineNote->drawLine(one, two, Color4F(0, 0, 0, 1));
 		}
 	}
-	*/
 }
 
 void Character::setSelected(bool isSelected)
@@ -104,8 +98,3 @@ void Character::setSelected(bool isSelected)
 	}
 }
 
-void Character::setPositionGoal(Point position)
-{
-	positionGoal = position;
-	positionGoal_change = true;
-}

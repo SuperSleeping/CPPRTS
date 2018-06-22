@@ -5,6 +5,16 @@
 #include <string>
 USING_NS_CC;
 
+//@屏幕坐标转换成层坐标（世界坐标系）
+extern Point convertToMapLayer(Point position);
+//@世界坐标转换成瓦片地图坐标
+extern Point convertToTiledMap(Point position);
+//@瓦片转换成世界坐标
+extern Point convertFromTMToWorld(Point position);
+//@世界坐标换成相邻的瓦片坐标
+extern Point convertToNeightborTiledMap(Point position);
+//判断目标是否超出瓦片地图的范围
+extern bool isTileOutOfRange(Point tmPoint);
 
 class GameElement : public Sprite
 {
@@ -25,8 +35,14 @@ public:
 	Sprite* bloodFrame;
 	Sprite* bloodPicture;
 
+	//位置
 	Vec2 positionCurrent;
 	Vec2 positionCurrentTM;
+	void setPositionCurrent(Point positionWorld)
+	{
+		positionCurrent = positionWorld;
+		positionCurrentTM = convertToTiledMap(positionWorld);
+	}
 
 	//选择设置
 	void setSelected(bool isSelected)

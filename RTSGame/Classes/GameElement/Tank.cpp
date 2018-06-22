@@ -9,7 +9,9 @@ Tank* Tank::create(Vec2 position)
 		//位置设置
 		tank->setAnchorPoint(Vec2(0.5, 0));
 		tank->setPosition(position);
-		tank->positionCurrent = position;
+		//初始位置设置
+		tank->setPositionCurrent(position);
+		tank->setPositionGoal(position);
 		//属性设置
 		tank->blood = 170;
 		tank->prize = 250;

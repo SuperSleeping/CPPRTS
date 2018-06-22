@@ -72,7 +72,7 @@ public:
 	vector<Point> final_path;
 
 	//导入起始、终点坐标
-	void FromStartToEnd(Point originTM, Point destinationTM);
+	void find_a_new_way(Point originTM, Point destinationTM);
 
 private:
 	//地图信息置入
@@ -104,7 +104,7 @@ private:
 	{
 		int dis = abs(x.x - Destination.x);
 		dis += abs(x.y - Destination.y);
-		dis = dis * 10;
+		dis = dis * 50;
 		return dis;
 	}
 
@@ -113,7 +113,17 @@ private:
 	//close表存储已经检测且确定过的节点的信息
 	vector<Note> close;
 	//判断该位置是否需要加入检查（检查过=1；未检查=0）
-	bool table[118][138];
+	bool table[118][138] = { 0 };
+	void table_clear()
+	{
+		for (int i = 0; i < _WIDTH_OF_ARRAY_; i++)
+		{
+			for (int j = 0; j < _HEIGHT_OF_ARRAY_; j++)
+			{
+				table[i][j] = 0;
+			}
+		}
+	}
 
 	Note Search();
 
