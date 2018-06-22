@@ -49,12 +49,18 @@ public:
 
 	int attack;
 	int attackTag = 0;
+	int attackInterval = 0;
 	int attackDistance;
 	int formerValue;
 
 	bool stop = 0;
 
 	int repeat = 0;
+	void setAttackTag(int tag)
+	{
+		this->attackTag = tag;
+		this->attackInterval = 0;
+	}
 	void updateMove(float di);
 	void updateAttack(float di);
 

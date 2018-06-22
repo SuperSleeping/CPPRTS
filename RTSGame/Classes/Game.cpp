@@ -285,6 +285,7 @@ bool Game::init()
 
 	this->scheduleUpdate();
 	this->schedule(schedule_selector(Game::updateMapCharacter), 0.01f, kRepeatForever, 0);
+	this->schedule(schedule_selector(Game::updateZOrder), 0.1f, kRepeatForever, 0);
 
 	return true;
 }
@@ -637,11 +638,12 @@ void Game::onMouseUp(cocos2d::Event* event)
 	int x = position[tiledmapTM].x;
 	int y = position[tiledmapTM].y;
 
+	log("%d", CreateTag);
 	//hcw
 	bool swallow = 0;
 
 
-	//遍历人物
+	//遍历人物		//设成攻击目标
 	{
 		//由于人物比较小，所以改变selectedRect的大小
 		Point leftdown = Vec2(position[world].x - 10, position[world].y - 30);
@@ -669,6 +671,24 @@ void Game::onMouseUp(cocos2d::Event* event)
 								log("set tag: %d", (*iterInfantry)->getTag());
 							}
 						}
+						for (Tank* character : tankGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterInfantry)->getTag();
+								log("set tag: %d", (*iterInfantry)->getTag());
+							}
+						}
+						for (Dog* character : dogGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterInfantry)->getTag();
+								log("set tag: %d", (*iterInfantry)->getTag());
+							}
+						}
 					}
 					swallow = 1;
 				}
@@ -688,8 +708,26 @@ void Game::onMouseUp(cocos2d::Event* event)
 							if (character->selected)
 							{
 								character->stopAllActions();
-								character->attackTag = (*iterInfantry)->getTag();
-								log("set tag: %d", (*iterInfantry)->getTag());
+								character->attackTag = (*iterDog)->getTag();
+								log("set tag: %d", (*iterDog)->getTag());
+							}
+						}
+						for (Tank* character : tankGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterDog)->getTag();
+								log("set tag: %d", (*iterDog)->getTag());
+							}
+						}
+						for (Dog* character : dogGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterDog)->getTag();
+								log("set tag: %d", (*iterDog)->getTag());
 							}
 						}
 					}
@@ -710,8 +748,26 @@ void Game::onMouseUp(cocos2d::Event* event)
 							if (character->selected)
 							{
 								character->stopAllActions();
-								character->attackTag = (*iterInfantry)->getTag();
-								log("set tag: %d", (*iterInfantry)->getTag());
+								character->attackTag = (*iterTank)->getTag();
+								log("set tag: %d", (*iterTank)->getTag());
+							}
+						}
+						for (Tank* character : tankGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterTank)->getTag();
+								log("set tag: %d", (*iterTank)->getTag());
+							}
+						}
+						for (Dog* character : dogGroup[myTeam])
+						{
+							if (character->selected)
+							{
+								character->stopAllActions();
+								character->attackTag = (*iterTank)->getTag();
+								log("set tag: %d", (*iterTank)->getTag());
 							}
 						}
 					}
@@ -746,9 +802,39 @@ void Game::onMouseUp(cocos2d::Event* event)
 			{
 				character->stopAllActions();
 				//character->positionGoal = position[tiledmapTM];
-
-				character->setGoal(Safe(position[tiledmapTM]));
 				character->attackTag = 0;
+				character->setGoal(Safe(position[tiledmapTM]));
+				
+				//character->setMapDestination(position[tiledmapTM]);
+				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
+				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
+
+			}
+		}
+		for (Dog* character : dogGroup[myTeam])
+		{
+			if (character->selected)
+			{
+				character->stopAllActions();
+				//character->positionGoal = position[tiledmapTM];
+				character->attackTag = 0;
+				character->setGoal(Safe(position[tiledmapTM]));
+
+				//character->setMapDestination(position[tiledmapTM]);
+				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
+				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
+
+			}
+		}
+		for (Tank* character : tankGroup[myTeam])
+		{
+			if (character->selected)
+			{
+				character->stopAllActions();
+				//character->positionGoal = position[tiledmapTM];
+				character->attackTag = 0;
+				character->setGoal(Safe(position[tiledmapTM]));
+
 				//character->setMapDestination(position[tiledmapTM]);
 				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
 				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
@@ -1077,9 +1163,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 
 
 
-	int a = position[tiledmapTM].x;
+	/*int a = position[tiledmapTM].x;
 	int b = position[tiledmapTM].y;
-	log("BD :%d", Buildings[a][b]);
+	log("BD :%d", Buildings[a][b]);*/
 
 	//排除菜单范围
 	if (rectContain(menuRect, position[screen]))return;
@@ -1380,60 +1466,92 @@ void Game::updateMapCharacter(float di)
 			Characters[i][j] = 0;
 		}
 	}
-	for (Infantry* infa : infantryGroup[myTeam])
+	for (int i = 0; i < 4; i++)
 	{
-		int x = infa->positionNow.x;
-		int y = infa->positionNow.y;
-		Characters[x][y] -= 700;
-		int qi = 2;
-		Characters[x - 1][y] += qi;
-		Characters[x + 1][y] += qi;
-		Characters[x][y + 1] += qi;
-		Characters[x][y - 1] += qi;
-		Characters[x + 1][y + 1]++;
-		Characters[x + 1][y - 1]++;
-		Characters[x - 1][y + 1]++;
-		Characters[x - 1][y - 1]++;
-		x = infa->positionTarget.x;
-		y = infa->positionTarget.y;
-		Characters[x][y] -= 700;
-		Characters[x][y] -= 700;
-		Characters[x - 1][y] += qi;
-		Characters[x + 1][y] += qi;
-		Characters[x][y + 1] += qi;
-		Characters[x][y - 1] += qi;
-		Characters[x + 1][y + 1]++;
-		Characters[x + 1][y - 1]++;
-		Characters[x - 1][y + 1]++;
-		Characters[x - 1][y - 1]++;
-	}
-	/*for (int i = 0; i < 118; i++)
-	{
-		for (int j = 0; j < 138; j++)
+		for (Infantry* infa : infantryGroup[i])
 		{
-			if (Characters[i][j] <= -1400)
-			{
-				for (Infantry* infa : infantryGroup[myTeam])
-				{
-					if (infa->positionNow == Vec2(i, j))
-					{
-						if (infa->positionNow == infa->positionGoal)
-						{
-							for (int t = 0; t <8; t++) {
-
-								if (Characters[i + DIRECTION[t][0]][j + DIRECTION[t][1]] == 0)
-								{
-									infa->positionGoal = Vec2(i + DIRECTION[t][0], j + DIRECTION[t][1]);
-								}
-								break;
-							}
-							break;
-						}
-					}
-				}
-			}
+			int x = infa->positionNow.x;
+			int y = infa->positionNow.y;
+			Characters[x][y] -= 700;
+			int qi = 2;
+			Characters[x - 1][y] += qi;
+			Characters[x + 1][y] += qi;
+			Characters[x][y + 1] += qi;
+			Characters[x][y - 1] += qi;
+			Characters[x + 1][y + 1]++;
+			Characters[x + 1][y - 1]++;
+			Characters[x - 1][y + 1]++;
+			Characters[x - 1][y - 1]++;
+			x = infa->positionTarget.x;
+			y = infa->positionTarget.y;
+			Characters[x][y] -= 700;
+			Characters[x][y] -= 700;
+			Characters[x - 1][y] += qi;
+			Characters[x + 1][y] += qi;
+			Characters[x][y + 1] += qi;
+			Characters[x][y - 1] += qi;
+			Characters[x + 1][y + 1]++;
+			Characters[x + 1][y - 1]++;
+			Characters[x - 1][y + 1]++;
+			Characters[x - 1][y - 1]++;
 		}
-	}*/
+		for (Dog* dog : dogGroup[i])
+		{
+			int x = dog->positionNow.x;
+			int y = dog->positionNow.y;
+			Characters[x][y] -= 700;
+			int qi = 2;
+			Characters[x - 1][y] += qi;
+			Characters[x + 1][y] += qi;
+			Characters[x][y + 1] += qi;
+			Characters[x][y - 1] += qi;
+			Characters[x + 1][y + 1]++;
+			Characters[x + 1][y - 1]++;
+			Characters[x - 1][y + 1]++;
+			Characters[x - 1][y - 1]++;
+			x = dog->positionTarget.x;
+			y = dog->positionTarget.y;
+			Characters[x][y] -= 700;
+			Characters[x][y] -= 700;
+			Characters[x - 1][y] += qi;
+			Characters[x + 1][y] += qi;
+			Characters[x][y + 1] += qi;
+			Characters[x][y - 1] += qi;
+			Characters[x + 1][y + 1]++;
+			Characters[x + 1][y - 1]++;
+			Characters[x - 1][y + 1]++;
+			Characters[x - 1][y - 1]++;
+		}
+		for (Tank* tank : tankGroup[i])
+		{
+			int x = tank->positionNow.x;
+			int y = tank->positionNow.y;
+			Characters[x][y] -= 700;
+			int qi = 2;
+			Characters[x - 1][y] += qi;
+			Characters[x + 1][y] += qi;
+			Characters[x][y + 1] += qi;
+			Characters[x][y - 1] += qi;
+			Characters[x + 1][y + 1]++;
+			Characters[x + 1][y - 1]++;
+			Characters[x - 1][y + 1]++;
+			Characters[x - 1][y - 1]++;
+			x = tank->positionTarget.x;
+			y = tank->positionTarget.y;
+			Characters[x][y] -= 700;
+			Characters[x][y] -= 700;
+			Characters[x - 1][y] += qi;
+			Characters[x + 1][y] += qi;
+			Characters[x][y + 1] += qi;
+			Characters[x][y - 1] += qi;
+			Characters[x + 1][y + 1]++;
+			Characters[x + 1][y - 1]++;
+			Characters[x - 1][y + 1]++;
+			Characters[x - 1][y - 1]++;
+		}
+	}
+	
+	
 }
 
 void Character::updateMove(float di) {
@@ -1450,6 +1568,7 @@ void Character::updateMove(float di) {
 	if (repeat >= 30)
 	{
 		this->stop = 1;
+		repeat = 0;
 		//this->setGoal(positionNow);
 	}
 	if (stop)
@@ -1616,11 +1735,18 @@ void Character::updateAttack(float di)
 			}
 			else
 			{
-				log("atk");
-				//this->positionGoal = positionNow;
-				this->setGoal(positionNow);
-				stop = 1;
-				//enemy_infa->beAttacked(this->attack);
+				
+				this->attackInterval = this->attackInterval % 5;
+				if (this->attackInterval == 0)
+				{
+					log("atk");
+					//this->positionGoal = positionNow;
+					this->setGoal(positionNow);
+					stop = 1;
+					//enemy_infa->beAttacked(this->attack);
+				}
+				this->attackInterval++;
+				
 			}
 		}
 	}

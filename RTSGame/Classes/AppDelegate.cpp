@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "SimpleAudioEngine.h"
 #include "HelloWorldScene.h"
+#include "Game.h"
 
 
 // #define USE_AUDIO_ENGINE 1
@@ -105,8 +106,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/music.mp3", true);
 
     // create a scene. it's an autorelease object
-    auto HelloWorldScene = HelloWorld::createScene();
-
+    //auto HelloWorldScene = HelloWorld::createScene();
+	auto HelloWorldScene = Game::createScene();
     // run
     director->runWithScene(HelloWorldScene);
 

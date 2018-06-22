@@ -8,7 +8,7 @@ USING_NS_CC;
 const int DIRECTION[8][2] = {
 	{ -1,0 },{ -1,1 },{ 0,1 },{ 1,1 },{ 1,0 },{ 1,-1 } ,{ 0,-1 },{ -1,-1 }
 };
-static int CreateTag = 0;
+static int CreateTag;
 static int myTeam = 0;
 
 static int Gold[4] = { 5000,5000,5000,5000 };
@@ -39,6 +39,8 @@ public:
 		if (bloodNow <= 0)
 		{
 			died = 1;
+			this->removeFromParent();
+			this->selected = 0;
 		}
 	}
 

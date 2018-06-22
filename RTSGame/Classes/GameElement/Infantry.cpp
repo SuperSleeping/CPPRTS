@@ -22,7 +22,7 @@ Infantry* Infantry::create(Vec2 position)
 		infantry->setTag(CreateTag);
 
 		infantry->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
-		infantry->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
+		infantry->schedule(schedule_selector(Character::updateAttack), 0.1f, kRepeatForever, 0.0f);
 
 
 		infantry->autorelease();
