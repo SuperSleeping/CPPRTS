@@ -1,7 +1,7 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
-
+#include "network/SocketIO.h"
 #include "cocos2d.h"
 #include <vector>
 #include "GameElement/GameElement.h"
@@ -14,13 +14,21 @@ extern int Characters[118][138];
 
 //extern vector<Infantry*> infantryGroup[4];
 
-class Game : public cocos2d::Scene
+class Game : public cocos2d::Scene,public cocos2d::network::SocketIO::SIODelegate
 {
 private:
+	cocos2d::network::SIOClient *sioClient;
 public:
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
+	/*委托协议函数*/
+	virtual void onConnect(cocos2d::network::SIOClient *client);
+	virtual void onMessage(cocos2d::network::SIOClient *client, const std::string& data);
+	virtual void onClose(cocos2d::network::SIOClient *client);
+	virtual void onError(cocos2d::network::SIOClient *client, const std::string& data);
+	
+	void numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data);
 
 	//层
 	Layer* mouseLayer;

@@ -1,6 +1,10 @@
 #include "Game.h"
+#include "SimpleAudioEngine.h"
 #include "HelloWorldScene.h"
 #include <iostream>
+#include "ui/CocosGUI.h"
+#include "UserDefault.h"
+#include "extensions/cocos-ext.h"
 
 #include"GameElement/Basement.h"
 #include"GameElement/Barrack.h"
@@ -14,6 +18,10 @@
 
 #include"GameInformation.h"
 
+USING_NS_CC;
+USING_NS_CC_EXT;
+using namespace CocosDenshion;
+using namespace cocos2d::ui;
 
 
 //½¨Á¢vector´¢´ægameElement
@@ -132,6 +140,11 @@ bool Game::init()
 	{
 		return false;
 	}
+
+	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
+	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
+	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
+
 	visibleSize = Director::getInstance()->getVisibleSize();
 
 	//Ìí¼Ó²ã(?)
@@ -2417,3 +2430,34 @@ Vec2 Safe(Vec2 &position)
 	}
 	return safe;
 }
+
+void Game::numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data)
+{
+	log("Client Called");
+	log("%s", data.c_str());
+	int number = atoi(data.c_str());
+	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number);
+	return;
+}
+
+void Game::onConnect(cocos2d::network::SIOClient *client)
+{
+	return;
+}
+
+void Game::onMessage(cocos2d::network::SIOClient *client, const std::string& data)
+{
+	return;
+}
+
+
+void Game::onClose(cocos2d::network::SIOClient *client)
+{
+	return;
+}
+
+void Game::onError(cocos2d::network::SIOClient *client, const std::string& data)
+{
+	return;
+}
+
