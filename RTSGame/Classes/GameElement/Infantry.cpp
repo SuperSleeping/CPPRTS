@@ -14,7 +14,7 @@ Infantry* Infantry::create(Vec2 position)
 		infantry->blood = 125;
 		infantry->bloodNow = 125;
 		infantry->attack = 10;
-		infantry->attackDistance = 3;
+		infantry->attackDistance = 4;
 		infantry->prize = 120;
 		infantry->velocity = 10;
 		//вт╤╞йм╥е

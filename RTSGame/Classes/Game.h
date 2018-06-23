@@ -28,11 +28,18 @@ public:
 	virtual void onClose(cocos2d::network::SIOClient *client);
 	virtual void onError(cocos2d::network::SIOClient *client, const std::string& data);
 	
+	void attackRespone(const std::string &data);
+	void moveRespone(const std::string &data);
+	void createRespone(const std::string &data);
+	void buildRespone(const std::string &data);
+
 	void numberClientEvent(cocos2d::network::SIOClient *client, const std::string& data);
 
 	//²ã
 	Layer* mouseLayer;
 	Layer* game;
+
+	void updateResources(float di);
 
 
 	//ÔªµØÍ¼ÊôÐÔ

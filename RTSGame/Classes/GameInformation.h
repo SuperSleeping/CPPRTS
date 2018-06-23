@@ -1,6 +1,6 @@
 #pragma once
 static int CreateTag = 1;
-static int myTeam = 1;
+static int myTeam = 0;
 
 static int Gold[4] = { 5000,5000,5000,5000 };
 static int Power[4] = { 0,0,0,0 };

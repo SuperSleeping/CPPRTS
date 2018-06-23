@@ -13,8 +13,10 @@ Dog* Dog::create(Vec2 position)
 		dog->setGoal(convertToTiledMap(position) + Vec2(0, 2));
 
 		//ÊôÐÔÉèÖÃ
-		dog->blood = 80;
-		dog->bloodNow = 80;
+		dog->blood = 50;
+		dog->bloodNow = 50;
+		dog->attack = 50;
+		dog->attackDistance = 1;
 		dog->prize = 150;
 		dog->velocity = 25;
 

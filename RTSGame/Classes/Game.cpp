@@ -18,11 +18,12 @@
 
 #include"GameInformation.h"
 
+#include<string>
 USING_NS_CC;
 USING_NS_CC_EXT;
 using namespace CocosDenshion;
 using namespace cocos2d::ui;
-
+using namespace std;
 
 //建立vector储存gameElement
 //4个数组分别存放四个国家的兵力和建筑
@@ -44,6 +45,8 @@ int Characters[118][138];
 int Buildings[118][138];
 int MapCondition[118][138];
 
+int PlayMode = 0;				//单人模式默认为0，联机模式设为1
+
 vector<int[118][138]> MapDestination;
 
 Vec2 Safe(Vec2 &position);
@@ -52,17 +55,24 @@ void MapBlockBegin();
 void BuildBlock(int x, int y, int size);
 void RefreshMap(int map[118][138]);
 
+string SpawnDatastring(int Player, char type, int n, int m);
+string SpawnDatastring(int Player, char type, int n, int m, int t);
+
 //当前玩家的资源数据
 int money;
 int electricity;
 
+Label* resources_gold;
+Label* resources_gold_per_second;
+Label* resources_power_avaliable;
+Label* resources_power_sum;
 //地图信息
 
 //地图
 //@map层级：
 //@  10   建筑人物等
 //@	 100  鼠标
-TMXTiledMap* map;
+TMXTiledMap* tiledmap;
 TMXLayer* _grass;
 TMXLayer* _grasswet;
 TMXLayer* _ground;
@@ -80,7 +90,7 @@ Point tmNumber;
 //@屏幕坐标转换成层坐标（世界坐标系）
 Point convertToMapLayer(Point position)
 {
-	position = position - map->getPosition();
+	position = position - tiledmap->getPosition();
 	return position;
 }
 //@世界坐标转换成瓦片地图坐标
@@ -141,9 +151,9 @@ bool Game::init()
 		return false;
 	}
 
-	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
+	/*std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
 	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
-	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
+	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));*/
 
 	visibleSize = Director::getInstance()->getVisibleSize();
 
@@ -156,26 +166,26 @@ bool Game::init()
 	this->addChild(mouseLayer, 2);
 
 	//置入地图
-	map = TMXTiledMap::create("map/maptest.tmx");
-	map->addChild(game, 100);
-	this->addChild(map, 0);
+	tiledmap = TMXTiledMap::create("map/maptest.tmx");
+	tiledmap->addChild(game, 100);
+	this->addChild(tiledmap, 0);
 
-	_grass = map->getLayer("grass");
-	_grasswet = map->getLayer("grasswet");
-	_ground = map->getLayer("ground");
-	_meta = map->getLayer("meta");
+	_grass = tiledmap->getLayer("grass");
+	_grasswet = tiledmap->getLayer("grasswet");
+	_ground = tiledmap->getLayer("ground");
+	_meta = tiledmap->getLayer("meta");
 
 	rectangle = DrawNode::create();
-	map->addChild(rectangle, 100);
+	tiledmap->addChild(rectangle, 100);
 
 	//基本信息、尺寸、坐标信息初始化
-	myTeam = 0;
+
 	visibleSize.x = 1600;
 	visibleSize.y = 900;
-	tmSize.x = map->getTileSize().width;
-	tmSize.y = map->getTileSize().height;
-	mapSize.x = map->getMapSize().width * tmSize.x;
-	mapSize.y = map->getMapSize().height * tmSize.y;
+	tmSize.x = tiledmap->getTileSize().width;
+	tmSize.y = tiledmap->getTileSize().height;
+	mapSize.x = tiledmap->getMapSize().width * tmSize.x;
+	mapSize.y = tiledmap->getMapSize().height * tmSize.y;
 	tmNumber.x = mapSize.x / tmSize.x;
 	tmNumber.y = mapSize.y / tmSize.y;
 	OKtobuilt = 0;
@@ -183,9 +193,29 @@ bool Game::init()
 	isBlockInitialize();
 
 	MapBlockBegin();
-	
-	//测试用攻击对象
-	auto character = Infantry::create(selectedSpawnPoint);
+
+	resources_gold = Label::create("", "Arial", 20);
+	this->addChild(resources_gold, 400);
+	resources_gold->setPosition(Vec2(1400, 880));
+
+
+	resources_gold_per_second = Label::create("", "Arial", 20);
+	this->addChild(resources_gold_per_second, 400);
+	resources_gold_per_second->setPosition(Vec2(1500, 880));
+
+	resources_power_avaliable = Label::create("", "Arial", 20);
+	this->addChild(resources_power_avaliable, 400);
+	resources_power_avaliable->setPosition(Vec2(1400, 860));
+
+	resources_power_sum = Label::create("", "Arial", 20);
+	this->addChild(resources_power_sum, 400);
+	resources_power_sum->setPosition(Vec2(1500, 860));
+
+	this->schedule(schedule_selector(Game::updateResources), 1.0f, kRepeatForever, 0);
+
+
+	//测试用攻击对象		//似乎会导致关闭时的内存泄漏
+	/*auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
 	character->setTeam(1);
@@ -203,7 +233,7 @@ bool Game::init()
 	game->addChild(building, 120);
 	BuildBlock(20, 120, 2);
 	building->setTag(CreateTag);
-	CreateTag++;
+	CreateTag++;*/
 
 	//菜单栏
 	{
@@ -299,7 +329,7 @@ bool Game::init()
 
 	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
-	
+
 
 
 
@@ -367,39 +397,39 @@ void Game::onMouseMove(cocos2d::Event* event)
 	{
 		if (position.x > visibleSize.x - 100)
 		{
-			if (!(map->numberOfRunningActions()))
+			if (!(tiledmap->numberOfRunningActions()))
 			{
-				auto map_move = MoveTo::create((map->getPosition().x + (mapSize.x - visibleSize.x)) / 2000, Vec2(-(mapSize.x - visibleSize.x), map->getPosition().y));
-				map->runAction(map_move);
+				auto map_move = MoveTo::create((tiledmap->getPosition().x + (mapSize.x - visibleSize.x)) / 2000, Vec2(-(mapSize.x - visibleSize.x), tiledmap->getPosition().y));
+				tiledmap->runAction(map_move);
 			}
 		}
 		else if (position.x < 100)
 		{
-			if (!(map->numberOfRunningActions()))
+			if (!(tiledmap->numberOfRunningActions()))
 			{
-				auto map_move = MoveTo::create((-(map->getPosition().x)) / 2000, Vec2(0, map->getPosition().y));
-				map->runAction(map_move);
+				auto map_move = MoveTo::create((-(tiledmap->getPosition().x)) / 2000, Vec2(0, tiledmap->getPosition().y));
+				tiledmap->runAction(map_move);
 			}
 		}
 		else if (position.y < 100)
 		{
-			if (!(map->numberOfRunningActions()))
+			if (!(tiledmap->numberOfRunningActions()))
 			{
-				auto map_move = MoveTo::create((-(map->getPosition().y)) / 2000, Vec2(map->getPosition().x, 0));
-				map->runAction(map_move);
+				auto map_move = MoveTo::create((-(tiledmap->getPosition().y)) / 2000, Vec2(tiledmap->getPosition().x, 0));
+				tiledmap->runAction(map_move);
 			}
 		}
 		else if (position.y > visibleSize.y - 100)
 		{
-			if (!(map->numberOfRunningActions()))
+			if (!(tiledmap->numberOfRunningActions()))
 			{
-				auto map_move = MoveTo::create((map->getPosition().y + (mapSize.y - visibleSize.y)) / 2000, Vec2(map->getPosition().x, -(mapSize.y - visibleSize.y)));
-				map->runAction(map_move);
+				auto map_move = MoveTo::create((tiledmap->getPosition().y + (mapSize.y - visibleSize.y)) / 2000, Vec2(tiledmap->getPosition().x, -(mapSize.y - visibleSize.y)));
+				tiledmap->runAction(map_move);
 			}
 		}
 		else
 		{
-			map->stopAllActions();
+			tiledmap->stopAllActions();
 		}
 	}
 
@@ -410,7 +440,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		//移除上一个精灵
 		if (BuildingPictureWithMouse != NULL)
 		{
-			map->removeChild(BuildingPictureWithMouse);
+			tiledmap->removeChild(BuildingPictureWithMouse);
 		}
 
 		//检测碰撞(OKtobuilt)
@@ -483,7 +513,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		Point possiblePosition = convertFromTMToWorld(positionWorld);
 		BuildingPictureWithMouse->setPosition(possiblePosition);
 		BuildingPictureWithMouse->setOpacity(150);
-		map->addChild(BuildingPictureWithMouse, 100);
+		tiledmap->addChild(BuildingPictureWithMouse, 100);
 	}
 
 	//选择状态
@@ -504,7 +534,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 	if (e->getMouseButton() == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
 		buildState = false;
-		map->removeChild(BuildingPictureWithMouse);
+		tiledmap->removeChild(BuildingPictureWithMouse);
 		selectedState = false;
 		selectedType = NULL;
 		rectangle->clear();
@@ -594,53 +624,63 @@ void Game::onMouseDown(cocos2d::Event* event)
 		//根据状态新建不同的GameElement并推入相应队伍的vector中
 		if (buildState == Building::BuildingType::BASEMENT)
 		{
-			auto building = Basement::create(position[tiledmapW]);
+			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 1));
+
+			/*auto building = Basement::create(position[tiledmapW]);
 			building->setTeam(myTeam);
 			basementGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 			building->setTag(CreateTag);
-			CreateTag++;
+			CreateTag++;*/
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
-			auto building = Barrack::create(position[tiledmapW]);
+			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 2));
+
+			/*auto building = Barrack::create(position[tiledmapW]);
 			building->setTeam(myTeam);
 			barrackGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 			building->setTag(CreateTag);
-			CreateTag++;
+			CreateTag++;*/
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
-			auto building = Minefield::create(position[tiledmapW]);
+			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 3));
+
+			/*auto building = Minefield::create(position[tiledmapW]);
 			building->setTeam(myTeam);
 			minefieldGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 			building->setTag(CreateTag);
-			CreateTag++;
+			CreateTag++;*/
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
-			auto building = Powerplant::create(position[tiledmapW]);
+			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
+
+			/*auto building = Powerplant::create(position[tiledmapW]);
 			building->setTeam(myTeam);
 			powerplantGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 1);
 			building->setTag(CreateTag);
-			CreateTag++;
+			CreateTag++;*/
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
-			auto building = Warfactory::create(position[tiledmapW]);
+			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
+
+			/*auto building = Warfactory::create(position[tiledmapW]);
 			building->setTeam(myTeam);
 			warfactoryGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
 			building->setTag(CreateTag);
-			CreateTag++;
+			CreateTag++;*/
 		}
 		else
 		{
@@ -652,7 +692,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 
 		//退出建筑状态
 		buildState = NULL;
-		map->removeChild(BuildingPictureWithMouse);
+		tiledmap->removeChild(BuildingPictureWithMouse);
 	}
 
 	//选择状态（非建筑状态）
@@ -714,27 +754,44 @@ void Game::onMouseUp(cocos2d::Event* event)
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterInfantry)->getTag();
-								log("set tag: %d", (*iterInfantry)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterInfantry)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterInfantry)->getTag()));
+								}
+
+
 							}
 						}
 						for (Tank* character : tankGroup[myTeam])
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterInfantry)->getTag();
-								log("set tag: %d", (*iterInfantry)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterInfantry)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterInfantry)->getTag()));
+								}
 							}
 						}
 						for (Dog* character : dogGroup[myTeam])
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterInfantry)->getTag();
-								log("set tag: %d", (*iterInfantry)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterInfantry)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterInfantry)->getTag()));
+								}
 							}
 						}
 					}
@@ -755,27 +812,43 @@ void Game::onMouseUp(cocos2d::Event* event)
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterDog)->getTag();
-								log("set tag: %d", (*iterDog)->getTag());
+								
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterDog)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterDog)->getTag()));
+								}
 							}
 						}
 						for (Tank* character : tankGroup[myTeam])
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterDog)->getTag();
-								log("set tag: %d", (*iterDog)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterDog)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterDog)->getTag()));
+								}
 							}
 						}
 						for (Dog* character : dogGroup[myTeam])
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterDog)->getTag();
-								log("set tag: %d", (*iterDog)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterDog)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterDog)->getTag()));
+								}
 							}
 						}
 					}
@@ -795,27 +868,42 @@ void Game::onMouseUp(cocos2d::Event* event)
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterTank)->getTag();
-								log("set tag: %d", (*iterTank)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterTank)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterTank)->getTag()));
+								}
 							}
 						}
 						for (Tank* character : tankGroup[myTeam])
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterTank)->getTag();
-								log("set tag: %d", (*iterTank)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterTank)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterTank)->getTag()));
+								}
 							}
 						}
 						for (Dog* character : dogGroup[myTeam])
 						{
 							if (character->selected)
 							{
-								character->stopAllActions();
-								character->attackTag = (*iterTank)->getTag();
-								log("set tag: %d", (*iterTank)->getTag());
+								if (!PlayMode)
+								{
+									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterTank)->getTag()));
+								}
+								else
+								{
+									sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterTank)->getTag()));
+								}
 							}
 						}
 					}
@@ -831,7 +919,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 		{
 
 
-			//遍历建筑
+			//遍历建筑攻击
 
 			{
 				//int zo = 0;
@@ -849,27 +937,42 @@ void Game::onMouseUp(cocos2d::Event* event)
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterBasement)->getTag();
-										log("set tag: %d", (*iterBasement)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBasement)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBasement)->getTag()));
+										}
 									}
 								}
 								for (Tank* character : tankGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterBasement)->getTag();
-										log("set tag: %d", (*iterBasement)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBasement)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBasement)->getTag()));
+										}
 									}
 								}
 								for (Dog* character : dogGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterBasement)->getTag();
-										log("set tag: %d", (*iterBasement)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBasement)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBasement)->getTag()));
+										}
 									}
 								}
 							}
@@ -891,27 +994,42 @@ void Game::onMouseUp(cocos2d::Event* event)
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterMinefield)->getTag();
-										log("set tag: %d", (*iterMinefield)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterMinefield)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterMinefield)->getTag()));
+										}
 									}
 								}
 								for (Tank* character : tankGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterMinefield)->getTag();
-										log("set tag: %d", (*iterMinefield)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterMinefield)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterMinefield)->getTag()));
+										}
 									}
 								}
 								for (Dog* character : dogGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterMinefield)->getTag();
-										log("set tag: %d", (*iterMinefield)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterMinefield)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterMinefield)->getTag()));
+										}
 									}
 								}
 							}
@@ -933,27 +1051,42 @@ void Game::onMouseUp(cocos2d::Event* event)
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterBarrack)->getTag();
-										log("set tag: %d", (*iterBarrack)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBarrack)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBarrack)->getTag()));
+										}
 									}
 								}
 								for (Tank* character : tankGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterBarrack)->getTag();
-										log("set tag: %d", (*iterBarrack)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBarrack)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBarrack)->getTag()));
+										}
 									}
 								}
 								for (Dog* character : dogGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterBarrack)->getTag();
-										log("set tag: %d", (*iterBarrack)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBarrack)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterBarrack)->getTag()));
+										}
 									}
 								}
 							}
@@ -975,27 +1108,42 @@ void Game::onMouseUp(cocos2d::Event* event)
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterWarfactory)->getTag();
-										log("set tag: %d", (*iterWarfactory)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterWarfactory)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterWarfactory)->getTag()));
+										}
 									}
 								}
 								for (Tank* character : tankGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterWarfactory)->getTag();
-										log("set tag: %d", (*iterWarfactory)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterWarfactory)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterWarfactory)->getTag()));
+										}
 									}
 								}
 								for (Dog* character : dogGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterWarfactory)->getTag();
-										log("set tag: %d", (*iterWarfactory)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterWarfactory)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterWarfactory)->getTag()));
+										}
 									}
 								}
 							}
@@ -1021,27 +1169,42 @@ void Game::onMouseUp(cocos2d::Event* event)
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterPowerplant)->getTag();
-										log("set tag: %d", (*iterPowerplant)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterPowerplant)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterPowerplant)->getTag()));
+										}
 									}
 								}
 								for (Tank* character : tankGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterPowerplant)->getTag();
-										log("set tag: %d", (*iterPowerplant)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterPowerplant)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterPowerplant)->getTag()));
+										}
 									}
 								}
 								for (Dog* character : dogGroup[myTeam])
 								{
 									if (character->selected)
 									{
-										character->stopAllActions();
-										character->attackTag = (*iterPowerplant)->getTag();
-										log("set tag: %d", (*iterPowerplant)->getTag());
+										if (!PlayMode)
+										{
+											attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterPowerplant)->getTag()));
+										}
+										else
+										{
+											sioClient->send(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterPowerplant)->getTag()));
+										}
 									}
 								}
 							}
@@ -1053,37 +1216,23 @@ void Game::onMouseUp(cocos2d::Event* event)
 		}
 
 	}
-	/*for (Infantry* enemy_character : infantryGroup[(myTeam + 1) % 2])
-	{
-		if (enemy_character->positionNow == position[tiledmapTM])
-		{
-			for (Infantry* character : infantryGroup[myTeam])
-			{
-				if (character->selected)
-				{
-					character->stopAllActions();
-					character->attackTag = enemy_character->getTag();
-					log("set tag: %d", enemy_character->getTag());
-				}
-			}
-			swallow = 1;
-			break;
-		}
-	}*/
+	//如果没有检测到攻击事件，就检测移动事件
 	if (!swallow)
 	{
 		for (Infantry* character : infantryGroup[myTeam])
 		{
 			if (character->selected)
 			{
-				character->stopAllActions();
-				//character->positionGoal = position[tiledmapTM];
-				character->attackTag = 0;
-				character->setGoal(Safe(position[tiledmapTM]));
-				log("%d", character->getTag());
-				//character->setMapDestination(position[tiledmapTM]);
-				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
-				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
+				if (!PlayMode)
+				{
+					moveRespone(SpawnDatastring(myTeam, 'm', character->getTag(), Safe(position[tiledmapTM]).x, Safe(position[tiledmapTM]).y));
+				}
+				else
+				{
+					sioClient->send(SpawnDatastring(myTeam, 'm', character->getTag(), Safe(position[tiledmapTM]).x, Safe(position[tiledmapTM]).y));
+				}
+				
+
 
 			}
 		}
@@ -1091,14 +1240,14 @@ void Game::onMouseUp(cocos2d::Event* event)
 		{
 			if (character->selected)
 			{
-				character->stopAllActions();
-				//character->positionGoal = position[tiledmapTM];
-				character->attackTag = 0;
-				character->setGoal(Safe(position[tiledmapTM]));
-
-				//character->setMapDestination(position[tiledmapTM]);
-				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
-				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
+				if (!PlayMode)
+				{
+					moveRespone(SpawnDatastring(myTeam, 'm', character->getTag(), Safe(position[tiledmapTM]).x, Safe(position[tiledmapTM]).y));
+				}
+				else
+				{
+					sioClient->send(SpawnDatastring(myTeam, 'm', character->getTag(), Safe(position[tiledmapTM]).x, Safe(position[tiledmapTM]).y));
+				}
 
 			}
 		}
@@ -1106,14 +1255,16 @@ void Game::onMouseUp(cocos2d::Event* event)
 		{
 			if (character->selected)
 			{
-				character->stopAllActions();
-				//character->positionGoal = position[tiledmapTM];
-				character->attackTag = 0;
-				character->setGoal(Safe(position[tiledmapTM]));
 
-				//character->setMapDestination(position[tiledmapTM]);
-				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
-				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
+				if (!PlayMode)
+				{
+					moveRespone(SpawnDatastring(myTeam, 'm', character->getTag(), Safe(position[tiledmapTM]).x, Safe(position[tiledmapTM]).y));
+				}
+				else
+				{
+					sioClient->send(SpawnDatastring(myTeam, 'm', character->getTag(), Safe(position[tiledmapTM]).x, Safe(position[tiledmapTM]).y));
+				}
+
 
 			}
 		}
@@ -1425,23 +1576,11 @@ void Game::onMouseUp(cocos2d::Event* event)
 		selectedState = false;
 
 	}
-	/*int nm = 1;
-	for (Infantry* infa : infantryGroup[myTeam])
-	{
-		int x = infa->positionNow.x;
-		int y = infa->positionNow.y;
-		nm++;
-		log("%d : %d,%d", nm, x, y);
-		log("%d", Characters[x][y]);
-
-	}*/
 
 
 
 
-	int a = position[tiledmapTM].x;
-	int b = position[tiledmapTM].y;
-	log("BD :%d", Buildings[a][b]);
+
 
 	//排除菜单范围
 
@@ -1493,44 +1632,44 @@ void Game::buttonWarfactory(Ref* pSender)
 
 void Game::buttonInfantry(Ref* pSender)
 {
-	auto character = Infantry::create(selectedSpawnPoint);
-	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
-	game->addChild(character, z);
-	character->setTeam(myTeam);
-	Gold[character->team] -= 500;
-	infantryGroup[character->team].push_back(character);
-	character->setTag(CreateTag);
-	CreateTag++;
-	log("%d Gold %d",myTeam, Gold[myTeam]);
+	if (!PlayMode)
+	{
+		createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 1));
+	}
+	else
+	{
+		sioClient->send(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 1));
+	}
 }
 
 void Game::buttonDog(Ref* pSender)
 {
-	auto character = Dog::create(selectedSpawnPoint);
-	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
-	game->addChild(character, z);
-	character->setTeam(myTeam);
-	Gold[character->team] -= 500;
-	dogGroup[character->team].push_back(character);
-	character->setTag(CreateTag);
-	CreateTag++;
+	if (!PlayMode)
+	{
+		createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 2));
+	}
+	else
+	{
+		sioClient->send(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 2));
+	}
 }
 
 void Game::buttonTank(Ref* pSender)
 {
-	/*if (Gold[myTeam] < 1000)
+	if (warfactory[myTeam] == 0 || Gold[myTeam] < 1000)
 	{
 		return;
-	}*/
+	}
+	if (!PlayMode)
+	{
+		createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 3));
+	}
+	else
+	{
+		sioClient->send(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 3));
+	}
 
-	auto character = Tank::create(selectedSpawnPoint);
-	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
-	game->addChild(character, z);
-	character->setTeam(myTeam);
-	Gold[character->team] -= 1000;
-	tankGroup[character->team].push_back(character);
-	character->setTag(CreateTag);
-	CreateTag++;
+
 }
 
 void Game::buttonx(Ref* pSender)
@@ -1557,7 +1696,7 @@ void Game::isBlockInitialize()
 				int GID = _meta->getTileGIDAt(tmPoint);
 				if (GID != 0)
 				{
-					auto properties = map->getPropertiesForGID(GID).asValueMap();
+					auto properties = tiledmap->getPropertiesForGID(GID).asValueMap();
 					if (!properties.empty())
 					{
 						auto block = properties["Block"].asString();
@@ -2393,18 +2532,18 @@ void Game::updateZOrder(float di)
 	{
 		for (auto infa : infantryGroup[i])
 		{
-			if(!infa->died)
-			infa->setZOrder(infa->positionNow.y);
+			if (!infa->died)
+				infa->setZOrder(infa->positionNow.y);
 		}
 		for (auto dog : dogGroup[i])
 		{
-			if(!dog->died)
-			dog->setZOrder(dog->positionNow.y);
+			if (!dog->died)
+				dog->setZOrder(dog->positionNow.y);
 		}
 		for (auto tank : tankGroup[i])
 		{
-			if(!tank->died)
-			tank->setZOrder(tank->positionNow.y);
+			if (!tank->died)
+				tank->setZOrder(tank->positionNow.y);
 		}
 	}
 }
@@ -2449,6 +2588,21 @@ void Game::onConnect(cocos2d::network::SIOClient *client)
 
 void Game::onMessage(cocos2d::network::SIOClient *client, const std::string& data)
 {
+	if (data[3] == 'c') {
+		createRespone(data);
+	}
+	else if (data[3] == 'b') {
+		buildRespone(data);
+	}
+	else if (data[3] == 'a') {
+		attackRespone(data);
+	}
+	else if (data[3] == 'm') {
+		moveRespone(data);
+	}
+
+
+
 	return;
 }
 
@@ -2463,3 +2617,337 @@ void Game::onError(cocos2d::network::SIOClient *client, const std::string& data)
 	return;
 }
 
+void Game::updateResources(float di) {
+	resources_gold->setString(to_string(Gold[myTeam]));
+	resources_gold_per_second->setString(to_string(minefield[myTeam] * 50) + " / second");
+	resources_power_avaliable->setString(to_string(Power[myTeam]));
+	resources_power_sum->setString("/ " + to_string(powerplant[myTeam] * 100));
+}
+
+void Game::attackRespone(const std::string &data) {
+	int index = PlayMode;
+	int Player = data[index] - 48;
+	char atk[5];
+	char tgt[5];
+	int atk_tag;
+	int tgt_tag;
+	index += 4;
+	int a = 0;
+	for (index; data[index] != 32; index++) {
+
+		atk[a] = data[index];
+		a++;
+	}
+	atk_tag = atoi(atk);
+	index++;
+	a = 0;
+	for (index; data[index] && data[index] != 32; index++) {
+
+		tgt[a] = data[index];
+		a++;
+	}
+	tgt_tag = atoi(tgt);
+	for (Infantry* character : infantryGroup[Player])
+	{
+		if (character->getTag() == atk_tag)
+		{
+			character->stopAllActions();
+			character->attackTag = tgt_tag;
+			break;
+		}
+	}
+	for (Dog* character : dogGroup[Player])
+	{
+		if (character->getTag() == atk_tag)
+		{
+			character->stopAllActions();
+			character->attackTag = tgt_tag;
+			break;
+		}
+	}
+	for (Tank* character : tankGroup[Player])
+	{
+		if (character->getTag() == atk_tag)
+		{
+			character->stopAllActions();
+			character->attackTag = tgt_tag;
+			break;
+		}
+	}
+
+}
+
+void Game::buildRespone(const std::string &data) {
+	//log("create");
+	int index = 0;
+	int Player = data[index] - 48;
+	char x_c[4];
+	char y_c[4];
+	char type_c[1];
+	int x;
+	int y;
+	int type;
+	index += 4;
+	int a = 0;
+	for (index; data[index] != 32; index++) {
+
+		x_c[a] = data[index];
+		a++;
+	}
+	x = atoi(x_c);
+	index++;
+	a = 0;
+	for (index; data[index] && data[index] != 32; index++) {
+
+		y_c[a] = data[index];
+		a++;
+	}
+	y = atoi(y_c);
+	index++;
+	type_c[0] = data[index];
+	type = atoi(type_c);
+
+	switch (type)
+	{
+	case 1: {
+		Gold[Player] -= 1000;
+		basement[Player]++;
+		auto building = Basement::create(Vec2(x, y));
+		building->setTeam(Player);
+		basementGroup[Player].push_back(building);
+		game->addChild(building, convertToTiledMap(Vec2(x, y)).y);
+		BuildBlock(convertToTiledMap(Vec2(x, y)).x, convertToTiledMap(Vec2(x, y)).y, 2);
+		building->setTag(CreateTag);
+		CreateTag++;
+		break; }
+	case 2: {
+		Gold[Player] -= 1000;
+		Power[Player] -= 50;
+		barrack[Player]++;
+		auto building = Barrack::create(Vec2(x, y));
+		building->setTeam(Player);
+		barrackGroup[Player].push_back(building);
+		game->addChild(building, convertToTiledMap(Vec2(x, y)).y);
+		BuildBlock(convertToTiledMap(Vec2(x, y)).x, convertToTiledMap(Vec2(x, y)).y, 2);
+		building->setTag(CreateTag);
+		CreateTag++;
+		break; }
+
+	case 3: {
+		Gold[Player] -= 1000;
+		Power[Player] -= 50;
+		minefield[Player]++;
+
+		auto building = Minefield::create(Vec2(x, y));
+		building->setTeam(Player);
+		minefieldGroup[Player].push_back(building);
+		game->addChild(building, convertToTiledMap(Vec2(x, y)).y);
+		BuildBlock(convertToTiledMap(Vec2(x, y)).x, convertToTiledMap(Vec2(x, y)).y, 2);
+		building->setTag(CreateTag);
+		CreateTag++;
+		break; }
+	case 4: {
+		Gold[Player] -= 1000;
+		Power[Player] += 100;
+		powerplant[Player]++;
+		auto building = Powerplant::create(Vec2(x, y));
+		building->setTeam(Player);
+		powerplantGroup[Player].push_back(building);
+		game->addChild(building, convertToTiledMap(Vec2(x, y)).y);
+		BuildBlock(convertToTiledMap(Vec2(x, y)).x, convertToTiledMap(Vec2(x, y)).y, 2);
+		building->setTag(CreateTag);
+		CreateTag++;
+		break; }
+	case 5: {
+		Gold[Player] -= 2000;
+		Power[Player] -= 100;
+		warfactory[Player]++;
+
+		auto building = Warfactory::create(Vec2(x, y));
+		building->setTeam(Player);
+		warfactoryGroup[Player].push_back(building);
+		game->addChild(building, convertToTiledMap(Vec2(x, y)).y);
+		BuildBlock(convertToTiledMap(Vec2(x, y)).x, convertToTiledMap(Vec2(x, y)).y, 2);
+		building->setTag(CreateTag);
+		CreateTag++;
+		break; }
+	}
+
+
+}
+
+void Game::createRespone(const std::string &data) {
+	int index = PlayMode;
+	int Player = data[index] - 48;
+	char x_c[4];
+	char y_c[4];
+	char type_c[1];
+	int x;
+	int y;
+	int type;
+	index += 4;
+	int a = 0;
+	for (index; data[index] != 32; index++) {
+
+		x_c[a] = data[index];
+		a++;
+	}
+	x = atoi(x_c);
+	index++;
+	a = 0;
+	for (index; data[index] && data[index] != 32; index++) {
+
+		y_c[a] = data[index];
+		a++;
+	}
+	y = atoi(y_c);
+	index++;
+	type_c[0] = data[index];
+	type = atoi(type_c);
+
+	switch (type)
+	{
+	case 1: {
+		auto character = Infantry::create(Vec2(x, y));
+		int z = convertToNeightborTiledMap(Vec2(x, y)).y;
+		game->addChild(character, z);
+		character->setTeam(Player);
+		Gold[character->team] -= 500;
+		infantryGroup[character->team].push_back(character);
+		character->setTag(CreateTag);
+		CreateTag++; 
+		break; }
+	case 2: {
+		auto character = Dog::create(Vec2(x, y));
+		int z = convertToNeightborTiledMap(Vec2(x, y)).y;
+		game->addChild(character, z);
+		character->setTeam(Player);
+		Gold[character->team] -= 500;
+		dogGroup[character->team].push_back(character);
+		character->setTag(CreateTag);
+		CreateTag++; 
+		break; }
+
+	case 3: {
+		auto character = Tank::create(Vec2(x, y));
+		int z = convertToNeightborTiledMap(Vec2(x, y)).y;
+		game->addChild(character, z);
+		character->setTeam(Player);
+		Gold[character->team] -= 1000;
+		tankGroup[character->team].push_back(character);
+		character->setTag(CreateTag);
+		CreateTag++;
+		break; }
+
+	}
+
+
+
+}
+
+void Game::moveRespone(const std::string &data) {
+	int index = 0;
+	int Player = data[index] - 48;
+	char tag_c[5];
+	char x_c[4];
+	char y_c[4];
+	int tag;
+	int x;
+	int y;
+	index += 4;
+	int a = 0;
+	for (index; data[index] != 32; index++) {
+		tag_c[a] = data[index];
+		a++;
+	}
+	tag = atoi(tag_c);
+	index++;
+	a = 0;
+	for (index; data[index] != 32; index++) {
+
+		x_c[a] = data[index];
+		a++;
+	}
+	x = atoi(x_c);
+	index++;
+	a = 0;
+	for (index; data[index] && data[index] != 32; index++) {
+
+		y_c[a] = data[index];
+		a++;
+	}
+	y = atoi(y_c);
+	for (Infantry* character : infantryGroup[Player])
+	{
+		if (character->getTag() == tag)
+		{
+			character->stopAllActions();
+			character->attackTag = 0;
+			character->setGoal(Vec2(x, y));
+			break;
+		}
+	}
+	for (Dog* character : dogGroup[Player])
+	{
+		if (character->getTag() == tag)
+		{
+			character->stopAllActions();
+			character->attackTag = 0;
+			character->setGoal(Vec2(x, y));
+			break;
+		}
+	}
+	for (Tank* character : tankGroup[Player])
+	{
+		if (character->getTag() == tag)
+		{
+			character->stopAllActions();
+			character->attackTag = 0;
+			character->setGoal(Vec2(x, y));
+			break;
+		}
+	}
+
+
+}
+
+string SpawnDatastring(int Player, char type, int n, int m) {
+	string data;
+	char tp[5];
+	char tpx[5];
+	char tpy[5];
+	_itoa_s(Player, tp, 10);
+	data += tp;
+	data += " ";
+	data += type;
+	data += " ";
+	_itoa_s(n, tpx, 10);
+	_itoa_s(m, tpy, 10);
+	data += tpx;
+	data += " ";
+	data += tpy;
+	data += " ";
+	return data;
+}
+string SpawnDatastring(int Player, char type, int n, int m, int t) {
+	string data;
+	char tp[5];
+	char tpx[5];
+	char tpy[5];
+	char tpz[5];
+	_itoa_s(Player, tp, 10);
+	data += tp;
+	data += " ";
+	data += type;
+	data += " ";
+	_itoa_s(n, tpx, 10);
+	_itoa_s(m, tpy, 10);
+	_itoa_s(t, tpz, 10);
+	data += tpx;
+	data += " ";
+	data += tpy;
+	data += " ";
+	data += tpz;
+	data += " ";
+	return data;
+}

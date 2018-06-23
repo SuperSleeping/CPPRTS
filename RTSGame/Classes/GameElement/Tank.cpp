@@ -18,7 +18,7 @@ Tank* Tank::create(Vec2 position)
 		tank->blood = 170;
 		tank->bloodNow = 170;
 		tank->attack = 20;
-		tank->attackDistance = 5;
+		tank->attackDistance = 6;
 		tank->prize = 250;
 		tank->velocity = 15;
 
