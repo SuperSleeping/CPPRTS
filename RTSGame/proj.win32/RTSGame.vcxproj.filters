@@ -10,6 +10,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameElement">
+      <UniqueIdentifier>{770b8c61-aeba-46af-b1c0-293a853badab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,9 +30,6 @@
     <ClCompile Include="..\Classes\MySetting.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameScene.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\UDP.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -38,6 +38,40 @@
     </ClCompile>
     <ClCompile Include="..\Classes\TransScene.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Game.cpp" />
+    <ClCompile Include="..\Classes\GameElement\Barrack.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Basement.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Building.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Character.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Dog.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\GameElement.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Infantry.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Minefield.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Powerplant.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Tank.cpp">
+      <Filter>GameElement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameElement\Warfactory.cpp">
+      <Filter>GameElement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,24 +90,53 @@
     <ClInclude Include="..\Classes\MySetting.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameScene.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\UDP.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\UserDefault.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Soldier.h" />
-    <ClInclude Include="..\Classes\Building.h" />
     <ClInclude Include="..\Classes\AboutScene.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\TransScene.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Elements.h" />
+    <ClInclude Include="..\Classes\Game.h" />
+    <ClInclude Include="..\Classes\GameInformation.h" />
+    <ClInclude Include="..\Classes\GameElement\Barrack.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Basement.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Building.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Character.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Dog.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\GameElement.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Infantry.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Minefield.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Powerplant.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Tank.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameElement\Warfactory.h">
+      <Filter>GameElement</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

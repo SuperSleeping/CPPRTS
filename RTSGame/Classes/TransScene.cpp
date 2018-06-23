@@ -1,6 +1,6 @@
 #include"TransScene.h"
 #include"SimpleAudioEngine.h"
-#include"GameScene.h"
+#include"Game.h"
 #include "UDP.h"
 #include <stdlib.h>
 #include <Windows.h>
@@ -80,7 +80,7 @@ void TransScene::newCallback(Ref* pSender)
 	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
 	int number = 2;								//加入游戏的玩家人数。允许玩家设置为2或4
 	serverOperation(number);
-	auto sc = GameScene::createScene();
+	auto sc = Game::createScene();
 	Director::getInstance()->replaceScene(sc);
 	return;
 }
@@ -91,7 +91,7 @@ void TransScene::joinCallback(Ref* pSender)
 	clientOperation(hostIp);
 	strcat(hostIp, ":3000");
 	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
-	auto sc = GameScene::createScene();
+	auto sc = Game::createScene();
 	Director::getInstance()->replaceScene(sc);
 	return;
 }
