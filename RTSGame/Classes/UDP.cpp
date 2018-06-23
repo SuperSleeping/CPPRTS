@@ -127,8 +127,8 @@ bool clientOperation(char *hostIp)
 			/*if (strcmp(command, "begin") == 0)
 			{
 				break;
-			}
-			else*/ if (strlen(command))
+			}*/
+			if (strlen(command))
 			{
 				strcpy(hostIp, command);
 				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
