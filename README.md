@@ -6,6 +6,9 @@ The final project of TJ SSE
 
 
 ○启动说明
+
+
+
 多人游戏选择开始游戏→新建游戏。其他游戏端选择加入游戏。待连接成功的游戏人数足够后就会自动开始游戏。
 
 单人游戏会允许你在无限资源的情况下随时更换队伍进行游戏功能测试。
@@ -18,6 +21,8 @@ The final project of TJ SSE
 
 
 ○游戏玩法说明
+
+
 
 基本建筑五个：基地 发电厂 矿厂 兵营 战车工厂
 
@@ -41,7 +46,11 @@ The final project of TJ SSE
 
 拒绝平衡性吐槽！
 
+
+
 ○功能说明：
+
+
 
 点击按钮可以进行对应建筑的建造。只有条件允许的建筑可以进行建造。
 
@@ -59,6 +68,8 @@ The final project of TJ SSE
 
 如果游戏模式是单人模式：转换队伍按钮可以使你切换当前队伍，从而与之前生产的兵种与建筑进行交互测试。
 
+
+
 ○关于游戏的说明：
 
 所有的建筑、兵种都拥有碰撞体积，无论是在行进中还是停止。
@@ -70,6 +81,7 @@ The final project of TJ SSE
 我们没有实现将攻击目标击杀后的自动搜寻目标，十分抱歉。请亲自点击目标进行攻击。
 
 虽然我们提供了拉选框，但是为了使实际效果符合预期，建议您控制每次拉选兵种个数控制在九个以下，并且避免选中多个兵种指向地图边缘或拥挤区域。
+
 
 碰撞体积与寻路的算法是对Potential Fields进行的魔改。具体参照：
 Using Potential Fields in a Real-time Strategy Game Scenario (Tutorial)————Johan Hagelbäck on January 31, 2009
