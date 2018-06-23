@@ -117,10 +117,7 @@ bool clientOperation(char *hostIp)
 	char order[] = "GET_HOST_IP";
 	char command[30];
 
-	if (SOCKET_ERROR == sendto(connectSocket, order, strlen(order), 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom)))
-	{
-		return false;
-	}
+	sendto(connectSocket, order, strlen(order), 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
 	while (true)
 	{
 		if (SOCKET_ERROR != recvfrom(connectSocket, command, 30, 0, reinterpret_cast<SOCKADDR*>(&sinFrom), &addrLen))
@@ -129,6 +126,7 @@ bool clientOperation(char *hostIp)
 			{
 				strcpy(hostIp, command);
 				sendto(connectSocket, "success", 8, 0, reinterpret_cast<sockaddr*>(&sinFrom), sizeof(sinFrom));
+				break;
 			}
 		}
 	}
