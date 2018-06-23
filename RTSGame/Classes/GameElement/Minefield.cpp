@@ -17,8 +17,8 @@ Minefield* Minefield::create(Vec2 position)
 		minefield->setPosition(position);
 		//属性设置
 		minefield->positionCurrent = position;
-		minefield->blood = 200;
-		minefield->bloodNow = 200;
+		minefield->blood = 2000;
+		minefield->bloodNow = 2000;
 		CreateTag++;
 		minefield->setTag(CreateTag);
 		//自动释放

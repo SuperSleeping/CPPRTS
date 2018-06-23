@@ -16,8 +16,8 @@ Warfactory* Warfactory::create(Vec2 position)
 		warfactory->setAnchorPoint(Vec2(0.5, 0.4));
 		warfactory->setPosition(position);
 		//属性设置
-		warfactory->blood = 200;
-		warfactory->bloodNow = 200;
+		warfactory->blood = 2000;
+		warfactory->bloodNow = 2000;
 		CreateTag++;
 		warfactory->setTag(CreateTag);
 		//自动释放

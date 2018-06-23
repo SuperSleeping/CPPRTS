@@ -10,8 +10,8 @@ Barrack::Barrack()
 {
 	this->initWithFile("Game/building/barrack.png");
 	this->setAnchorPoint(Vec2(0.5, 0.4));
-	this->blood = 200;
-	this->bloodNow = 200;
+	this->blood = 2000;
+	this->bloodNow = 2000;
 	
 	
 	

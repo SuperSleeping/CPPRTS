@@ -18,8 +18,8 @@ Powerplant* Powerplant::create(Vec2 position)
 		//属性设置
 		powerplant->selected = 0;
 		powerplant->positionCurrent = position;
-		powerplant->blood = 200;
-		powerplant->bloodNow = 200;
+		powerplant->blood = 2000;
+		powerplant->bloodNow = 2000;
 		CreateTag++;
 		powerplant->setTag(CreateTag);
 		//自动释放

@@ -173,7 +173,7 @@ bool Game::init()
 	auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	character->team = 1;
+	character->setTeam(1);
 	infantryGroup[character->team].push_back(character);
 	character->positionGoal = Vec2(20, 100);
 	character->setPosition(Vec2(200, 200));
@@ -183,7 +183,7 @@ bool Game::init()
 	CreateTag++;
 
 	auto building = Basement::create(convertFromTMToWorld(Vec2(20, 120)));
-	building->team = 1;
+	building->setTeam(1);
 	basementGroup[building->team].push_back(building);
 	game->addChild(building, 120);
 	BuildBlock(20, 120, 2);
@@ -580,6 +580,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		if (buildState == Building::BuildingType::BASEMENT)
 		{
 			auto building = Basement::create(position[tiledmapW]);
+			building->setTeam(myTeam);
 			basementGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
@@ -589,6 +590,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
 			auto building = Barrack::create(position[tiledmapW]);
+			building->setTeam(myTeam);
 			barrackGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
@@ -598,6 +600,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
 			auto building = Minefield::create(position[tiledmapW]);
+			building->setTeam(myTeam);
 			minefieldGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
@@ -607,6 +610,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
 			auto building = Powerplant::create(position[tiledmapW]);
+			building->setTeam(myTeam);
 			powerplantGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 1);
@@ -616,6 +620,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
 			auto building = Warfactory::create(position[tiledmapW]);
+			building->setTeam(myTeam);
 			warfactoryGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
@@ -1476,11 +1481,12 @@ void Game::buttonInfantry(Ref* pSender)
 	auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	character->team = 0;
+	character->setTeam(myTeam);
 	Gold[character->team] -= 500;
 	infantryGroup[character->team].push_back(character);
 	character->setTag(CreateTag);
 	CreateTag++;
+	log("%d Gold %d",myTeam, Gold[myTeam]);
 }
 
 void Game::buttonDog(Ref* pSender)
@@ -1488,7 +1494,7 @@ void Game::buttonDog(Ref* pSender)
 	auto character = Dog::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	character->team = 0;
+	character->setTeam(myTeam);
 	Gold[character->team] -= 500;
 	dogGroup[character->team].push_back(character);
 	character->setTag(CreateTag);
@@ -1497,15 +1503,15 @@ void Game::buttonDog(Ref* pSender)
 
 void Game::buttonTank(Ref* pSender)
 {
-	if (Gold[myTeam] < 1000)
+	/*if (Gold[myTeam] < 1000)
 	{
 		return;
-	}
+	}*/
 
 	auto character = Tank::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	character->team = 0;
+	character->setTeam(myTeam);
 	Gold[character->team] -= 1000;
 	tankGroup[character->team].push_back(character);
 	character->setTag(CreateTag);
@@ -1955,7 +1961,7 @@ void Character::updateMove(float di) {
 				bool neighbor = 0;
 				Characters[xx][yy] -= 700;
 				positionTarget = BestTarget;
-				MoveTo* move = MoveTo::create(0.1f, convertFromTMToWorld(BestTarget));
+				MoveTo* move = MoveTo::create(0.2f, convertFromTMToWorld(BestTarget));
 				this->runAction(move);
 				MapDestination[x][y] = -700;
 			}

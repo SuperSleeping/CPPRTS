@@ -15,7 +15,7 @@ class GameElement : public Sprite
 {
 public:
 	//创建GameElement的函数
-	static GameElement* create(const char* filename, Vec2 position, int team);
+	static GameElement* create(const char* filename, Vec2 position);
 
 	//绑定touch监听器
 	EventListenerTouchOneByOne * touchListener;

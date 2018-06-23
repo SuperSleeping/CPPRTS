@@ -18,7 +18,7 @@ public:
 	Character();
 
 	//Create Character
-	static Character* create(const char* filename, Vec2 position, int tm);
+	static Character* create(const char* filename, Vec2 position);
 
 	//人物类型
 	enum CharacterType
@@ -40,6 +40,40 @@ public:
 	float velocity;
 	//检测目标位置与当前位置后进行移动
 	void move();
+	
+	void setTeam(int tm)
+	{
+		team = tm;
+		bloodFrame = Sprite::create("Game/blood/characterBlood/bloodFrame.png");
+		{
+			switch (tm)
+			{
+			case 0:bloodPicture = ProgressTimer::create(Sprite::create("Game/blood/characterBlood/blood2.png"));
+				break;
+			case 1:bloodPicture = ProgressTimer::create(Sprite::create("Game/blood/characterBlood/blood1.png"));
+				break;
+			case 2:bloodPicture = ProgressTimer::create(Sprite::create("Game/blood/characterBlood/blood3.png"));
+				break;
+			case 3:bloodPicture = ProgressTimer::create(Sprite::create("Game/blood/characterBlood/blood4.png"));
+				break;
+			}
+			
+			//bloodPicture = Sprite::create("Game/character/blood.png");
+			//bloodPicture->setAnchorPoint(Vec2(0, 0));
+			bloodPicture->setPosition(Vec2(1, 1));
+
+			//this->addChild(blood);
+
+			bloodPicture->setAnchorPoint(Vec2(0, 0));
+			bloodPicture->setType(ProgressTimer::Type::BAR);
+			bloodPicture->setMidpoint(Vec2(0, 0.5f));
+			bloodPicture->setBarChangeRate(Vec2(1, 0));
+			bloodPicture->setPercentage(100);
+			bloodFrame->addChild(bloodPicture);
+			bloodFrame->setPositionNormalized(Vec2(0.5, 1.2));
+			this->addChild(bloodFrame, 1);
+		}
+	}
 
 	void beAttacked(int damage)
 	{

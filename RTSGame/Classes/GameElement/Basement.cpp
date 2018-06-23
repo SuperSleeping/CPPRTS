@@ -16,8 +16,8 @@ Basement* Basement::create(Vec2 position)
 		basement->setAnchorPoint(Vec2(0.5, 0.3));
 		basement->setPosition(position);
 		//属性设置
-		basement->blood = 200;
-		basement->bloodNow = 200;
+		basement->blood = 2000;
+		basement->bloodNow = 2000;
 		CreateTag++;
 		basement->setTag(CreateTag);
 		//自动释放
