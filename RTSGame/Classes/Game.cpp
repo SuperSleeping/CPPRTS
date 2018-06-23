@@ -309,6 +309,8 @@ bool Game::init()
 		menu->addChild(tank_button, 0);
 		menu->addChild(tankx_button, 1);
 
+		
+		
 		//²Ëµ¥·¶Î§
 		menuRect = Rect(visibleSize.x - 500, 0, 500, 200);
 
@@ -1607,31 +1609,55 @@ void Game::drawline()
 
 void Game::buttonBasement(Ref* pSender)
 {
+	if (Gold[myTeam] < 1000)
+	{
+		return;
+	}
 	buildState = Building::BuildingType::BASEMENT;
 }
 
 void Game::buttonBarrack(Ref* pSender)
 {
+	if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+	{
+		return;
+	}
 	buildState = Building::BuildingType::BARRACK;
 }
 
 void Game::buttonPowerplant(Ref* pSender)
 {
+	if (Gold[myTeam] < 1000)
+	{
+		return;
+	}
 	buildState = Building::BuildingType::POWERPLANT;
 }
 
 void Game::buttonMinefield(Ref* pSender)
 {
+	if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+	{
+		return;
+	}
 	buildState = Building::BuildingType::MINEFIELD;
 }
 
 void Game::buttonWarfactory(Ref* pSender)
 {
+	if (Gold[myTeam] < 2000 || Power[myTeam] < 100)
+	{
+		return;
+	}
 	buildState = Building::BuildingType::WARFACTORY;
 }
 
 void Game::buttonInfantry(Ref* pSender)
 {
+	if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
+	{
+		return;
+	}
 	if (!PlayMode)
 	{
 		createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 1));
@@ -1644,6 +1670,10 @@ void Game::buttonInfantry(Ref* pSender)
 
 void Game::buttonDog(Ref* pSender)
 {
+	if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
+	{
+		return;
+	}
 	if (!PlayMode)
 	{
 		createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 2));
@@ -2618,6 +2648,22 @@ void Game::onError(cocos2d::network::SIOClient *client, const std::string& data)
 }
 
 void Game::updateResources(float di) {
+	for (int s = 0; s < 4; s++)
+	{
+		int mf_number = 0;
+		for (auto minefield : minefieldGroup[s])
+		{
+			
+			if (!minefield->died)
+			{
+				Gold[s] += 50;
+				mf_number++;
+			}
+		}
+		minefield[s] = mf_number;
+	}
+	
+	
 	resources_gold->setString(to_string(Gold[myTeam]));
 	resources_gold_per_second->setString(to_string(minefield[myTeam] * 50) + " / second");
 	resources_power_avaliable->setString(to_string(Power[myTeam]));
