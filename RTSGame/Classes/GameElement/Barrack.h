@@ -3,6 +3,7 @@
 
 #include"Building.h"
 
+
 class Barrack : public Building
 {
 public:

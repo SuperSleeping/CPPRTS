@@ -1,5 +1,5 @@
 #include "Powerplant.h"
-
+#include"GameInformation.h"
 Powerplant::Powerplant()
 	:Building(POWERPLANT)
 {

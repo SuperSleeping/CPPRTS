@@ -3,22 +3,19 @@
 
 #include "cocos2d.h"
 #include <string>
+
 USING_NS_CC;
 
 const int DIRECTION[8][2] = {
 	{ -1,0 },{ -1,1 },{ 0,1 },{ 1,1 },{ 1,0 },{ 1,-1 } ,{ 0,-1 },{ -1,-1 }
 };
-static int CreateTag;
-static int myTeam = 0;
 
-static int Gold[4] = { 5000,5000,5000,5000 };
-static int Power[4] = { 0,0,0,0 };
 
 class GameElement : public Sprite
 {
 public:
 	//创建GameElement的函数
-	static GameElement* create(const char* filename, Vec2 position);
+	static GameElement* create(const char* filename, Vec2 position, int team);
 
 	//绑定touch监听器
 	EventListenerTouchOneByOne * touchListener;
@@ -27,26 +24,20 @@ public:
 	bool selected=0;
 	int team;
 	int prize;
-	int blood;
-	int bloodNow;
+	float blood;
+	float bloodNow;
 	bool died = 0;
 
-	void beAttacked(int damage)
+	void updateRemove(float di)
 	{
-		bloodNow -= damage;
-		bloodPicture->setScaleX(bloodNow / blood);
-		log("Blood : %d", bloodNow);
-		if (bloodNow <= 0)
-		{
-			died = 1;
-			this->removeFromParent();
-			this->selected = 0;
-		}
+		//this->removeFromParent();
 	}
+
+
 
 	//血条
 	Sprite* bloodFrame;
-	Sprite* bloodPicture;
+	ProgressTimer* bloodPicture;
 
 	Vec2 positionCurrent;
 	Vec2 positionCurrentTM;

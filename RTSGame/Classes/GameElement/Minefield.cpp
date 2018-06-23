@@ -1,4 +1,5 @@
 #include "Minefield.h"
+#include"GameInformation.h"
 Minefield::Minefield()
 	:Building(MINEFIELD)
 {

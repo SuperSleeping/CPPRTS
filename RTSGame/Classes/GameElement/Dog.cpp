@@ -1,5 +1,5 @@
 #include "Dog.h"
-
+#include"GameInformation.h"
 Dog* Dog::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分
@@ -17,8 +17,7 @@ Dog* Dog::create(Vec2 position)
 		dog->bloodNow = 80;
 		dog->prize = 150;
 		dog->velocity = 25;
-		CreateTag++;
-		dog->setTag(CreateTag);
+
 		dog->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
 		dog->schedule(schedule_selector(Character::updateAttack), 0.1f, kRepeatForever, 0.0f);
 		//自动释放

@@ -12,6 +12,8 @@
 #include"GameElement/Dog.h"
 #include"GameElement/Tank.h"
 
+#include"GameInformation.h"
+
 //建立vector储存gameElement
 //4个数组分别存放四个国家的兵力和建筑
 
@@ -165,15 +167,28 @@ bool Game::init()
 	occupiedRelatedCoordinateInitialize();
 	isBlockInitialize();
 
+	MapBlockBegin();
+	
 	//测试用攻击对象
 	auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	infantryGroup[1].push_back(character);
+	character->team = 1;
+	infantryGroup[character->team].push_back(character);
 	character->positionGoal = Vec2(20, 100);
 	character->setPosition(Vec2(200, 200));
 	character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0);
 	character->setMapDestination(Vec2(20, 100));
+	character->setTag(CreateTag);
+	CreateTag++;
+
+	auto building = Basement::create(convertFromTMToWorld(Vec2(20, 120)));
+	building->team = 1;
+	basementGroup[building->team].push_back(building);
+	game->addChild(building, 120);
+	BuildBlock(20, 120, 2);
+	building->setTag(CreateTag);
+	CreateTag++;
 
 	//菜单栏
 	{
@@ -269,7 +284,7 @@ bool Game::init()
 
 	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
-	MapBlockBegin();
+	
 
 
 
@@ -568,6 +583,8 @@ void Game::onMouseDown(cocos2d::Event* event)
 			basementGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
+			building->setTag(CreateTag);
+			CreateTag++;
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
@@ -575,6 +592,8 @@ void Game::onMouseDown(cocos2d::Event* event)
 			barrackGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
+			building->setTag(CreateTag);
+			CreateTag++;
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
@@ -582,6 +601,8 @@ void Game::onMouseDown(cocos2d::Event* event)
 			minefieldGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
+			building->setTag(CreateTag);
+			CreateTag++;
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
@@ -589,6 +610,8 @@ void Game::onMouseDown(cocos2d::Event* event)
 			powerplantGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 1);
+			building->setTag(CreateTag);
+			CreateTag++;
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
@@ -596,6 +619,8 @@ void Game::onMouseDown(cocos2d::Event* event)
 			warfactoryGroup[myTeam].push_back(building);
 			game->addChild(building, position[tiledmapTM].y);
 			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
+			building->setTag(CreateTag);
+			CreateTag++;
 		}
 		else
 		{
@@ -627,7 +652,8 @@ void Game::onMouseUp(cocos2d::Event* event)
 
 	//右键监控
 	//@排除右键操控
-	if (e->getMouseButton() == EventMouse::MouseButton::BUTTON_RIGHT)return;
+	if (e->getMouseButton() == EventMouse::MouseButton::BUTTON_RIGHT)
+		return;
 
 	enum { screen, world, tiledmapTM, tiledmapW };
 	Point position[4];
@@ -638,8 +664,10 @@ void Game::onMouseUp(cocos2d::Event* event)
 	int x = position[tiledmapTM].x;
 	int y = position[tiledmapTM].y;
 
-	log("%d", CreateTag);
-	//hcw
+
+
+
+
 	bool swallow = 0;
 
 
@@ -657,7 +685,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 			vector<Infantry*>::iterator iterInfantry;
 			for (iterInfantry = infantryGroup[s].begin(); iterInfantry != infantryGroup[s].end(); iterInfantry++)
 			{
-				if (rectContain(selectRect, (*iterInfantry)->getPosition()))
+				if (!(*iterInfantry)->died && rectContain(selectRect, (*iterInfantry)->getPosition()))
 				{
 					if ((*iterInfantry)->getZOrder() > zo)
 					{
@@ -698,7 +726,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 			vector<Dog*>::iterator iterDog;
 			for (iterDog = dogGroup[s].begin(); iterDog != dogGroup[s].end(); iterDog++)
 			{
-				if (rectContain(selectRect, (*iterDog)->getPosition()))
+				if (!(*iterDog)->died && rectContain(selectRect, (*iterDog)->getPosition()))
 				{
 					if ((*iterDog)->getZOrder() > zo)
 					{
@@ -736,9 +764,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 			}
 			//tank
 			vector<Tank*>::iterator iterTank;
-			for (iterTank = tankGroup[myTeam].begin(); iterTank != tankGroup[myTeam].end(); iterTank++)
+			for (iterTank = tankGroup[s].begin(); iterTank != tankGroup[s].end(); iterTank++)
 			{
-				if (rectContain(selectRect, (*iterTank)->getPosition()))
+				if (!(*iterTank)->died && rectContain(selectRect, (*iterTank)->getPosition()))
 				{
 					if ((*iterTank)->getZOrder() > zo)
 					{
@@ -776,6 +804,234 @@ void Game::onMouseUp(cocos2d::Event* event)
 			}
 		}
 
+		leftdown = Vec2(position[world].x - 48, position[world].y - 72);
+		size = Size(96, 96);
+		selectRect = Rect(leftdown, size);
+		for (int s = (myTeam + 1) % 2; s < 4; s += 2)
+		{
+
+
+			//遍历建筑
+
+			{
+				//int zo = 0;
+				//Basement
+				{
+					vector<Basement*>::iterator iterBasement;
+					for (iterBasement = basementGroup[s].begin(); iterBasement != basementGroup[s].end(); iterBasement++)
+					{
+						if (!(*iterBasement)->died && rectContain(selectRect, (*iterBasement)->getPosition()))
+						{
+							if ((*iterBasement)->getZOrder() > zo)
+							{
+								zo = (*iterBasement)->getZOrder();
+								for (Infantry* character : infantryGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterBasement)->getTag();
+										log("set tag: %d", (*iterBasement)->getTag());
+									}
+								}
+								for (Tank* character : tankGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterBasement)->getTag();
+										log("set tag: %d", (*iterBasement)->getTag());
+									}
+								}
+								for (Dog* character : dogGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterBasement)->getTag();
+										log("set tag: %d", (*iterBasement)->getTag());
+									}
+								}
+							}
+							swallow = 1;
+						}
+					}
+				}
+				//Minefield
+				{
+					vector<Minefield*>::iterator iterMinefield;
+					for (iterMinefield = minefieldGroup[s].begin(); iterMinefield != minefieldGroup[s].end(); iterMinefield++)
+					{
+						if (!(*iterMinefield)->died && rectContain(selectRect, (*iterMinefield)->getPosition()))
+						{
+							if ((*iterMinefield)->getZOrder() > zo)
+							{
+								zo = (*iterMinefield)->getZOrder();
+								for (Infantry* character : infantryGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterMinefield)->getTag();
+										log("set tag: %d", (*iterMinefield)->getTag());
+									}
+								}
+								for (Tank* character : tankGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterMinefield)->getTag();
+										log("set tag: %d", (*iterMinefield)->getTag());
+									}
+								}
+								for (Dog* character : dogGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterMinefield)->getTag();
+										log("set tag: %d", (*iterMinefield)->getTag());
+									}
+								}
+							}
+							swallow = 1;
+						}
+					}
+				}
+				//Barrack
+				{
+					vector<Barrack*>::iterator iterBarrack;
+					for (iterBarrack = barrackGroup[s].begin(); iterBarrack != barrackGroup[s].end(); iterBarrack++)
+					{
+						if (!(*iterBarrack)->died && rectContain(selectRect, (*iterBarrack)->getPosition()))
+						{
+							if ((*iterBarrack)->getZOrder() > zo)
+							{
+								zo = (*iterBarrack)->getZOrder();
+								for (Infantry* character : infantryGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterBarrack)->getTag();
+										log("set tag: %d", (*iterBarrack)->getTag());
+									}
+								}
+								for (Tank* character : tankGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterBarrack)->getTag();
+										log("set tag: %d", (*iterBarrack)->getTag());
+									}
+								}
+								for (Dog* character : dogGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterBarrack)->getTag();
+										log("set tag: %d", (*iterBarrack)->getTag());
+									}
+								}
+							}
+							swallow = 1;
+						}
+					}
+				}
+				//Warfactory
+				{
+					vector<Warfactory*>::iterator iterWarfactory;
+					for (iterWarfactory = warfactoryGroup[s].begin(); iterWarfactory != warfactoryGroup[s].end(); iterWarfactory++)
+					{
+						if (!(*iterWarfactory) && rectContain(selectRect, (*iterWarfactory)->getPosition()))
+						{
+							if ((*iterWarfactory)->getZOrder() > zo)
+							{
+								zo = (*iterWarfactory)->getZOrder();
+								for (Infantry* character : infantryGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterWarfactory)->getTag();
+										log("set tag: %d", (*iterWarfactory)->getTag());
+									}
+								}
+								for (Tank* character : tankGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterWarfactory)->getTag();
+										log("set tag: %d", (*iterWarfactory)->getTag());
+									}
+								}
+								for (Dog* character : dogGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterWarfactory)->getTag();
+										log("set tag: %d", (*iterWarfactory)->getTag());
+									}
+								}
+							}
+							swallow = 1;
+						}
+					}
+				}
+				//Powerplant
+				{
+					vector<Powerplant*>::iterator iterPowerplant;
+					//Powerplant尺寸比较小 重新判断
+					Point leftdown = Vec2(lastPress.x - 24, lastPress.y - 24);
+					Size size = Size(48, 48);
+					selectRect = Rect(leftdown, size);
+					for (iterPowerplant = powerplantGroup[s].begin(); iterPowerplant != powerplantGroup[s].end(); iterPowerplant++)
+					{
+						if (!(*iterPowerplant)->died && rectContain(selectRect, (*iterPowerplant)->getPosition()))
+						{
+							if ((*iterPowerplant)->getZOrder() > zo)
+							{
+								zo = (*iterPowerplant)->getZOrder();
+								for (Infantry* character : infantryGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterPowerplant)->getTag();
+										log("set tag: %d", (*iterPowerplant)->getTag());
+									}
+								}
+								for (Tank* character : tankGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterPowerplant)->getTag();
+										log("set tag: %d", (*iterPowerplant)->getTag());
+									}
+								}
+								for (Dog* character : dogGroup[myTeam])
+								{
+									if (character->selected)
+									{
+										character->stopAllActions();
+										character->attackTag = (*iterPowerplant)->getTag();
+										log("set tag: %d", (*iterPowerplant)->getTag());
+									}
+								}
+							}
+							swallow = 1;
+						}
+					}
+				}
+			}
+		}
+
 	}
 	/*for (Infantry* enemy_character : infantryGroup[(myTeam + 1) % 2])
 	{
@@ -804,7 +1060,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 				//character->positionGoal = position[tiledmapTM];
 				character->attackTag = 0;
 				character->setGoal(Safe(position[tiledmapTM]));
-				
+				log("%d", character->getTag());
 				//character->setMapDestination(position[tiledmapTM]);
 				//character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
 				//character->schedule(schedule_selector(Character::updateAttack), 0.01f, kRepeatForever, 0.0f);
@@ -1163,12 +1419,12 @@ void Game::onMouseUp(cocos2d::Event* event)
 
 
 
-	/*int a = position[tiledmapTM].x;
+	int a = position[tiledmapTM].x;
 	int b = position[tiledmapTM].y;
-	log("BD :%d", Buildings[a][b]);*/
+	log("BD :%d", Buildings[a][b]);
 
 	//排除菜单范围
-	if (rectContain(menuRect, position[screen]))return;
+
 
 }
 
@@ -1220,7 +1476,11 @@ void Game::buttonInfantry(Ref* pSender)
 	auto character = Infantry::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	infantryGroup[myTeam].push_back(character);
+	character->team = 0;
+	Gold[character->team] -= 500;
+	infantryGroup[character->team].push_back(character);
+	character->setTag(CreateTag);
+	CreateTag++;
 }
 
 void Game::buttonDog(Ref* pSender)
@@ -1228,15 +1488,28 @@ void Game::buttonDog(Ref* pSender)
 	auto character = Dog::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	dogGroup[myTeam].push_back(character);
+	character->team = 0;
+	Gold[character->team] -= 500;
+	dogGroup[character->team].push_back(character);
+	character->setTag(CreateTag);
+	CreateTag++;
 }
 
 void Game::buttonTank(Ref* pSender)
 {
+	if (Gold[myTeam] < 1000)
+	{
+		return;
+	}
+
 	auto character = Tank::create(selectedSpawnPoint);
 	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
 	game->addChild(character, z);
-	tankGroup[myTeam].push_back(character);
+	character->team = 0;
+	Gold[character->team] -= 1000;
+	tankGroup[character->team].push_back(character);
+	character->setTag(CreateTag);
+	CreateTag++;
 }
 
 void Game::buttonx(Ref* pSender)
@@ -1404,6 +1677,7 @@ void MapBlockBegin()
 
 void BuildBlock(int x, int y, int size)
 {
+	log("zz");
 	int q = 2;
 	if (size == 2)
 	{
@@ -1470,6 +1744,10 @@ void Game::updateMapCharacter(float di)
 	{
 		for (Infantry* infa : infantryGroup[i])
 		{
+			if (infa->died)
+			{
+				break;
+			}
 			int x = infa->positionNow.x;
 			int y = infa->positionNow.y;
 			Characters[x][y] -= 700;
@@ -1497,6 +1775,10 @@ void Game::updateMapCharacter(float di)
 		}
 		for (Dog* dog : dogGroup[i])
 		{
+			if (dog->died)
+			{
+				break;
+			}
 			int x = dog->positionNow.x;
 			int y = dog->positionNow.y;
 			Characters[x][y] -= 700;
@@ -1524,6 +1806,10 @@ void Game::updateMapCharacter(float di)
 		}
 		for (Tank* tank : tankGroup[i])
 		{
+			if (tank->died)
+			{
+				break;
+			}
 			int x = tank->positionNow.x;
 			int y = tank->positionNow.y;
 			Characters[x][y] -= 700;
@@ -1550,17 +1836,20 @@ void Game::updateMapCharacter(float di)
 			Characters[x - 1][y - 1]++;
 		}
 	}
-	
-	
+
+
 }
 
 void Character::updateMove(float di) {
-	
+	if (died)
+	{
+		return;
+	}
 	if (!this)
 	{
 		return;
 	}
-	
+
 	if (!this->getParent())
 	{
 		return;
@@ -1622,7 +1911,7 @@ void Character::updateMove(float di) {
 				{
 					best = MapCondition[x + DIRECTION[i][0]][y + DIRECTION[i][1]];
 					direction = i;
-					
+
 				}
 			}
 			if (formerValue > best)
@@ -1646,7 +1935,7 @@ void Character::updateMove(float di) {
 				for (int i = 0; i < 8; i++)
 				{
 
-					if (Characters[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 && 
+					if (Characters[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 &&
 						Buildings[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200 &&
 						Block[x_goal + DIRECTION[i][0]][y_goal + DIRECTION[i][1]] > -200)
 					{
@@ -1691,62 +1980,387 @@ void Character::updateMove(float di) {
 
 void Character::updateAttack(float di)
 {
-	
+	if (died)
+	{
+		return;
+	}
 	if (!attackTag)
 	{
 		stop = 0;
 		return;
 	}
-
-	for (Infantry* enemy_infa : infantryGroup[1])
+	for (int s = (this->team + 1) % 2; s < 4; s += 2)
 	{
-
-		if (enemy_infa->died)
+		for (Infantry* enemy : infantryGroup[s])
 		{
-			this->attackTag = 0;
-			return;
-		}
-		if (enemy_infa->getTag() == this->attackTag)
-		{
-			if (abs(this->positionNow.x - enemy_infa->positionNow.x) > attackDistance + 1 || abs(this->positionNow.y - enemy_infa->positionNow.y) > attackDistance + 1)
+			if (enemy->getTag() == this->attackTag)
 			{
-				//this->positionGoal = enemy_infa->positionNow;
-				if (this->positionGoal != enemy_infa->positionNow)
+				if (enemy->died)
 				{
-					this->setGoal(enemy_infa->positionNow);
+					this->attackTag = 0;
+					return;
 				}
+				if (abs(this->positionNow.x - enemy->positionNow.x) > attackDistance + 1 || abs(this->positionNow.y - enemy->positionNow.y) > attackDistance + 1)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionNow)
+					{
+						this->setGoal(enemy->positionNow);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
 
-				/*if (positionNow.x < enemy_infa->positionNow.x)
-				{
-					positionGoal.x = enemy_infa->positionNow.x - 2;
 				}
-				if (positionNow.x > enemy_infa->positionNow.x)
-				{
-					positionGoal.x = enemy_infa->positionNow.x + 2;
-				}
-				if (positionNow.y < enemy_infa->positionNow.y)
-				{
-					positionGoal.y = enemy_infa->positionNow.y - 2;
-				}
-				if (positionNow.y > enemy_infa->positionNow.y)
-				{
-					positionGoal.y = enemy_infa->positionNow.y - 2;
-				}*/
 			}
-			else
+		}
+		for (Tank* enemy : tankGroup[s])
+		{
+			if (enemy->getTag() == this->attackTag)
 			{
-				
-				this->attackInterval = this->attackInterval % 5;
-				if (this->attackInterval == 0)
+				if (enemy->died)
 				{
-					log("atk");
-					//this->positionGoal = positionNow;
-					this->setGoal(positionNow);
-					stop = 1;
-					//enemy_infa->beAttacked(this->attack);
+					this->attackTag = 0;
+					return;
 				}
-				this->attackInterval++;
-				
+				if (abs(this->positionNow.x - enemy->positionNow.x) > attackDistance + 1 || abs(this->positionNow.y - enemy->positionNow.y) > attackDistance + 1)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionNow)
+					{
+						this->setGoal(enemy->positionNow);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+		}
+		for (Dog* enemy : dogGroup[s])
+		{
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionNow.x) > attackDistance + 1 || abs(this->positionNow.y - enemy->positionNow.y) > attackDistance + 1)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionNow)
+					{
+						this->setGoal(enemy->positionNow);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+		}
+		for (Barrack* enemy : barrackGroup[s])
+		{
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+		}
+		for (Warfactory* enemy : warfactoryGroup[s])
+		{
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+		}
+		for (Powerplant* enemy : powerplantGroup[s])
+		{
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+		}
+		for (Basement* enemy : basementGroup[s])
+		{
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+		}
+		for (Minefield* enemy : minefieldGroup[s])
+		{
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
+			}
+			if (enemy->getTag() == this->attackTag)
+			{
+				if (enemy->died)
+				{
+					this->attackTag = 0;
+					return;
+				}
+				if (abs(this->positionNow.x - enemy->positionCurrentTM.x) > attackDistance + 3 || abs(this->positionNow.y - enemy->positionCurrentTM.y) > attackDistance + 3)
+				{
+					//this->positionGoal = enemy_infa->positionNow;
+					if (this->positionGoal != enemy->positionCurrentTM)
+					{
+						this->setGoal(enemy->positionCurrentTM);
+					}
+				}
+				else
+				{
+					this->attackInterval = this->attackInterval % 5;
+					if (this->attackInterval == 0)
+					{
+						log("atk");
+						this->setGoal(positionNow);
+						stop = 1;
+						enemy->beAttacked(this->attack);
+					}
+					this->attackInterval++;
+
+				}
 			}
 		}
 	}
@@ -1758,14 +2372,17 @@ void Game::updateZOrder(float di)
 	{
 		for (auto infa : infantryGroup[i])
 		{
+			if(!infa->died)
 			infa->setZOrder(infa->positionNow.y);
 		}
 		for (auto dog : dogGroup[i])
 		{
+			if(!dog->died)
 			dog->setZOrder(dog->positionNow.y);
 		}
 		for (auto tank : tankGroup[i])
 		{
+			if(!tank->died)
 			tank->setZOrder(tank->positionNow.y);
 		}
 	}

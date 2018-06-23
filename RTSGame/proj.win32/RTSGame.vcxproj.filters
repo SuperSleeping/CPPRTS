@@ -127,6 +127,7 @@
       <Filter>src\GameElement\Character</Filter>
     </ClInclude>
     <ClInclude Include="Outline.h" />
+    <ClInclude Include="..\Classes\GameInformation.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

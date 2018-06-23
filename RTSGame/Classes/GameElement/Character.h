@@ -18,7 +18,7 @@ public:
 	Character();
 
 	//Create Character
-	static Character* create(const char* filename, Vec2 position);
+	static Character* create(const char* filename, Vec2 position, int tm);
 
 	//人物类型
 	enum CharacterType
@@ -40,6 +40,22 @@ public:
 	float velocity;
 	//检测目标位置与当前位置后进行移动
 	void move();
+
+	void beAttacked(int damage)
+	{
+		bloodNow -= damage;
+		bloodPicture->setPercentage(bloodNow/blood*100);
+		log("Blood : %d", bloodNow);
+		if (bloodNow <= 0)
+		{
+			died = 1;
+			this->selected = 0;
+			//this->setZOrder(-100);
+			//log("%f",this->getZOrder());
+			this->removeAllChildren();
+			this->initWithFile("remove.png");
+		}
+	}
 
 	void setGoal(Vec2 goal) {
 		this->stop = 0;

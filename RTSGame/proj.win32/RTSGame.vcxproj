@@ -183,6 +183,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameElement\Powerplant.h" />
     <ClInclude Include="..\Classes\GameElement\Tank.h" />
     <ClInclude Include="..\Classes\GameElement\Warfactory.h" />
+    <ClInclude Include="..\Classes\GameInformation.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\Setting.h" />
     <ClInclude Include="main.h" />

@@ -1,5 +1,5 @@
 #include "Basement.h"
-
+#include"GameInformation.h"
 Basement::Basement()
 	:Building(BASEMENT)
 {

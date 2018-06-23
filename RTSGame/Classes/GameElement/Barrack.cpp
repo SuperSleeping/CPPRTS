@@ -1,5 +1,5 @@
 #include "Barrack.h"
-
+#include"GameInformation.h"
 extern void BuildBlock(int x, int y, int size);
 //extern int Buildings[118][138];
 extern Point convertToTiledMap(Point pt);

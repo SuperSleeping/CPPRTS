@@ -1,5 +1,5 @@
 #include "Tank.h"
-
+#include"GameInformation.h"
 extern int CreateTag;
 
 Tank* Tank::create(Vec2 position)
@@ -21,8 +21,7 @@ Tank* Tank::create(Vec2 position)
 		tank->attackDistance = 5;
 		tank->prize = 250;
 		tank->velocity = 15;
-		CreateTag++;
-		tank->setTag(CreateTag);
+
 		tank->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
 		tank->schedule(schedule_selector(Character::updateAttack), 0.1f, kRepeatForever, 0.0f);
 		//×Ô¶¯ÊÍ·Å

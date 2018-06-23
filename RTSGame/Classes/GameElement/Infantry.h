@@ -9,6 +9,7 @@ public:
 	//Create Character
 	static Infantry* create(Vec2 position);
 
+	
 
 };
 

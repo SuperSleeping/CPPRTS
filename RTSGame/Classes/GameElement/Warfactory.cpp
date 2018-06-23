@@ -1,5 +1,5 @@
 #include "Warfactory.h"
-
+#include"GameInformation.h"
 Warfactory::Warfactory()
 	:Building(WARFACTORY)
 {

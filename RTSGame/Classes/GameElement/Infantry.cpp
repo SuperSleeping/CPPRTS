@@ -1,5 +1,5 @@
 #include "Infantry.h"
-
+#include"GameInformation.h"
 Infantry* Infantry::create(Vec2 position)
 {
 	//创建GameElement中类似Sprite的部分
@@ -18,12 +18,12 @@ Infantry* Infantry::create(Vec2 position)
 		infantry->prize = 120;
 		infantry->velocity = 10;
 		//自动释放
-		CreateTag++;
-		infantry->setTag(CreateTag);
+		
+		
 
 		infantry->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0.0f);
 		infantry->schedule(schedule_selector(Character::updateAttack), 0.1f, kRepeatForever, 0.0f);
-
+		
 
 		infantry->autorelease();
 		return infantry;
