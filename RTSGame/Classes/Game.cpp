@@ -165,7 +165,8 @@ bool Game::init()
 	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
 	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();
+	visibleSize = Director::getInstance()->getVisibleSize();
+	auto VisibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	//Ìí¼Ó²ã(?)
@@ -329,7 +330,7 @@ bool Game::init()
 	auto content = RichText::create();
 	content->setContentSize(Size(400, 200));
 	content->ignoreContentAdaptWithSize(false);
-	content->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
+	content->setPosition(Vec2(origin.x + VisibleSize.width / 2, origin.y + VisibleSize.height / 2));
 	content->setTag(112);
 	this->addChild(content);
 	//auto text = RichElementText::create(1, Color3B::RED, 255, "Hi!", "Arial", 20);
@@ -339,7 +340,7 @@ bool Game::init()
 	auto chatbox = EditBox::create(Size(400, 20), Scale9Sprite::create("editbox.jpg"));
 	chatbox->setPlaceHolder("Press Enter to chat: ");
 	chatbox->setFontColor(Color3B::BLACK);
-	chatbox->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
+	chatbox->setPosition(Vec2(origin.x + VisibleSize.width / 2, origin.y + VisibleSize.height / 2));
 	chatbox->setTag(111);
 	chatbox->setVisible(false);
 	chatbox->setInputMode(EditBox::InputMode::SINGLE_LINE);
