@@ -69,6 +69,9 @@ Label* resources_gold_per_second;
 Label* resources_power_avaliable;
 Label* resources_power_sum;
 Label* my_team_mate;
+
+Sprite* miniMap;
+Sprite* miniRec;
 //地图信息
 
 //地图
@@ -180,6 +183,15 @@ bool Game::init()
 
 	rectangle = DrawNode::create();
 	tiledmap->addChild(rectangle, 100);
+
+	miniMap = Sprite::create("Game/minimap/minimap.png");
+	miniMap->setAnchorPoint(Vec2(0, 0));
+	this->addChild(miniMap, 800);
+	miniRec = Sprite::create("Game/minimap/mini.png");
+	this->addChild(miniRec, 1000);
+	miniRec->setAnchorPoint(Vec2(0, 0));
+	miniRec->setPosition(Vec2(0, 0));
+
 
 	//基本信息、尺寸、坐标信息初始化
 
@@ -359,7 +371,7 @@ bool Game::init()
 	this->scheduleUpdate();
 	this->schedule(schedule_selector(Game::updateMapCharacter), 0.01f, kRepeatForever, 0);
 	this->schedule(schedule_selector(Game::updateZOrder), 0.1f, kRepeatForever, 0);
-
+	this->schedule(schedule_selector(Game::updateMinimap), 0.05f, kRepeatForever, 0);
 	return true;
 }
 
@@ -404,6 +416,11 @@ void Game::onMouseMove(cocos2d::Event* event)
 
 	Vec2 position = e->getLocationInView();
 	Vec2 positionWorld = convertToMapLayer(position);
+
+	if (position.x < 472 && position.y < 276)
+	{
+		return;
+	}
 
 	//视野移动
 	if (!rectContain(menuRect, position))
@@ -627,6 +644,31 @@ void Game::onMouseDown(cocos2d::Event* event)
 	position[world] = convertToMapLayer(position[screen]);
 	position[tiledmapTM] = convertToNeightborTiledMap(position[world]);
 	position[tiledmapW] = convertFromTMToWorld(position[tiledmapTM]);
+
+	//小地图
+	if (position[screen].x < 472 && position[screen].y < 276)
+	{
+		log("%f %f", tiledmap->getAnchorPoint().x, tiledmap->getAnchorPoint().y);
+		Vec2 recPosition = position[screen] - Vec2(800 / 12, 450 / 12);
+		if (recPosition.x < 0)
+		{
+			recPosition.x = 0;
+		}
+		if (recPosition.y < 0)
+		{
+			recPosition.y = 0;
+		}
+		if (recPosition.x > 472 - 1600 / 12)
+		{
+			recPosition.x = 472 - 1600 / 12;
+		}
+		if (recPosition.y > 276 - 900 / 12)
+		{
+			recPosition.y = 276 - 900 / 12;
+		}
+		miniRec->setPosition(recPosition);
+		tiledmap->setPosition((Vec2(472, 276) - Vec2(recPosition) * 12) - Vec2(472, 276));
+	}
 
 	//排除菜单范围
 	if (rectContain(menuRect, position[screen]))return;
@@ -925,7 +967,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 			}
 		}
 
-		
+
 		for (int s = (myTeam + 1) % 2; s < 4; s += 2)
 		{
 			leftdown = Vec2(position[world].x - 48, position[world].y - 72);
@@ -1970,6 +2012,7 @@ void Game::menuReturn(cocos2d::Ref* pSender)
 {
 
 }
+
 void MapBlockBegin()
 {
 	for (int i = 0; i < 118; i++) {
@@ -2045,6 +2088,312 @@ void BuildBlock(int x, int y, int size)
 		Buildings[x + 1][y - 1] = -1400;
 		Buildings[x + 1][y + 1] = -1400;
 
+	}
+}
+
+void Game::updateMinimap(float di)
+{
+	miniMap->removeAllChildren();
+	miniRec->setPosition(-((tiledmap->getPosition()/12 + Vec2(472, 276))  - Vec2(472, 276)));
+	//玩家green
+	{
+		for (auto character : infantryGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildinggreen.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276-(character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : dogGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildinggreen.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276-(character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : tankGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildinggreen.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276-(character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : basementGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minigreen.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : barrackGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minigreen.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : minefieldGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minigreen.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : powerplantGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minigreen.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : warfactoryGroup[0])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minigreen.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+	}
+	//玩家red
+	{
+		for (auto character : infantryGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingred.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : dogGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingred.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : tankGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingred.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : basementGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minired.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : barrackGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minired.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : minefieldGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minired.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : powerplantGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minired.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : warfactoryGroup[1])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minired.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+	}
+	//玩家blue
+	{
+		for (auto character : infantryGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingblue.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : dogGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingblue.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : tankGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingblue.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : basementGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/miniblue.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : barrackGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/miniblue.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : minefieldGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/miniblue.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : powerplantGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/miniblue.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : warfactoryGroup[2])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/miniblue.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+	}
+	//玩家purple
+	{
+		for (auto character : infantryGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingpurple.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : dogGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingpurple.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : tankGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/buildingpurple.png");
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : basementGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minipurple.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : barrackGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minipurple.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : minefieldGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minipurple.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : powerplantGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minipurple.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
+		for (auto character : warfactoryGroup[3])
+		{
+			if (!character->died)
+			{
+				auto mini = Sprite::create("Game/minimap/minipurple.png");
+				mini->setPosition(Vec2((character->positionCurrentTM).x * 4, 276 - (character->positionCurrentTM).y * 2));
+				miniMap->addChild(mini, 1);
+			}
+		}
 	}
 }
 

@@ -210,6 +210,7 @@ public:
 
 	void updateMapCharacter(float di);
 	void updateZOrder(float di);
+	void updateMinimap(float di);
 	
 	//³¡¾°ÇÐ»»
 	void menuReturn(cocos2d::Ref* pSender);
