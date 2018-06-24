@@ -79,7 +79,7 @@ public:
 	{
 		bloodNow -= damage;
 		bloodPicture->setPercentage(bloodNow/blood*100);
-		log("Blood : %d", bloodNow);
+		log("Blood : %f", bloodNow);
 		if (bloodNow <= 0)
 		{
 			died = 1;

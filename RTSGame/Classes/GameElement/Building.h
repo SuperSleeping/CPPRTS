@@ -66,7 +66,7 @@ public:
 	{
 		bloodNow -= damage;
 		bloodPicture->setPercentage(bloodNow / blood * 100);
-		log("Blood : %d   %d", bloodNow, blood);
+		log("Blood : %f   %f", bloodNow, blood);
 		log("perc %f", bloodNow / blood * 100);
 		if (bloodNow <= 0)
 		{

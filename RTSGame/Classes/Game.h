@@ -151,6 +151,7 @@ public:
 	void onMouseMove(cocos2d::Event* event);
 	void onMouseDown(cocos2d::Event* event);
 	void onMouseUp(cocos2d::Event* event);
+	void onKeyReleased(EventKeyboard::KeyCode keyCode,cocos2d::Event* event);
 
 	//@框选范围
 	Point firstPress;
@@ -182,7 +183,7 @@ public:
 	MenuItemImage* dogx_button;
 	MenuItemImage* tank_button;
 	MenuItemImage* tankx_button;
-
+	MenuItemImage* teamchange_button;
 	//@创建建筑/人物
 	//@BUILDING - 描述建筑状态和建筑信息
 	int BUILDING;
@@ -195,6 +196,7 @@ public:
 	void buttonInfantry(Ref* pSender);
 	void buttonDog(Ref* pSender);
 	void buttonTank(Ref* pSender);
+	void buttonTeamchange(Ref* pSender);
 
 	void buttonx(Ref* pSender);
 

@@ -18,6 +18,8 @@
 
 #include"GameInformation.h"
 
+
+
 #include<string>
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -66,6 +68,7 @@ Label* resources_gold;
 Label* resources_gold_per_second;
 Label* resources_power_avaliable;
 Label* resources_power_sum;
+Label* my_team_mate;
 //地图信息
 
 //地图
@@ -198,7 +201,6 @@ bool Game::init()
 	this->addChild(resources_gold, 400);
 	resources_gold->setPosition(Vec2(1400, 880));
 
-
 	resources_gold_per_second = Label::create("", "Arial", 20);
 	this->addChild(resources_gold_per_second, 400);
 	resources_gold_per_second->setPosition(Vec2(1500, 880));
@@ -210,6 +212,10 @@ bool Game::init()
 	resources_power_sum = Label::create("", "Arial", 20);
 	this->addChild(resources_power_sum, 400);
 	resources_power_sum->setPosition(Vec2(1500, 860));
+
+	my_team_mate = Label::create("", "Arial", 20);
+	this->addChild(my_team_mate, 400);
+	my_team_mate->setPosition(Vec2(1400, 840));
 
 	this->schedule(schedule_selector(Game::updateResources), 1.0f, kRepeatForever, 0);
 
@@ -256,7 +262,7 @@ bool Game::init()
 		dogx_button = MenuItemImage::create("Game/button/dog_button2.png", "Game/button/dog_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		tank_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonTank, this));
 		tankx_button = MenuItemImage::create("Game/button/tank_button2.png", "Game/button/tank_button2.png", CC_CALLBACK_1(Game::buttonx, this));
-
+		teamchange_button = MenuItemImage::create("Game/button/teamchange_button.png", "Game/button/teamchange_button.png", CC_CALLBACK_1(Game::buttonTeamchange, this));
 		//锚点坐标设置
 		basement_button->setAnchorPoint(Vec2(0, 0));
 		basementx_button->setAnchorPoint(Vec2(0, 0));
@@ -274,6 +280,7 @@ bool Game::init()
 		dogx_button->setAnchorPoint(Vec2(0, 0));
 		tank_button->setAnchorPoint(Vec2(0, 0));
 		tankx_button->setAnchorPoint(Vec2(0, 0));
+		teamchange_button->setAnchorPoint(Vec2(0, 0));
 		//坐标设置
 		basement_button->setPosition(Vec2(0, 0));
 		basementx_button->setPosition(Vec2(0, 0));
@@ -291,6 +298,7 @@ bool Game::init()
 		dogx_button->setPosition(Vec2(300, 100));
 		tank_button->setPosition(Vec2(400, 100));
 		tankx_button->setPosition(Vec2(400, 100));
+		teamchange_button->setPosition(Vec2(400, 200));
 		//按钮加入菜单
 		menu->addChild(basement_button, 0);
 		menu->addChild(basementx_button, 1);
@@ -308,9 +316,10 @@ bool Game::init()
 		menu->addChild(dogx_button, 1);
 		menu->addChild(tank_button, 0);
 		menu->addChild(tankx_button, 1);
+		menu->addChild(teamchange_button, 1);
 
-		
-		
+
+
 		//菜单范围
 		menuRect = Rect(visibleSize.x - 500, 0, 500, 200);
 
@@ -323,13 +332,15 @@ bool Game::init()
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
 	//@鼠标移动到边界的时候屏幕移动
 	auto mouseListener = EventListenerMouse::create();
-
+	auto keyboardListener = EventListenerKeyboard::create();
 
 	mouseListener->onMouseMove = CC_CALLBACK_1(Game::onMouseMove, this);
 	mouseListener->onMouseDown = CC_CALLBACK_1(Game::onMouseDown, this);
 	mouseListener->onMouseUp = CC_CALLBACK_1(Game::onMouseUp, this);
+	keyboardListener->onKeyReleased = CC_CALLBACK_2(Game::onKeyReleased, this);
 
 	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
+	dispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 
 
 
@@ -733,7 +744,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 	bool swallow = 0;
 
 
-	//遍历人物		//设成攻击目标
+	//遍历	//设成攻击目标
 	{
 		//由于人物比较小，所以改变selectedRect的大小
 		Point leftdown = Vec2(position[world].x - 10, position[world].y - 30);
@@ -814,7 +825,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 						{
 							if (character->selected)
 							{
-								
+
 								if (!PlayMode)
 								{
 									attackRespone(SpawnDatastring(myTeam, 'a', character->getTag(), (*iterDog)->getTag()));
@@ -914,12 +925,12 @@ void Game::onMouseUp(cocos2d::Event* event)
 			}
 		}
 
-		leftdown = Vec2(position[world].x - 48, position[world].y - 72);
-		size = Size(96, 96);
-		selectRect = Rect(leftdown, size);
+		
 		for (int s = (myTeam + 1) % 2; s < 4; s += 2)
 		{
-
+			leftdown = Vec2(position[world].x - 48, position[world].y - 72);
+			size = Size(96, 96);
+			selectRect = Rect(leftdown, size);
 
 			//遍历建筑攻击
 
@@ -1157,9 +1168,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 				{
 					vector<Powerplant*>::iterator iterPowerplant;
 					//Powerplant尺寸比较小 重新判断
-					Point leftdown = Vec2(lastPress.x - 24, lastPress.y - 24);
+					/*Point leftdown = Vec2(lastPress.x - 24, lastPress.y - 24);
 					Size size = Size(48, 48);
-					selectRect = Rect(leftdown, size);
+					selectRect = Rect(leftdown, size);*/
 					for (iterPowerplant = powerplantGroup[s].begin(); iterPowerplant != powerplantGroup[s].end(); iterPowerplant++)
 					{
 						if (!(*iterPowerplant)->died && rectContain(selectRect, (*iterPowerplant)->getPosition()))
@@ -1233,7 +1244,7 @@ void Game::onMouseUp(cocos2d::Event* event)
 				{
 					sioClient->send(SpawnDatastring(myTeam, 'm', character->getTag(), Safe(position[tiledmapTM]).x, Safe(position[tiledmapTM]).y));
 				}
-				
+
 
 
 			}
@@ -1606,6 +1617,123 @@ void Game::drawline()
 /***************/
 //菜单button
 /***************/
+void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
+{
+	log("getre");
+	switch (keyCode) {
+	case EventKeyboard::KeyCode::KEY_Q:				//Q 大兵
+	{
+		if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
+		{
+			return;
+		}
+		if (!PlayMode)
+		{
+			createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 1));
+		}
+		else
+		{
+			sioClient->send(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 1));
+		}
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_W:				//W 警犬
+	{
+		if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
+		{
+			return;
+		}
+		if (!PlayMode)
+		{
+			createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 2));
+		}
+		else
+		{
+			sioClient->send(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 2));
+		}
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_E:				//E 坦克
+	{
+		if (warfactory[myTeam] == 0 || Gold[myTeam] < 1000)
+		{
+			return;
+		}
+		if (!PlayMode)
+		{
+			createRespone(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 3));
+		}
+		else
+		{
+			sioClient->send(SpawnDatastring(myTeam, 'c', selectedSpawnPoint.x, selectedSpawnPoint.y, 3));
+		}
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_A:				//A 基地
+	{
+		if (Gold[myTeam] < 1000)
+		{
+			return;
+		}
+		buildState = Building::BuildingType::BASEMENT;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_S:				//S 兵营
+	{
+		if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+		{
+			return;
+		}
+		buildState = Building::BuildingType::BARRACK;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_D:				//D 电厂
+	{
+		if (Gold[myTeam] < 1000)
+		{
+			return;
+		}
+		buildState = Building::BuildingType::POWERPLANT;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_F:				//F 矿厂
+	{
+		if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+		{
+			return;
+		}
+		buildState = Building::BuildingType::MINEFIELD;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_G:				//G 战车工厂
+	{
+		if (Gold[myTeam] < 2000 || Power[myTeam] < 100)
+		{
+			return;
+		}
+		buildState = Building::BuildingType::WARFACTORY;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_Z:				//Z 换队
+	{
+		if (PlayMode)
+		{
+			return;
+		}
+		myTeam = (myTeam + 1) % 4;
+		break;
+	}
+	}
+}
+
+void Game::buttonTeamchange(Ref* pSender)
+{
+	if (PlayMode)
+	{
+		return;
+	}
+	myTeam = (myTeam + 1) % 4;
+}
 
 void Game::buttonBasement(Ref* pSender)
 {
@@ -2653,7 +2781,7 @@ void Game::updateResources(float di) {
 		int mf_number = 0;
 		for (auto minefield : minefieldGroup[s])
 		{
-			
+
 			if (!minefield->died)
 			{
 				Gold[s] += 50;
@@ -2662,12 +2790,29 @@ void Game::updateResources(float di) {
 		}
 		minefield[s] = mf_number;
 	}
-	
-	
+
+
 	resources_gold->setString(to_string(Gold[myTeam]));
 	resources_gold_per_second->setString(to_string(minefield[myTeam] * 50) + " / second");
 	resources_power_avaliable->setString(to_string(Power[myTeam]));
 	resources_power_sum->setString("/ " + to_string(powerplant[myTeam] * 100));
+
+	switch (myTeam)
+	{
+	case 0:
+		my_team_mate->setString("    Team: Green   Mate: Blue");
+		break;
+	case 1:
+		my_team_mate->setString("    Team: Red   Mate: Purple");
+		break;
+	case 2:
+		my_team_mate->setString("    Team: Blue   Mate: Green");
+		break;
+	case 3:
+		my_team_mate->setString("    Team: Purple   Mate: Red");
+		break;
+	}
+
 }
 
 void Game::attackRespone(const std::string &data) {
@@ -2693,6 +2838,7 @@ void Game::attackRespone(const std::string &data) {
 		a++;
 	}
 	tgt_tag = atoi(tgt);
+	log("settag: %d", tgt_tag);
 	for (Infantry* character : infantryGroup[Player])
 	{
 		if (character->getTag() == atk_tag)
@@ -2861,7 +3007,7 @@ void Game::createRespone(const std::string &data) {
 		Gold[character->team] -= 500;
 		infantryGroup[character->team].push_back(character);
 		character->setTag(CreateTag);
-		CreateTag++; 
+		CreateTag++;
 		break; }
 	case 2: {
 		auto character = Dog::create(Vec2(x, y));
@@ -2871,7 +3017,7 @@ void Game::createRespone(const std::string &data) {
 		Gold[character->team] -= 500;
 		dogGroup[character->team].push_back(character);
 		character->setTag(CreateTag);
-		CreateTag++; 
+		CreateTag++;
 		break; }
 
 	case 3: {
