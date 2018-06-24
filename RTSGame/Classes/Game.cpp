@@ -157,9 +157,9 @@ bool Game::init()
 		return false;
 	}
 
-	/*std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
+	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
 	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
-	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));*/
+	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
 
 	visibleSize = Director::getInstance()->getVisibleSize();
 
@@ -232,26 +232,7 @@ bool Game::init()
 	this->schedule(schedule_selector(Game::updateResources), 1.0f, kRepeatForever, 0);
 
 
-	//测试用攻击对象		//似乎会导致关闭时的内存泄漏
-	/*auto character = Infantry::create(selectedSpawnPoint);
-	int z = convertToNeightborTiledMap(selectedSpawnPoint).y;
-	game->addChild(character, z);
-	character->setTeam(1);
-	infantryGroup[character->team].push_back(character);
-	character->positionGoal = Vec2(20, 100);
-	character->setPosition(Vec2(200, 200));
-	character->schedule(schedule_selector(Character::updateMove), 0.01f, kRepeatForever, 0);
-	character->setMapDestination(Vec2(20, 100));
-	character->setTag(CreateTag);
-	CreateTag++;
 
-	auto building = Basement::create(convertFromTMToWorld(Vec2(20, 120)));
-	building->setTeam(1);
-	basementGroup[building->team].push_back(building);
-	game->addChild(building, 120);
-	BuildBlock(20, 120, 2);
-	building->setTag(CreateTag);
-	CreateTag++;*/
 
 	//菜单栏
 	{
@@ -668,6 +649,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 		}
 		miniRec->setPosition(recPosition);
 		tiledmap->setPosition((Vec2(472, 276) - Vec2(recPosition) * 12) - Vec2(472, 276));
+		return;
 	}
 
 	//排除菜单范围
@@ -679,63 +661,65 @@ void Game::onMouseDown(cocos2d::Event* event)
 		//根据状态新建不同的GameElement并推入相应队伍的vector中
 		if (buildState == Building::BuildingType::BASEMENT)
 		{
-			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 1));
+			if (!PlayMode)
+			{
+				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 1));
+			}
+			else
+			{
+				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 1));
+			}
 
-			/*auto building = Basement::create(position[tiledmapW]);
-			building->setTeam(myTeam);
-			basementGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
-			building->setTag(CreateTag);
-			CreateTag++;*/
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
-			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 2));
+			if (!PlayMode)
+			{
+				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 2));
+			}
+			else
+			{
+				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 2));
+			}
 
-			/*auto building = Barrack::create(position[tiledmapW]);
-			building->setTeam(myTeam);
-			barrackGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
-			building->setTag(CreateTag);
-			CreateTag++;*/
+
+
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
-			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 3));
+			if (!PlayMode)
+			{
+				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 3));
+			}
+			else
+			{
+				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 3));
+			}
 
-			/*auto building = Minefield::create(position[tiledmapW]);
-			building->setTeam(myTeam);
-			minefieldGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
-			building->setTag(CreateTag);
-			CreateTag++;*/
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
-			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
+			if (!PlayMode) 
+			{
+				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
+			}
+			else 
+			{
+				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
+			}
 
-			/*auto building = Powerplant::create(position[tiledmapW]);
-			building->setTeam(myTeam);
-			powerplantGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 1);
-			building->setTag(CreateTag);
-			CreateTag++;*/
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
-			buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
+			if (!PlayMode)
+			{
+				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
+			}
+			else 
+			{
+				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
+			}
 
-			/*auto building = Warfactory::create(position[tiledmapW]);
-			building->setTeam(myTeam);
-			warfactoryGroup[myTeam].push_back(building);
-			game->addChild(building, position[tiledmapTM].y);
-			BuildBlock(position[tiledmapTM].x, position[tiledmapTM].y, 2);
-			building->setTag(CreateTag);
-			CreateTag++;*/
 		}
 		else
 		{
@@ -763,6 +747,9 @@ void Game::onMouseDown(cocos2d::Event* event)
 
 void Game::onMouseUp(cocos2d::Event* event)
 {
+	log("playmode %d", PlayMode);
+	log("myteam %d", myTeam);
+
 	EventMouse* e = (EventMouse*)event;
 
 	//右键监控
@@ -2094,7 +2081,7 @@ void BuildBlock(int x, int y, int size)
 void Game::updateMinimap(float di)
 {
 	miniMap->removeAllChildren();
-	miniRec->setPosition(-((tiledmap->getPosition()/12 + Vec2(472, 276))  - Vec2(472, 276)));
+	miniRec->setPosition(-((tiledmap->getPosition() / 12 + Vec2(472, 276)) - Vec2(472, 276)));
 	//玩家green
 	{
 		for (auto character : infantryGroup[0])
@@ -2102,7 +2089,7 @@ void Game::updateMinimap(float di)
 			if (!character->died)
 			{
 				auto mini = Sprite::create("Game/minimap/buildinggreen.png");
-				mini->setPosition(Vec2((character->positionNow).x * 4, 276-(character->positionNow).y * 2));
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
 				miniMap->addChild(mini, 1);
 			}
 		}
@@ -2111,7 +2098,7 @@ void Game::updateMinimap(float di)
 			if (!character->died)
 			{
 				auto mini = Sprite::create("Game/minimap/buildinggreen.png");
-				mini->setPosition(Vec2((character->positionNow).x * 4, 276-(character->positionNow).y * 2));
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
 				miniMap->addChild(mini, 1);
 			}
 		}
@@ -2120,7 +2107,7 @@ void Game::updateMinimap(float di)
 			if (!character->died)
 			{
 				auto mini = Sprite::create("Game/minimap/buildinggreen.png");
-				mini->setPosition(Vec2((character->positionNow).x * 4, 276-(character->positionNow).y * 2));
+				mini->setPosition(Vec2((character->positionNow).x * 4, 276 - (character->positionNow).y * 2));
 				miniMap->addChild(mini, 1);
 			}
 		}
@@ -3083,6 +3070,7 @@ void Game::numberClientEvent(cocos2d::network::SIOClient *client, const std::str
 	log("%s", data.c_str());
 	int number = atoi(data.c_str());
 	myTeam = number;
+	PlayMode = 1;
 	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number);
 	log("myteam: %d", myTeam);
 	return;
@@ -3220,7 +3208,7 @@ void Game::attackRespone(const std::string &data) {
 
 void Game::buildRespone(const std::string &data) {
 	//log("create");
-	int index = 0;
+	int index = PlayMode;
 	int Player = data[index] - 48;
 	char x_c[4];
 	char y_c[4];
@@ -3387,7 +3375,7 @@ void Game::createRespone(const std::string &data) {
 }
 
 void Game::moveRespone(const std::string &data) {
-	int index = 0;
+	int index = PlayMode;
 	int Player = data[index] - 48;
 	char tag_c[5];
 	char x_c[4];
