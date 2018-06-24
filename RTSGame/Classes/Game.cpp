@@ -3118,7 +3118,10 @@ void Game::numberClientEvent(cocos2d::network::SIOClient *client, const std::str
 {
 	log("Client Called");
 	log("%s", data.c_str());
-	int number = atoi(data.c_str());
+	std::string num = data;
+	num.erase(0, 1);
+	num.pop_back();
+	int number = atoi(num.c_str());
 	PlayMode = 1;
 	myTeam = number % 4;
 	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number % 4);
