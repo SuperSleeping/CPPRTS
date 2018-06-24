@@ -1744,7 +1744,7 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 	}
 	case EventKeyboard::KeyCode::KEY_S:				//S 兵营
 	{
-		if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+		if (Gold[myTeam] < 1000 || Power[myTeam] < 50 || basement[myTeam] == 0)
 		{
 			return;
 		}
@@ -1753,7 +1753,7 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 	}
 	case EventKeyboard::KeyCode::KEY_D:				//D 电厂
 	{
-		if (Gold[myTeam] < 1000)
+		if (Gold[myTeam] < 1000 || basement[myTeam] == 0)
 		{
 			return;
 		}
@@ -1762,7 +1762,7 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 	}
 	case EventKeyboard::KeyCode::KEY_F:				//F 矿厂
 	{
-		if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+		if (Gold[myTeam] < 1000 || Power[myTeam] < 50 || basement[myTeam] == 0)
 		{
 			return;
 		}
@@ -1771,7 +1771,7 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 	}
 	case EventKeyboard::KeyCode::KEY_G:				//G 战车工厂
 	{
-		if (Gold[myTeam] < 2000 || Power[myTeam] < 100)
+		if (Gold[myTeam] < 2000 || Power[myTeam] < 100 || basement[myTeam] == 0)
 		{
 			return;
 		}
@@ -1810,7 +1810,7 @@ void Game::buttonBasement(Ref* pSender)
 
 void Game::buttonBarrack(Ref* pSender)
 {
-	if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+	if (Gold[myTeam] < 1000 || Power[myTeam] < 50 || basement[myTeam] == 0)
 	{
 		return;
 	}
@@ -1819,7 +1819,7 @@ void Game::buttonBarrack(Ref* pSender)
 
 void Game::buttonPowerplant(Ref* pSender)
 {
-	if (Gold[myTeam] < 1000)
+	if (Gold[myTeam] < 1000 || basement[myTeam] == 0)
 	{
 		return;
 	}
@@ -1828,7 +1828,7 @@ void Game::buttonPowerplant(Ref* pSender)
 
 void Game::buttonMinefield(Ref* pSender)
 {
-	if (Gold[myTeam] < 1000 || Power[myTeam] < 50)
+	if (Gold[myTeam] < 1000 || Power[myTeam] < 50 || basement[myTeam] == 0)
 	{
 		return;
 	}
@@ -1837,7 +1837,7 @@ void Game::buttonMinefield(Ref* pSender)
 
 void Game::buttonWarfactory(Ref* pSender)
 {
-	if (Gold[myTeam] < 2000 || Power[myTeam] < 100)
+	if (Gold[myTeam] < 2000 || Power[myTeam] < 100 || basement[myTeam] == 0)
 	{
 		return;
 	}
