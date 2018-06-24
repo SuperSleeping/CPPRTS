@@ -488,7 +488,41 @@ void Game::onMouseMove(cocos2d::Event* event)
 
 		//检测碰撞(OKtobuilt)
 		positionWorld = convertToNeightborTiledMap(positionWorld);
+		Point possiblePosition = convertFromTMToWorld(positionWorld);
 		OKtobuilt = 1 - readOccupiedTile(positionWorld, buildState);
+		//@能建造范围划分(OKtobuilt)
+		if (myTeam == 0)
+		{
+			Rect buildPlace = Rect(0, 0, 2832, 1656);
+			if (!rectContain(buildPlace, possiblePosition))
+			{
+				OKtobuilt = false;
+			}
+		}
+		else if (myTeam == 1)
+		{
+			Rect buildPlace = Rect(2832, 1656, 2832, 1656);
+			if (!rectContain(buildPlace, possiblePosition))
+			{
+				OKtobuilt = false;
+			}
+		}
+		else if (myTeam == 2)
+		{
+			Rect buildPlace = Rect(0, 1656, 2832, 1656);
+			if (!rectContain(buildPlace, possiblePosition))
+			{
+				OKtobuilt = false;
+			}
+		}
+		else
+		{
+			Rect buildPlace = Rect(2832, 0, 2832, 1656);
+			if (!rectContain(buildPlace, possiblePosition))
+			{
+				OKtobuilt = false;
+			}
+		}
 
 		//创建随鼠标移动的图片精灵
 		if (buildState == Building::BuildingType::BASEMENT)
@@ -553,7 +587,6 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 
 		//在瓦片地图上定位 探测可能安放的位置
-		Point possiblePosition = convertFromTMToWorld(positionWorld);
 		BuildingPictureWithMouse->setPosition(possiblePosition);
 		BuildingPictureWithMouse->setOpacity(150);
 		tiledmap->addChild(BuildingPictureWithMouse, 100);
