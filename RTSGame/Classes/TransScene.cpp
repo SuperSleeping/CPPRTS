@@ -1,10 +1,12 @@
 #include"TransScene.h"
 #include"SimpleAudioEngine.h"
 #include"Game.h"
+#include "WaitingScene.h"
 #include "UDP.h"
 #include <stdlib.h>
 #include <Windows.h>
 #include <direct.h>
+
 
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -55,7 +57,21 @@ bool TransScene::init()
 	Menu *mn = Menu::create(newitem,joinitem,returnitem,nullptr);
 	mn->alignItemsVerticallyWithPadding(25);
 	mn->setPosition(Vec2(origin.x + visibleSize.width*2/3, origin.y + visibleSize.height / 2));
+	mn->setTag(123);
 	this->addChild(mn);
+
+	MenuItemImage *twoItem = MenuItemImage::create("menu/2P.png", "menu/2P.png", CC_CALLBACK_1(TransScene::twoCallback, this));
+	MenuItemImage *fourItem = MenuItemImage::create("menu/4P.png", "menu/4P.png", CC_CALLBACK_1(TransScene::fourCallback, this));
+	MenuItemImage *backItem = MenuItemImage::create("menu/return.png", "menu/return.png", CC_CALLBACK_1(TransScene::backCallback, this));
+	twoItem->setScale(0.5);
+	fourItem->setScale(0.5);
+	backItem->setScale(0.5);
+	Menu *mm = Menu::create(twoItem, fourItem, backItem, nullptr);
+	mm->alignItemsVerticallyWithPadding(25);
+	mm->setPosition(Vec2(origin.x + visibleSize.width * 2 / 3, origin.y + visibleSize.height / 2));
+	mm->setVisible(false);
+	mm->setTag(321);
+	this->addChild(mm);
 
 	//music
 	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
@@ -78,10 +94,15 @@ void TransScene::newCallback(Ref* pSender)
 	strcat(hostIp, ":3000");
 	log("%s", hostIp);
 	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
-	int number = 2;								//加入游戏的玩家人数。允许玩家设置为2或4
+	auto mm = this->getChildByTag(321);
+	auto mn = this->getChildByTag(123);
+	mn->setVisible(false);
+	mm->setVisible(true);
+	/*int number = 2;								//加入游戏的玩家人数。允许玩家设置为2或4
+	UserDefault::getInstance()->setIntegerForKey(PLAYERS, number);
 	serverOperation(number);
 	auto sc = Game::createScene();
-	Director::getInstance()->replaceScene(sc);
+	Director::getInstance()->replaceScene(sc);*/
 	return;
 }
 
@@ -90,8 +111,9 @@ void TransScene::joinCallback(Ref* pSender)
 	char hostIp[30];
 	clientOperation(hostIp);
 	strcat(hostIp, ":3000");
+	log("%s",hostIp);
 	UserDefault::getInstance()->setStringForKey(HOST_IP, hostIp);
-	auto sc = Game::createScene();
+	auto sc = WaitingScene::createScene();
 	Director::getInstance()->replaceScene(sc);
 	return;
 }
@@ -99,4 +121,35 @@ void TransScene::joinCallback(Ref* pSender)
 void TransScene::returnCallback(Ref* pSender)
 {
 	Director::getInstance()->popScene();
+}
+
+void TransScene::backCallback(Ref *pSender)
+{
+	auto mn = this->getChildByTag(123);
+	auto mm = this->getChildByTag(321);
+	mm->setVisible(false);
+	mn->setVisible(true);
+	return;
+}
+
+void TransScene::twoCallback(Ref* pSender)
+{
+	UserDefault::getInstance()->setIntegerForKey(PLAYERS, 2);
+	std::thread server(serverOperation, 2);
+	server.detach();
+	//serverOperation(2);
+	auto sc = WaitingScene::createScene();
+	Director::getInstance()->replaceScene(sc);
+	return;
+}
+
+void TransScene::fourCallback(Ref *pSender)
+{
+	UserDefault::getInstance()->setIntegerForKey(PLAYERS, 4);
+	std::thread server(serverOperation, 2);
+	server.detach();
+	//serverOperation(4);
+	auto sc = WaitingScene::createScene();
+	Director::getInstance()->replaceScene(sc);
+	return;
 }
