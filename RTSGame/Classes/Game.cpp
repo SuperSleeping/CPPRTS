@@ -165,7 +165,8 @@ bool Game::init()
 	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
 	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
 
-	visibleSize = Director::getInstance()->getVisibleSize();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	//添加层(?)
 	//////#############################################################################!!!!!!!!解决一下回调函数监听器什么的捆绑在哪个node上的问题
@@ -323,6 +324,30 @@ bool Game::init()
 
 		menuLayer->addChild(menu);
 	}
+
+	//content
+	auto content = RichText::create();
+	content->setContentSize(Size(400, 200));
+	content->ignoreContentAdaptWithSize(false);
+	content->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
+	content->setTag(112);
+	this->addChild(content);
+	//auto text = RichElementText::create(1, Color3B::RED, 255, "Hi!", "Arial", 20);
+	//content->pushBackElement(text);
+
+	//chat
+	auto chatbox = EditBox::create(Size(400, 20), Scale9Sprite::create("editbox.jpg"));
+	chatbox->setPlaceHolder("Press Enter to chat: ");
+	chatbox->setFontColor(Color3B::BLACK);
+	chatbox->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
+	chatbox->setTag(111);
+	chatbox->setVisible(false);
+	chatbox->setInputMode(EditBox::InputMode::SINGLE_LINE);
+	this->addChild(chatbox);
+
+	auto sendMessage = EventListenerKeyboard::create();
+	sendMessage->onKeyPressed = CC_CALLBACK_2(Game::sendCallback, this);
+	_eventDispatcher->addEventListenerWithFixedPriority(sendMessage, 1);
 
 	//触发事件
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
@@ -3124,6 +3149,20 @@ void Game::numberClientEvent(cocos2d::network::SIOClient *client, const std::str
 	int number = atoi(num.c_str());
 	PlayMode = 1;
 	myTeam = number % 4;
+	switch (myTeam)
+	{
+	case 0:
+		break;
+	case 2:
+		tiledmap->setPosition(Vec2(0, -2412));
+		break;
+	case 1:
+		tiledmap->setPosition(Vec2(-4064, 0));
+		break;
+	case 3:
+		tiledmap->setPosition(Vec2(-4064, -2412));
+		break;
+	}
 	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number % 4);
 	log("myteam: %d", myTeam);
 	return;
@@ -3134,9 +3173,39 @@ void Game::onConnect(cocos2d::network::SIOClient *client)
 	return;
 }
 
+void Game::sendCallback(EventKeyboard::KeyCode keyCode, Event *event)
+{
+	auto editbox = reinterpret_cast<EditBox*>(this->getChildByTag(111));
+	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER)
+	{
+		if (!editbox->isVisible())
+		{
+			editbox->setVisible(true);
+		}
+		else
+		{
+			int playerNumber = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
+			std::string message = std::to_string(playerNumber);
+			std::string playerName = UserDefault::getInstance()->getStringForKey(USER_NAME, "User");
+			std::string content = editbox->getText();
+			if (content.length())
+			{
+				message = message + " p" + playerName + ":" + content;
+				editbox->setText("");
+				sioClient->send(message);
+			}
+			editbox->setVisible(false);
+		}
+	}
+	return;
+}
+
 void Game::onMessage(cocos2d::network::SIOClient *client, const std::string& data)
 {
-	if (data[3] == 'c') {
+	if (data[3] == 'p') {
+		chatResponse(data);
+	}
+	else if (data[3] == 'c') {
 		createRespone(data);
 	}
 	else if (data[3] == 'b') {
@@ -3162,6 +3231,40 @@ void Game::onClose(cocos2d::network::SIOClient *client)
 
 void Game::onError(cocos2d::network::SIOClient *client, const std::string& data)
 {
+	return;
+}
+
+void Game::chatResponse(const std::string& data)
+{
+	static int i = 0;
+	/*根据data[0]决定添加富文本的颜色暂时懒得实现*/
+	auto content = reinterpret_cast<RichText*>(this->getChildByTag(112));
+	int mSide = data[1];
+	int mySide = UserDefault::getInstance()->getIntegerForKey(PLAYER_NUMBER);
+	//提取聊天内容
+	std::string message = data;
+	message.erase(0, 4);
+	message.pop_back();
+	log("%s", message.c_str());
+	if (mSide % 2 == mySide % 2)
+	{
+		auto re1 = RichElementNewLine::create(-1, Color3B::WHITE, 255);
+		auto re2 = RichElementText::create(i, Color3B::WHITE, 255, message, "Arial", 20);
+		content->pushBackElement(re1);
+		content->pushBackElement(re2);
+	}
+	else
+	{
+		auto re1 = RichElementNewLine::create(-1, Color3B::RED, 255);
+		auto re2 = RichElementText::create(i, Color3B::RED, 255, message, "Arial", 20);
+		content->pushBackElement(re1);
+		content->pushBackElement(re2);
+	}
+	i++;
+	if (i > 4)
+	{
+		content->removeElement(i - 5);
+	}
 	return;
 }
 

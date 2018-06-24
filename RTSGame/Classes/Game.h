@@ -28,6 +28,8 @@ public:
 	virtual void onClose(cocos2d::network::SIOClient *client);
 	virtual void onError(cocos2d::network::SIOClient *client, const std::string& data);
 	
+	void sendCallback(EventKeyboard::KeyCode keyCode, Event *event);
+	void chatResponse(const std::string& data);
 	void attackRespone(const std::string &data);
 	void moveRespone(const std::string &data);
 	void createRespone(const std::string &data);
