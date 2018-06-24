@@ -64,6 +64,8 @@ string SpawnDatastring(int Player, char type, int n, int m, int t);
 int money;
 int electricity;
 
+bool tab = 1;
+
 Label* resources_gold;
 Label* resources_gold_per_second;
 Label* resources_power_avaliable;
@@ -72,6 +74,8 @@ Label* my_team_mate;
 
 Sprite* miniMap;
 Sprite* miniRec;
+
+Animation* attackAnimation;
 //地图信息
 
 //地图
@@ -230,7 +234,6 @@ bool Game::init()
 	my_team_mate->setPosition(Vec2(1400, 840));
 
 	this->schedule(schedule_selector(Game::updateResources), 1.0f, kRepeatForever, 0);
-
 
 
 
@@ -398,9 +401,12 @@ void Game::onMouseMove(cocos2d::Event* event)
 	Vec2 position = e->getLocationInView();
 	Vec2 positionWorld = convertToMapLayer(position);
 
-	if (position.x < 472 && position.y < 276)
+	if (tab)
 	{
-		return;
+		if (position.x < 472 && position.y < 276)
+		{
+			return;
+		}
 	}
 
 	//视野移动
@@ -627,29 +633,32 @@ void Game::onMouseDown(cocos2d::Event* event)
 	position[tiledmapW] = convertFromTMToWorld(position[tiledmapTM]);
 
 	//小地图
-	if (position[screen].x < 472 && position[screen].y < 276)
+	if (tab)
 	{
-		log("%f %f", tiledmap->getAnchorPoint().x, tiledmap->getAnchorPoint().y);
-		Vec2 recPosition = position[screen] - Vec2(800 / 12, 450 / 12);
-		if (recPosition.x < 0)
+		if (position[screen].x < 472 && position[screen].y < 276)
 		{
-			recPosition.x = 0;
+			log("%f %f", tiledmap->getAnchorPoint().x, tiledmap->getAnchorPoint().y);
+			Vec2 recPosition = position[screen] - Vec2(800 / 12, 450 / 12);
+			if (recPosition.x < 0)
+			{
+				recPosition.x = 0;
+			}
+			if (recPosition.y < 0)
+			{
+				recPosition.y = 0;
+			}
+			if (recPosition.x > 472 - 1600 / 12)
+			{
+				recPosition.x = 472 - 1600 / 12;
+			}
+			if (recPosition.y > 276 - 900 / 12)
+			{
+				recPosition.y = 276 - 900 / 12;
+			}
+			miniRec->setPosition(recPosition);
+			tiledmap->setPosition((Vec2(472, 276) - Vec2(recPosition) * 12) - Vec2(472, 276));
+			return;
 		}
-		if (recPosition.y < 0)
-		{
-			recPosition.y = 0;
-		}
-		if (recPosition.x > 472 - 1600 / 12)
-		{
-			recPosition.x = 472 - 1600 / 12;
-		}
-		if (recPosition.y > 276 - 900 / 12)
-		{
-			recPosition.y = 276 - 900 / 12;
-		}
-		miniRec->setPosition(recPosition);
-		tiledmap->setPosition((Vec2(472, 276) - Vec2(recPosition) * 12) - Vec2(472, 276));
-		return;
 	}
 
 	//排除菜单范围
@@ -699,11 +708,11 @@ void Game::onMouseDown(cocos2d::Event* event)
 		}
 		else if (buildState == Building::BuildingType::POWERPLANT)
 		{
-			if (!PlayMode) 
+			if (!PlayMode)
 			{
 				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
 			}
-			else 
+			else
 			{
 				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
 			}
@@ -715,7 +724,7 @@ void Game::onMouseDown(cocos2d::Event* event)
 			{
 				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
 			}
-			else 
+			else
 			{
 				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
 			}
@@ -1650,8 +1659,26 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 {
 	log("getre");
 	switch (keyCode) {
+	case EventKeyboard::KeyCode::KEY_TAB:
+	{
+		tab = !tab;
+		if (miniMap->getZOrder() > 100)
+		{
+			miniMap->setZOrder(-1);
+			miniRec->setZOrder(-1);
+		}
+		else
+		{
+			miniMap->setZOrder(800);
+			miniRec->setZOrder(1000);
+		}
+	}
 	case EventKeyboard::KeyCode::KEY_Q:				//Q 大兵
 	{
+		if (selectedType != Building::BARRACK)
+		{
+			return;
+		}
 		if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
 		{
 			return;
@@ -1668,6 +1695,10 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 	}
 	case EventKeyboard::KeyCode::KEY_W:				//W 警犬
 	{
+		if (selectedType != Building::BARRACK)
+		{
+			return;
+		}
 		if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
 		{
 			return;
@@ -1684,6 +1715,10 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 	}
 	case EventKeyboard::KeyCode::KEY_E:				//E 坦克
 	{
+		if (selectedType != Building::WARFACTORY)
+		{
+			return;
+		}
 		if (warfactory[myTeam] == 0 || Gold[myTeam] < 1000)
 		{
 			return;
@@ -1811,6 +1846,11 @@ void Game::buttonWarfactory(Ref* pSender)
 
 void Game::buttonInfantry(Ref* pSender)
 {
+
+	if (selectedType != Building::BARRACK)
+	{
+		return;
+	}
 	if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
 	{
 		return;
@@ -1827,6 +1867,11 @@ void Game::buttonInfantry(Ref* pSender)
 
 void Game::buttonDog(Ref* pSender)
 {
+
+	if (selectedType != Building::BARRACK)
+	{
+		return;
+	}
 	if (barrack[myTeam] == 0 || Gold[myTeam] < 500)
 	{
 		return;
@@ -1843,6 +1888,11 @@ void Game::buttonDog(Ref* pSender)
 
 void Game::buttonTank(Ref* pSender)
 {
+
+	if (selectedType != Building::WARFACTORY)
+	{
+		return;
+	}
 	if (warfactory[myTeam] == 0 || Gold[myTeam] < 1000)
 	{
 		return;
