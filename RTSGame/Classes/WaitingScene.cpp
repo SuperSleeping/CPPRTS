@@ -54,9 +54,12 @@ void WaitingScene::onMessage(cocos2d::network::SIOClient *client, const std::str
 	}
 	else
 	{
-		/*切换进入下一个场景*/
-		auto sc = Game::create();
-		Director::getInstance()->replaceScene(sc);
+		if (strcmp(message.c_str(), "begin") == 0)
+		{
+			/*切换进入下一个场景*/
+			auto sc = Game::create();
+			Director::getInstance()->replaceScene(sc);
+		}
 	}
 	return;
 }
