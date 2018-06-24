@@ -74,7 +74,7 @@ public:
 			this->selected = 0;
 			//this->setZOrder(-100);
 			//log("%f",this->getZOrder());
-			this->removeAllChildren();
+			//this->removeAllChildren();
 			this->initWithFile("Game/building/diedbuilding.png");
 		}
 	}

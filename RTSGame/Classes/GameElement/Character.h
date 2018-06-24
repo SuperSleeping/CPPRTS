@@ -86,8 +86,9 @@ public:
 			this->selected = 0;
 			//this->setZOrder(-100);
 			//log("%f",this->getZOrder());
-			this->removeAllChildren();
-			this->initWithFile("remove.png");
+			this->setZOrder(-1);
+			//this->removeAllChildren();
+			//this->initWithFile("remove.png");
 		}
 	}
 
