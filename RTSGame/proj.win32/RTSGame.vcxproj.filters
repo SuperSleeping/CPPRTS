@@ -39,7 +39,6 @@
     <ClCompile Include="..\Classes\TransScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Game.cpp" />
     <ClCompile Include="..\Classes\GameElement\Barrack.cpp">
       <Filter>GameElement</Filter>
     </ClCompile>
@@ -73,6 +72,12 @@
     <ClCompile Include="..\Classes\GameElement\Warfactory.cpp">
       <Filter>GameElement</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\WaitingScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Game.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -102,7 +107,6 @@
     <ClInclude Include="..\Classes\TransScene.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Game.h" />
     <ClInclude Include="..\Classes\GameInformation.h" />
     <ClInclude Include="..\Classes\GameElement\Barrack.h">
       <Filter>GameElement</Filter>
@@ -136,6 +140,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameElement\Warfactory.h">
       <Filter>GameElement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\WaitingScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Game.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

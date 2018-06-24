@@ -17,6 +17,9 @@ public:
 	void newCallback(Ref* pSender);
 	void joinCallback(Ref* pSender);
 	void returnCallback(Ref* pSender);
+	void twoCallback(Ref* pSender);
+	void fourCallback(Ref* pSender);
+	void backCallback(Ref* pSender);
 
 	CREATE_FUNC(TransScene);
 };

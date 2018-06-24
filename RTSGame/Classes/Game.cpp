@@ -154,9 +154,9 @@ bool Game::init()
 		return false;
 	}
 
-	/*std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
+	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
 	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
-	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));*/
+	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
 
 	visibleSize = Director::getInstance()->getVisibleSize();
 
@@ -2733,8 +2733,8 @@ void Game::numberClientEvent(cocos2d::network::SIOClient *client, const std::str
 	log("Client Called");
 	log("%s", data.c_str());
 	int number = atoi(data.c_str());
-	myTeam = number;
-	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number);
+	myTeam = number % 4;
+	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number % 4);
 	log("myteam: %d", myTeam);
 	return;
 }

@@ -7,5 +7,6 @@
 #define USER_NAME "user_name"
 #define HOST_IP "host_ip"
 #define PLAYER_NUMBER "player_number"
+#define PLAYERS "players"
 
 #endif // !_USER_DEFAULT_
