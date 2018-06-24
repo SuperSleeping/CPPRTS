@@ -51,10 +51,16 @@ bool TransScene::init()
 		"menu/return.png",
 		CC_CALLBACK_1(TransScene::returnCallback, this));
 
+	MenuItemImage *singleitem = MenuItemImage::create(
+		"menu/single.png",
+		"menu/single.png",
+		CC_CALLBACK_1(TransScene::singleCallback, this));
+
 	newitem->setScale(0.5);
 	joinitem->setScale(0.5);
 	returnitem->setScale(0.5);
-	Menu *mn = Menu::create(newitem,joinitem,returnitem,nullptr);
+	singleitem->setScale(0.5);
+	Menu *mn = Menu::create(singleitem,newitem,joinitem,returnitem,nullptr);
 	mn->alignItemsVerticallyWithPadding(25);
 	mn->setPosition(Vec2(origin.x + visibleSize.width*2/3, origin.y + visibleSize.height / 2));
 	mn->setTag(123);
@@ -116,6 +122,12 @@ void TransScene::joinCallback(Ref* pSender)
 	auto sc = WaitingScene::createScene();
 	Director::getInstance()->replaceScene(sc);
 	return;
+}
+
+void TransScene::singleCallback(Ref* pSender)
+{
+	auto game = Game::createScene();
+	Director::getInstance()->replaceScene(game);
 }
 
 void TransScene::returnCallback(Ref* pSender)

@@ -3284,6 +3284,13 @@ void Game::updateResources(float di) {
 		minefield[s] = mf_number;
 	}
 
+	if (!PlayMode) 
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			Gold[i] = 99999;
+		}
+	}
 
 	resources_gold->setString(to_string(Gold[myTeam]));
 	resources_gold_per_second->setString(to_string(minefield[myTeam] * 50) + " / second");

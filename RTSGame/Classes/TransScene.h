@@ -20,6 +20,7 @@ public:
 	void twoCallback(Ref* pSender);
 	void fourCallback(Ref* pSender);
 	void backCallback(Ref* pSender);
+	void singleCallback(Ref* pSender);
 
 	CREATE_FUNC(TransScene);
 };
