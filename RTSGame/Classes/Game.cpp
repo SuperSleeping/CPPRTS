@@ -3237,7 +3237,7 @@ void Game::onError(cocos2d::network::SIOClient *client, const std::string& data)
 
 void Game::chatResponse(const std::string& data)
 {
-	static int i = 0;
+	static int mesNumber = 0;
 	/*根据data[0]决定添加富文本的颜色暂时懒得实现*/
 	auto content = reinterpret_cast<RichText*>(this->getChildByTag(112));
 	int mSide = data[1];
@@ -3250,21 +3250,21 @@ void Game::chatResponse(const std::string& data)
 	if (mSide % 2 == mySide % 2)
 	{
 		auto re1 = RichElementNewLine::create(-1, Color3B::WHITE, 255);
-		auto re2 = RichElementText::create(i, Color3B::WHITE, 255, message, "Arial", 20);
+		auto re2 = RichElementText::create(mesNumber, Color3B::WHITE, 255, message, "Arial", 20);
 		content->pushBackElement(re1);
 		content->pushBackElement(re2);
 	}
 	else
 	{
 		auto re1 = RichElementNewLine::create(-1, Color3B::RED, 255);
-		auto re2 = RichElementText::create(i, Color3B::RED, 255, message, "Arial", 20);
+		auto re2 = RichElementText::create(mesNumber, Color3B::RED, 255, message, "Arial", 20);
 		content->pushBackElement(re1);
 		content->pushBackElement(re2);
 	}
-	i++;
-	if (i > 4)
+	mesNumber++;
+	if (mesNumber > 4)
 	{
-		content->removeElement(i - 5);
+		content->removeElement(mesNumber - 5);
 	}
 	return;
 }
