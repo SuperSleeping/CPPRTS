@@ -238,85 +238,50 @@ bool Game::init()
 	this->schedule(schedule_selector(Game::updateResources), 1.0f, kRepeatForever, 0);
 
 
-
 	//菜单栏
 	{
 		menu = Menu::create();
 		//按钮的z坐标决定图像和触发函数 z坐标较大的图像显示在上层 但是先调用的是z坐标较小的函数
 		//解决办法是改变按钮是否可按的状态
 		basement_button = MenuItemImage::create("Game/button/basement_button1.png", "Game/button/basement_button3.png", CC_CALLBACK_1(Game::buttonBasement, this));
-		basementx_button = MenuItemImage::create("Game/button/basement_button2.png", "Game/button/basement_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		barrack_button = MenuItemImage::create("Game/button/barrack_button1.png", "Game/button/barrack_button3.png", CC_CALLBACK_1(Game::buttonBarrack, this));
-		barrackx_button = MenuItemImage::create("Game/button/barrack_button2.png", "Game/button/barrack_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		powerplant_button = MenuItemImage::create("Game/button/powerplant_button1.png", "Game/button/powerplant_button3.png", CC_CALLBACK_1(Game::buttonPowerplant, this));
-		powerplantx_button = MenuItemImage::create("Game/button/powerplant_button2.png", "Game/button/powerplant_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		minefield_button = MenuItemImage::create("Game/button/minefield_button1.png", "Game/button/minefield_button3.png", CC_CALLBACK_1(Game::buttonMinefield, this));
-		minefieldx_button = MenuItemImage::create("Game/button/minefield_button2.png", "Game/button/minefield_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		warfactory_button = MenuItemImage::create("Game/button/warfactory_button1.png", "Game/button/warfactory_button3.png", CC_CALLBACK_1(Game::buttonWarfactory, this));
-		warfactoryx_button = MenuItemImage::create("Game/button/warfactory_button2.png", "Game/button/warfactory_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		infantry_button = MenuItemImage::create("Game/button/infantry_button1.png", "Game/button/infantry_button3.png", CC_CALLBACK_1(Game::buttonInfantry, this));
-		infantryx_button = MenuItemImage::create("Game/button/infantry_button2.png", "Game/button/infantry_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		dog_button = MenuItemImage::create("Game/button/dog_button1.png", "Game/button/dog_button3.png", CC_CALLBACK_1(Game::buttonDog, this));
-		dogx_button = MenuItemImage::create("Game/button/dog_button2.png", "Game/button/dog_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		tank_button = MenuItemImage::create("Game/button/tank_button1.png", "Game/button/tank_button3.png", CC_CALLBACK_1(Game::buttonTank, this));
-		tankx_button = MenuItemImage::create("Game/button/tank_button2.png", "Game/button/tank_button2.png", CC_CALLBACK_1(Game::buttonx, this));
 		teamchange_button = MenuItemImage::create("Game/button/teamchange_button.png", "Game/button/teamchange_button.png", CC_CALLBACK_1(Game::buttonTeamchange, this));
 		//锚点坐标设置
 		basement_button->setAnchorPoint(Vec2(0, 0));
-		basementx_button->setAnchorPoint(Vec2(0, 0));
 		barrack_button->setAnchorPoint(Vec2(0, 0));
-		barrackx_button->setAnchorPoint(Vec2(0, 0));
 		powerplant_button->setAnchorPoint(Vec2(0, 0));
-		powerplantx_button->setAnchorPoint(Vec2(0, 0));
 		minefield_button->setAnchorPoint(Vec2(0, 0));
-		minefieldx_button->setAnchorPoint(Vec2(0, 0));
 		warfactory_button->setAnchorPoint(Vec2(0, 0));
-		warfactoryx_button->setAnchorPoint(Vec2(0, 0));
 		infantry_button->setAnchorPoint(Vec2(0, 0));
-		infantryx_button->setAnchorPoint(Vec2(0, 0));
 		dog_button->setAnchorPoint(Vec2(0, 0));
-		dogx_button->setAnchorPoint(Vec2(0, 0));
 		tank_button->setAnchorPoint(Vec2(0, 0));
-		tankx_button->setAnchorPoint(Vec2(0, 0));
 		teamchange_button->setAnchorPoint(Vec2(0, 0));
 		//坐标设置
 		basement_button->setPosition(Vec2(0, 0));
-		basementx_button->setPosition(Vec2(0, 0));
 		barrack_button->setPosition(Vec2(100, 0));
-		barrackx_button->setPosition(Vec2(100, 0));
 		powerplant_button->setPosition(Vec2(200, 0));
-		powerplantx_button->setPosition(Vec2(200, 0));
 		minefield_button->setPosition(Vec2(300, 0));
-		minefieldx_button->setPosition(Vec2(300, 0));
 		warfactory_button->setPosition(Vec2(400, 0));
-		warfactoryx_button->setPosition(Vec2(400, 0));
 		infantry_button->setPosition(Vec2(200, 100));
-		infantryx_button->setPosition(Vec2(200, 100));
 		dog_button->setPosition(Vec2(300, 100));
-		dogx_button->setPosition(Vec2(300, 100));
 		tank_button->setPosition(Vec2(400, 100));
-		tankx_button->setPosition(Vec2(400, 100));
 		teamchange_button->setPosition(Vec2(400, 200));
 		//按钮加入菜单
 		menu->addChild(basement_button, 0);
-		menu->addChild(basementx_button, 1);
 		menu->addChild(barrack_button, 0);
-		menu->addChild(barrackx_button, 1);
 		menu->addChild(powerplant_button, 0);
-		menu->addChild(powerplantx_button, 1);
 		menu->addChild(minefield_button, 0);
-		menu->addChild(minefieldx_button, 1);
 		menu->addChild(warfactory_button, 0);
-		menu->addChild(warfactoryx_button, 1);
 		menu->addChild(infantry_button, 0);
-		menu->addChild(infantryx_button, 1);
 		menu->addChild(dog_button, 0);
-		menu->addChild(dogx_button, 1);
 		menu->addChild(tank_button, 0);
-		menu->addChild(tankx_button, 1);
 		menu->addChild(teamchange_button, 1);
-
-
 
 		//菜单范围
 		menuRect = Rect(visibleSize.x - 500, 0, 500, 200);
@@ -325,6 +290,7 @@ bool Game::init()
 
 		menuLayer->addChild(menu);
 	}
+
 
 	//content
 	auto content = RichText::create();
