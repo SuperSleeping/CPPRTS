@@ -146,7 +146,7 @@ void TransScene::twoCallback(Ref* pSender)
 void TransScene::fourCallback(Ref *pSender)
 {
 	UserDefault::getInstance()->setIntegerForKey(PLAYERS, 4);
-	std::thread server(serverOperation, 2);
+	std::thread server(serverOperation, 4);
 	server.detach();
 	//serverOperation(4);
 	auto sc = WaitingScene::createScene();
