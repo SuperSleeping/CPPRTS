@@ -3158,10 +3158,10 @@ void Game::numberClientEvent(cocos2d::network::SIOClient *client, const std::str
 		tiledmap->setPosition(Vec2(0, -2412));
 		break;
 	case 1:
-		tiledmap->setPosition(Vec2(-4064, 0));
+		tiledmap->setPosition(Vec2(-4064, -2412));
 		break;
 	case 3:
-		tiledmap->setPosition(Vec2(-4064, -2412));
+		tiledmap->setPosition(Vec2(-4064, 0));
 		break;
 	}
 	UserDefault::getInstance()->setIntegerForKey(PLAYER_NUMBER, number % 4);
