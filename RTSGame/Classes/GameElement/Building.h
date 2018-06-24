@@ -72,6 +72,7 @@ public:
 		{
 			died = 1;
 			this->selected = 0;
+			bloodFrame->setVisible(false);
 			//this->setZOrder(-100);
 			//log("%f",this->getZOrder());
 			//this->removeAllChildren();

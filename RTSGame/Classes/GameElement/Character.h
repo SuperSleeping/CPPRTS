@@ -84,9 +84,10 @@ public:
 		{
 			died = 1;
 			this->selected = 0;
+			this->setVisible(false);
 			//this->setZOrder(-100);
 			//log("%f",this->getZOrder());
-			this->setZOrder(-1);
+			//this->setZOrder(-1);
 			//this->removeAllChildren();
 			//this->initWithFile("remove.png");
 		}
