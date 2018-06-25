@@ -13,7 +13,7 @@ Powerplant* Powerplant::create(Vec2 position)
 	if (powerplant && powerplant->initWithFile("Game/building/powerplant.png"))
 	{
 		//锚点坐标设置
-		powerplant->setAnchorPoint(Vec2(0.5, 0.2));
+		powerplant->setAnchorPoint(Vec2(0.5f, 0.2f));
 		powerplant->setPosition(position);
 		//属性设置
 		powerplant->selected = 0;
@@ -36,11 +36,11 @@ void Powerplant::setSelected(bool isSelected)
 	if (selected)
 	{
 		this->initWithFile("Game/building/powerplant_selected.png");
-		this->setAnchorPoint(Vec2(0.5, 0.2));
+		this->setAnchorPoint(Vec2(0.5f, 0.2f));
 	}
 	else
 	{
 		this->initWithFile("Game/building/powerplant.png");
-		this->setAnchorPoint(Vec2(0.5, 0.2));
+		this->setAnchorPoint(Vec2(0.5f, 0.2f));
 	}
 }

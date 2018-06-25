@@ -13,7 +13,7 @@ Basement* Basement::create(Vec2 position)
 	if (basement && basement->initWithFile("Game/building/basement.png"))
 	{
 		//锚点坐标设置
-		basement->setAnchorPoint(Vec2(0.5, 0.3));
+		basement->setAnchorPoint(Vec2(0.5f, 0.3f));
 		basement->setPosition(position);
 		//属性设置
 		basement->blood = 2000;
@@ -34,11 +34,11 @@ void Basement::setSelected(bool isSelected)
 	if (selected)
 	{
 		this->initWithFile("Game/building/basement_selected.png");
-		this->setAnchorPoint(Vec2(0.5, 0.3));
+		this->setAnchorPoint(Vec2(0.5f, 0.3f));
 	}
 	else
 	{
 		this->initWithFile("Game/building/basement.png");
-		this->setAnchorPoint(Vec2(0.5, 0.3));
+		this->setAnchorPoint(Vec2(0.5f, 0.3f));
 	}
 }

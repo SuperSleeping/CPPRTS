@@ -9,7 +9,7 @@ Barrack::Barrack()
 	:Building(BARRACK)
 {
 	this->initWithFile("Game/building/barrack.png");
-	this->setAnchorPoint(Vec2(0.5, 0.4));
+	this->setAnchorPoint(Vec2(0.5f, 0.4f));
 	this->blood = 2000;
 	this->bloodNow = 2000;
 	
@@ -41,11 +41,11 @@ void Barrack::setSelected(bool isSelected)
 	if (selected)
 	{
 		this->initWithFile("Game/building/barrack_selected.png");
-		this->setAnchorPoint(Vec2(0.5, 0.4));
+		this->setAnchorPoint(Vec2(0.5f, 0.4f));
 	}
 	else
 	{
 		this->initWithFile("Game/building/barrack.png");
-		this->setAnchorPoint(Vec2(0.5, 0.4));
+		this->setAnchorPoint(Vec2(0.5f, 0.4f));
 	}
 }

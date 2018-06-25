@@ -13,7 +13,7 @@ Warfactory* Warfactory::create(Vec2 position)
 	if (warfactory && warfactory->initWithFile("Game/building/warfactory.png"))
 	{
 		//锚点坐标设置
-		warfactory->setAnchorPoint(Vec2(0.5, 0.4));
+		warfactory->setAnchorPoint(Vec2(0.5f, 0.4f));
 		warfactory->setPosition(position);
 		//属性设置
 		warfactory->blood = 2000;
@@ -34,12 +34,12 @@ void Warfactory::setSelected(bool isSelected)
 	if (selected)
 	{
 		this->initWithFile("Game/building/warfactory_selected.png");
-		this->setAnchorPoint(Vec2(0.5, 0.4));
+		this->setAnchorPoint(Vec2(0.5f, 0.4f));
 	}
 	else
 	{
 		this->initWithFile("Game/building/warfactory.png");
-		this->setAnchorPoint(Vec2(0.5, 0.4));
+		this->setAnchorPoint(Vec2(0.5f, 0.4f));
 	}
 }
 

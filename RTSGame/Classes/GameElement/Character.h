@@ -70,7 +70,7 @@ public:
 			bloodPicture->setBarChangeRate(Vec2(1, 0));
 			bloodPicture->setPercentage(100);
 			bloodFrame->addChild(bloodPicture);
-			bloodFrame->setPositionNormalized(Vec2(0.5, 1.2));
+			bloodFrame->setPositionNormalized(Vec2(0.5f, 1.2f));
 			this->addChild(bloodFrame, 1);
 		}
 	}

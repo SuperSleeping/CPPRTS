@@ -47,7 +47,7 @@ int Characters[118][138];
 int Buildings[118][138];
 int MapCondition[118][138];
 
-int PlayMode = 0;				//单人模式默认为0，联机模式设为1
+int PlayMode=0;				//单人模式默认为0，联机模式设为1
 
 vector<int[118][138]> MapDestination;
 
@@ -160,10 +160,7 @@ bool Game::init()
 	{
 		return false;
 	}
-
-	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
-	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
-	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
+	
 
 	visibleSize = Director::getInstance()->getVisibleSize();
 	auto VisibleSize = Director::getInstance()->getVisibleSize();
@@ -331,18 +328,14 @@ bool Game::init()
 	dispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 
 
+	PlayMode = 0;
+
+	std::string hostIp = UserDefault::getInstance()->getStringForKey(HOST_IP);
+	sioClient = cocos2d::network::SocketIO::connect(hostIp, *this);
+	sioClient->on("numberClientEvent", CC_CALLBACK_2(Game::numberClientEvent, this));
 
 
 
-
-
-
-	/*
-	//GameScene上的鼠标监听、事件分配
-	auto mouseListener = EventListenerMouse::create();
-	mouseListener->onMouseDown = CC_CALLBACK_1(Game::mouseDown, this);
-	dispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
-	*/
 
 	this->scheduleUpdate();
 	this->schedule(schedule_selector(Game::updateMapCharacter), 0.01f, kRepeatForever, 0);
@@ -406,7 +399,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 	{
 		if (position.x > visibleSize.x - 100)
 		{
-			if (!(tiledmap->numberOfRunningActions()))
+			if (!(tiledmap->getNumberOfRunningActions()))
 			{
 				auto map_move = MoveTo::create((tiledmap->getPosition().x + (mapSize.x - visibleSize.x)) / 2000, Vec2(-(mapSize.x - visibleSize.x), tiledmap->getPosition().y));
 				tiledmap->runAction(map_move);
@@ -414,7 +407,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 		else if (position.x < 100)
 		{
-			if (!(tiledmap->numberOfRunningActions()))
+			if (!(tiledmap->getNumberOfRunningActions()))
 			{
 				auto map_move = MoveTo::create((-(tiledmap->getPosition().x)) / 2000, Vec2(0, tiledmap->getPosition().y));
 				tiledmap->runAction(map_move);
@@ -422,7 +415,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 		else if (position.y < 100)
 		{
-			if (!(tiledmap->numberOfRunningActions()))
+			if (!(tiledmap->getNumberOfRunningActions()))
 			{
 				auto map_move = MoveTo::create((-(tiledmap->getPosition().y)) / 2000, Vec2(tiledmap->getPosition().x, 0));
 				tiledmap->runAction(map_move);
@@ -430,7 +423,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 		}
 		else if (position.y > visibleSize.y - 100)
 		{
-			if (!(tiledmap->numberOfRunningActions()))
+			if (!(tiledmap->getNumberOfRunningActions()))
 			{
 				auto map_move = MoveTo::create((tiledmap->getPosition().y + (mapSize.y - visibleSize.y)) / 2000, Vec2(tiledmap->getPosition().x, -(mapSize.y - visibleSize.y)));
 				tiledmap->runAction(map_move);
@@ -501,7 +494,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 			{
 				BuildingPictureWithMouse = Sprite::create("Game/building/basement_block.png");
 			}
-			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.3));
+			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5f, 0.3f));
 		}
 		else if (buildState == Building::BuildingType::BARRACK)
 		{
@@ -513,7 +506,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 			{
 				BuildingPictureWithMouse = Sprite::create("Game/building/barrack_block.png");
 			}
-			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.4));
+			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5f, 0.4f));
 		}
 		else if (buildState == Building::BuildingType::MINEFIELD)
 		{
@@ -537,7 +530,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 			{
 				BuildingPictureWithMouse = Sprite::create("Game/building/powerplant_block.png");
 			}
-			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.2));
+			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5f, 0.2f));
 		}
 		else if (buildState == Building::BuildingType::WARFACTORY)
 		{
@@ -549,7 +542,7 @@ void Game::onMouseMove(cocos2d::Event* event)
 			{
 				BuildingPictureWithMouse = Sprite::create("Game/building/warfactory_block.png");
 			}
-			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5, 0.4));
+			BuildingPictureWithMouse->setAnchorPoint(Vec2(0.5f, 0.4f));
 		}
 
 		//在瓦片地图上定位 探测可能安放的位置
@@ -692,16 +685,18 @@ void Game::onMouseDown(cocos2d::Event* event)
 	//建筑状态
 	if (buildState&&OKtobuilt)
 	{
+		log("%f %f", position[tiledmapW].x, position[tiledmapW].y);
+		log("%f %f", convertToTiledMap(position[tiledmapW]).x, convertToTiledMap(position[tiledmapW]).y);
 		//根据状态新建不同的GameElement并推入相应队伍的vector中
 		if (buildState == Building::BuildingType::BASEMENT)
 		{
 			if (!PlayMode)
 			{
-				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 1));
+				buildRespone(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 1));
 			}
 			else
 			{
-				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 1));
+				sioClient->send(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 1));
 			}
 
 		}
@@ -709,11 +704,11 @@ void Game::onMouseDown(cocos2d::Event* event)
 		{
 			if (!PlayMode)
 			{
-				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 2));
+				buildRespone(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 2));
 			}
 			else
 			{
-				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 2));
+				sioClient->send(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 2));
 			}
 
 
@@ -723,11 +718,11 @@ void Game::onMouseDown(cocos2d::Event* event)
 		{
 			if (!PlayMode)
 			{
-				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 3));
+				buildRespone(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 3));
 			}
 			else
 			{
-				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 3));
+				sioClient->send(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 3));
 			}
 
 		}
@@ -735,11 +730,11 @@ void Game::onMouseDown(cocos2d::Event* event)
 		{
 			if (!PlayMode)
 			{
-				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
+				buildRespone(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 4));
 			}
 			else
 			{
-				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 4));
+				sioClient->send(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 4));
 			}
 
 		}
@@ -747,11 +742,11 @@ void Game::onMouseDown(cocos2d::Event* event)
 		{
 			if (!PlayMode)
 			{
-				buildRespone(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
+				buildRespone(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 5));
 			}
 			else
 			{
-				sioClient->send(SpawnDatastring(myTeam, ' b', position[tiledmapW].x, position[tiledmapW].y, 5));
+				sioClient->send(SpawnDatastring(myTeam, 'b', position[tiledmapW].x, position[tiledmapW].y, 5));
 			}
 
 		}
@@ -823,9 +818,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 			{
 				if (!(*iterInfantry)->died && rectContain(selectRect, (*iterInfantry)->getPosition()))
 				{
-					if ((*iterInfantry)->getZOrder() > zo)
+					if ((*iterInfantry)->getLocalZOrder() > zo)
 					{
-						zo = (*iterInfantry)->getZOrder();
+						zo = (*iterInfantry)->getLocalZOrder();
 						for (Infantry* character : infantryGroup[myTeam])
 						{
 							if (character->selected)
@@ -881,9 +876,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 			{
 				if (!(*iterDog)->died && rectContain(selectRect, (*iterDog)->getPosition()))
 				{
-					if ((*iterDog)->getZOrder() > zo)
+					if ((*iterDog)->getLocalZOrder() > zo)
 					{
-						zo = (*iterDog)->getZOrder();
+						zo = (*iterDog)->getLocalZOrder();
 						for (Infantry* character : infantryGroup[myTeam])
 						{
 							if (character->selected)
@@ -937,9 +932,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 			{
 				if (!(*iterTank)->died && rectContain(selectRect, (*iterTank)->getPosition()))
 				{
-					if ((*iterTank)->getZOrder() > zo)
+					if ((*iterTank)->getLocalZOrder() > zo)
 					{
-						zo = (*iterTank)->getZOrder();
+						zo = (*iterTank)->getLocalZOrder();
 						for (Infantry* character : infantryGroup[myTeam])
 						{
 							if (character->selected)
@@ -1006,9 +1001,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						if (!(*iterBasement)->died && rectContain(selectRect, (*iterBasement)->getPosition()))
 						{
-							if ((*iterBasement)->getZOrder() > zo)
+							if ((*iterBasement)->getLocalZOrder() > zo)
 							{
-								zo = (*iterBasement)->getZOrder();
+								zo = (*iterBasement)->getLocalZOrder();
 								for (Infantry* character : infantryGroup[myTeam])
 								{
 									if (character->selected)
@@ -1063,9 +1058,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						if (!(*iterMinefield)->died && rectContain(selectRect, (*iterMinefield)->getPosition()))
 						{
-							if ((*iterMinefield)->getZOrder() > zo)
+							if ((*iterMinefield)->getLocalZOrder() > zo)
 							{
-								zo = (*iterMinefield)->getZOrder();
+								zo = (*iterMinefield)->getLocalZOrder();
 								for (Infantry* character : infantryGroup[myTeam])
 								{
 									if (character->selected)
@@ -1120,9 +1115,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						if (!(*iterBarrack)->died && rectContain(selectRect, (*iterBarrack)->getPosition()))
 						{
-							if ((*iterBarrack)->getZOrder() > zo)
+							if ((*iterBarrack)->getLocalZOrder() > zo)
 							{
-								zo = (*iterBarrack)->getZOrder();
+								zo = (*iterBarrack)->getLocalZOrder();
 								for (Infantry* character : infantryGroup[myTeam])
 								{
 									if (character->selected)
@@ -1177,9 +1172,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						if (!(*iterWarfactory) && rectContain(selectRect, (*iterWarfactory)->getPosition()))
 						{
-							if ((*iterWarfactory)->getZOrder() > zo)
+							if ((*iterWarfactory)->getLocalZOrder() > zo)
 							{
-								zo = (*iterWarfactory)->getZOrder();
+								zo = (*iterWarfactory)->getLocalZOrder();
 								for (Infantry* character : infantryGroup[myTeam])
 								{
 									if (character->selected)
@@ -1238,9 +1233,9 @@ void Game::onMouseUp(cocos2d::Event* event)
 					{
 						if (!(*iterPowerplant)->died && rectContain(selectRect, (*iterPowerplant)->getPosition()))
 						{
-							if ((*iterPowerplant)->getZOrder() > zo)
+							if ((*iterPowerplant)->getLocalZOrder() > zo)
 							{
-								zo = (*iterPowerplant)->getZOrder();
+								zo = (*iterPowerplant)->getLocalZOrder();
 								for (Infantry* character : infantryGroup[myTeam])
 								{
 									if (character->selected)
@@ -1674,7 +1669,7 @@ void Game::drawline()
 		lastPress,
 		Vec2(lastPress.x,firstPress.y)
 	};
-	rectangle->drawPolygon(point, 4, Color4F(0, 0, 0, 0), 0.5, Color4F(1, 1, 1, 0.8));
+	rectangle->drawPolygon(point, 4, Color4F(0.0f, 0.0f, 0.0f, 0.0f), 0.5f, Color4F(1.0f, 1.0f, 1.0f, 0.8f));
 }
 
 /***************/
@@ -1687,15 +1682,15 @@ void Game::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 	case EventKeyboard::KeyCode::KEY_TAB:
 	{
 		tab = !tab;
-		if (miniMap->getZOrder() > 100)
+		if (miniMap->getLocalZOrder() > 100)
 		{
-			miniMap->setZOrder(-1);
-			miniRec->setZOrder(-1);
+			miniMap->setLocalZOrder(-1);
+			miniRec->setLocalZOrder(-1);
 		}
 		else
 		{
-			miniMap->setZOrder(800);
-			miniRec->setZOrder(1000);
+			miniMap->setLocalZOrder(800);
+			miniRec->setLocalZOrder(1000);
 		}
 	}
 	case EventKeyboard::KeyCode::KEY_Q:				//Q 大兵
@@ -2102,12 +2097,15 @@ void BuildBlock(int x, int y, int size)
 {
 	log("zz");
 	int q = 2;
+	
+	log("x y %d %d", x, y);
 	if (size == 2)
 	{
 
 		for (int i = x - 2; i <= x + 2; i++)
 		{
 			Buildings[i][y] = -1400;
+			//log("rdd");
 		}
 		for (int i = y - 2; i <= y + 2; i++)
 		{
@@ -2595,9 +2593,9 @@ void Character::updateMove(float di) {
 	}
 	//this->setMapDestination(positionGoal);
 
-	this->setZOrder(positionNow.y);
+	this->setLocalZOrder(positionNow.y);
 	Point TMposition = convertToTiledMap(this->getPosition());
-	if (!this->numberOfRunningActions()) {
+	if (!this->getNumberOfRunningActions()) {
 		positionNow = TMposition;
 	}
 
@@ -2605,7 +2603,7 @@ void Character::updateMove(float di) {
 	int y_goal = positionGoal.y;
 	if (TMposition != positionGoal)
 	{
-		if (!this->numberOfRunningActions())
+		if (!this->getNumberOfRunningActions())
 		{
 			for (int i = 0; i < 118; i++)
 			{
@@ -3102,17 +3100,17 @@ void Game::updateZOrder(float di)
 		for (auto infa : infantryGroup[i])
 		{
 			if (!infa->died)
-				infa->setZOrder(infa->positionNow.y);
+				infa->setLocalZOrder(infa->positionNow.y);
 		}
 		for (auto dog : dogGroup[i])
 		{
 			if (!dog->died)
-				dog->setZOrder(dog->positionNow.y);
+				dog->setLocalZOrder(dog->positionNow.y);
 		}
 		for (auto tank : tankGroup[i])
 		{
 			if (!tank->died)
-				tank->setZOrder(tank->positionNow.y);
+				tank->setLocalZOrder(tank->positionNow.y);
 		}
 	}
 }
